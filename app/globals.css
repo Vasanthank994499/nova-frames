@@ -15,3 +15,46 @@
 @media(max-width:800px){.attendance-panel,.report-panel{padding:20px}.shift-card{grid-template-columns:1fr}.report-sheets{grid-template-columns:repeat(2,1fr)}.attendance-clock{font-size:36px}.attendance-panel>.section-title{align-items:flex-start;flex-wrap:wrap}.date-control{margin-left:auto}.report-hero h2{font-size:21px}}
 @media(max-width:500px){.attendance-panel,.report-panel{padding:16px}.report-hero{gap:12px}.report-icon{width:45px;height:45px;border-radius:10px}.report-icon svg{width:25px}.report-hero h2{font-size:19px}.report-controls{flex-direction:column;align-items:stretch;padding:16px}.report-controls label{width:100%}.report-sheets{grid-template-columns:1fr}.date-control{margin-left:0;width:100%}.date-control label{flex:1}.attendance-clock{font-size:34px}.shift-card{padding-inline:0;gap:20px}.attendance-correction{padding:16px}.sidebar .navitem{font-size:10px}}
 .toggle-control{display:inline-flex;align-items:center;gap:5px;background:#e6ebf2;border-radius:20px;height:25px;min-width:57px;padding:4px;color:#7c8a9f;flex-shrink:0}.toggle-control span{height:17px;width:17px;background:#fff;border-radius:50%;box-shadow:0 1px 3px #20345222}.toggle-control small{font-size:9px;padding-right:3px}.toggle-control.on{background:#2563eb;color:#fff}.toggle-control.on span{order:2}.toggle-control.on small{padding-left:4px;padding-right:0}.brand-completion{padding:13px 0 18px;font-size:11px;min-width:180px}.brand-completion>div:first-child{display:flex;align-items:center;justify-content:space-between;gap:10px}.brand-completion strong{color:#406998;font-weight:600}.brand-completion small{font-size:9px;color:#879bb4}.brand-completion .hours-track{margin:9px 0 7px;height:5px}.person-card>.textbutton{display:flex;margin-top:15px}.role-checkboxes{border:1px solid #e3eaf5;border-radius:7px;padding:7px 14px 12px;margin:20px 0}.role-checkboxes legend{font-size:11px;color:#6c83a2;padding:0 5px}.role-checkboxes .checkbox{margin:12px 0}.allocation-page{background:white;border:1px solid var(--line);border-radius:12px;padding:24px}.allocation-page h2,.extra-panel h2{display:flex;align-items:center;gap:8px}.allocation-people{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.allocation-person{background:#f9fbfe;border:1px solid #e2eaf6;border-radius:9px;padding:16px;text-align:left;position:relative}.allocation-person .mini-avatar{height:28px;width:28px;margin-bottom:10px;background:#e7f0ff;color:#3166b1}.allocation-person strong,.allocation-person small{display:block}.allocation-person strong{font-size:12px;color:#466a98}.allocation-person small{font-size:9px;line-height:1.6;color:#8da0b9;margin-top:7px}.allocation-person>span:last-child{position:absolute;right:14px;top:17px;font-size:9px;color:#93a4bb}.allocation-person.chosen{border-color:#6f9ce8;background:#eef5ff;box-shadow:0 0 0 1px #9ab8ed}.allocation-editor{background:#f4f8ff;border:1px solid #e2eafa;border-radius:9px;padding:21px;margin:23px 0}.allocation-editor h3{font-size:14px;margin-bottom:18px}.allocation-editor>.primary{margin-top:18px}.extra-panel{background:white;border:1px solid var(--line);border-radius:10px;padding:22px;margin-top:24px}.allocation-page>.extra-panel{border:0;border-top:1px solid var(--line);border-radius:0;padding:23px 0 0}.extra-row{display:flex;align-items:flex-start;gap:14px;padding:18px 0;border-top:1px solid var(--line)}.extra-row>div{flex:1}.extra-row strong{font-size:12px;color:#436c9f}.extra-row small{display:block;font-size:9px;color:#95a6be;margin:6px 0}.extra-row p,.task-instructions{font-size:11px;line-height:1.7;color:#869ab5;white-space:pre-wrap}.extra-panel .drawer-body>label{margin-bottom:18px}@media(max-width:900px){.allocation-people{grid-template-columns:repeat(2,1fr)}}@media(max-width:500px){.allocation-page,.extra-panel{padding:17px}.allocation-people{grid-template-columns:1fr 1fr;gap:8px}.allocation-person{padding:13px}.allocation-person strong{font-size:11px}.allocation-person small{font-size:8px}.extra-row{flex-wrap:wrap;gap:9px}.extra-row>div{flex-basis:100%}.extra-panel>.section-title{flex-wrap:wrap}.extra-panel .secondary{font-size:10px;padding:9px 11px}.brand-detail>.brand-completion{width:100%}.person-card-top{gap:7px}.allocation-editor{padding:16px}.allocation-editor .form-grid{grid-template-columns:1fr}}
+
+/* Mobile navigation and independent scrolling surfaces. */
+.mobile-menu-button,.mobile-menu-close,.mobile-menu-backdrop{display:none}
+.mobile-topbar-start{display:flex;align-items:center;gap:12px;min-width:0}
+.main,.content,.projects,.attendance-panel,.report-panel,.allocation-page,.extra-panel{min-width:0}
+.drawer>header,.drawer-footer,.job-tabs{flex-shrink:0}
+.drawer-body{min-height:0;overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch}
+.table-wrap,.steps,.job-tabs{max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y}
+.sidebar nav{overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch}
+@media(max-width:800px){
+ html{overflow-x:clip}body{min-height:100dvh}.shell{min-height:100dvh}
+ .topbar{position:sticky;top:0;z-index:20;height:60px;padding-top:env(safe-area-inset-top);height:calc(60px + env(safe-area-inset-top))}
+ .mobile-menu-button,.mobile-menu-close{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;flex-shrink:0;background:transparent}
+ .mobile-menu-close{position:absolute;right:12px;top:calc(12px + env(safe-area-inset-top))}
+ .mobile-menu-backdrop{display:block;position:fixed;inset:0;background:#14274166;z-index:40;touch-action:none}
+ .sidebar{position:fixed;inset:0 auto 0 0;width:min(320px,86vw);height:100dvh;max-height:100dvh;z-index:50;padding:calc(24px + env(safe-area-inset-top)) 20px 0;display:flex;flex-direction:column;flex-wrap:nowrap;gap:0;transform:translateX(-105%);visibility:hidden;border-bottom:0;border-right:1px solid var(--line);transition:transform .2s ease,visibility .2s}
+ .sidebar.mobile-open{transform:translateX(0);visibility:visible}
+ .sidebar .brand{padding-right:40px;flex-shrink:0}
+ .sidebar .workspace-tag{display:flex;margin:24px 0 18px;flex-shrink:0}
+ .sidebar .navlabel{display:block;margin-bottom:10px;flex-shrink:0}
+ .sidebar nav{display:flex;flex-direction:column;flex:1;min-height:0;width:100%;overflow-y:auto;overflow-x:hidden;gap:3px;padding-bottom:12px}
+ .sidebar .navitem{width:100%;min-height:44px;flex-shrink:0;white-space:normal;font-size:13px;padding:11px 14px;gap:12px;margin-bottom:0}
+ .sidebar .navitem svg{display:block;width:18px;flex-shrink:0}
+ .sidebar .sidebar-bottom{display:block;margin-top:0;flex-shrink:0;padding-bottom:env(safe-area-inset-bottom);background:#fff}
+ .sidebar .account{margin:0 -20px;padding:16px 20px}
+ .breadcrumb{gap:8px;min-width:0}.breadcrumb>strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.breadcrumb>svg{flex-shrink:0}
+ .content{width:100%;padding-bottom:calc(24px + env(safe-area-inset-bottom))}
+ .table-wrap table{min-width:640px}.attendance-panel .table-wrap{width:100%}
+ .modal-shade{height:100dvh;max-height:100dvh;align-items:stretch;overflow:hidden}
+ .drawer{height:100%;max-height:100%;min-height:0}.drawer form{min-height:0;overflow:hidden}
+ .drawer>header{padding-top:calc(20px + env(safe-area-inset-top))}.drawer-footer{padding-bottom:calc(16px + env(safe-area-inset-bottom));flex-wrap:wrap}
+ .worker-modal{align-self:center;max-height:calc(100dvh - 24px);margin:auto;overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch}
+ .attendance-panel .section-title,.report-controls,.toolbar,.section-title,.page-heading{flex-wrap:wrap}
+ .attendance-actions{flex-wrap:wrap}.report-controls label{min-width:0}.report-controls input{max-width:100%}
+}
+@media(max-width:500px){
+ .form-grid{grid-template-columns:1fr}.form-grid .full{grid-column:auto}
+ .drawer-body{padding:20px 16px}.job-tabs{padding:9px 12px}.job-tabs button{min-height:40px;font-size:11px}
+ .drawer-footer .primary{white-space:normal;min-height:44px}.primary,.secondary{min-height:44px}
+ input,select,textarea{font-size:16px}.search input{font-size:16px}.allocation-person small{font-size:10px}
+ .page-heading>.primary{margin-left:0}.topbar{padding-inline:12px}.mobile-topbar-start{gap:6px}
+}
+@media(prefers-reduced-motion:reduce){.sidebar{transition:none}}
