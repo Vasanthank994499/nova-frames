@@ -27,14 +27,12 @@ Removing a brand preserves its name and existing video history. Removing a worke
 Submitting a replacement edited video resets approval and clears an old Instagram link. The portal stores links; it does not upload footage to Drive, copy files to a computer, or post automatically to Instagram. Client decisions may be recorded by any signed-in staff member after communicating with the client.
 
 ## Development and deployment
-This app uses the Sites Vinext starter, Cloudflare Workers and D1. Preserve .openai/hosting.json's project ID. Use the Sites plugin's install-dependencies.mjs and build-site.mjs helpers. Drizzle migrations are in drizzle/; apply pending migrations to local D1 before preview. Hosted deployments apply migrations through Sites.
 
-For local built preview, scripts/preview-config.mjs reads the ignored .dev.vars administrator hash and generates an ignored .sites-runtime/preview.json. Run Wrangler dev with that config and .wrangler/state. The generated preview config is never included in deployments.
+Production uses Next.js on Vercel and Neon Postgres. Connect the provisioned Neon database to the Vercel project so DATABASE_URL is injected. Configure NOVA_ADMIN_PASSWORD_HASH as a Vercel Secret; never commit its value. Run the migration in drizzle/postgres/ on a new Postgres database, then run npm ci and npm run build. Vercel uses the Next.js preset, npm run build and .next output. Use npm run dev for local Next.js development with a separate development database. Original Cloudflare migrations and starter files remain for historical reference and are excluded from TypeScript compilation; they are not the production backend.
 
-scripts/verify-workflow.mjs exports verify(credentials, localhostOrigin). It tests password login, worker role isolation, four allocations, brands, Drive-only shoot, same-editor revisions, approval, posting/completion, reset/removal, invalid sessions and login throttling using disposable local data. Never run it against a production URL.
 
 ## Managers, attendance and monthly Excel reports
-Managers can read existing video jobs and allocate all four production roles. They cannot add, change or remove people, brands, branches or videos, or download reports. Anyone can mark client approval. A manager may receive posting work and may also hold additional production roles. Only the administrator manages people (including manager accounts). Managers also have their own attendance page.
+Managers can read existing video jobs and allocate all four production roles. They cannot add, change or remove people, brands or branches, or download reports. Managers can create videos and allocate work. Anyone can mark client approval. A manager may receive posting work and may also hold additional production roles. Only the administrator manages people (including manager accounts). Managers also have their own attendance page.
 
 Team profiles have a joining date and branch. Removed accounts are archived and disabled to preserve work and attendance history. Admin can create branch records and associate brands, videos and people with a branch.
 
