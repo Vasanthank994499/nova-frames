@@ -1,4 +1,3 @@
-import { env } from 'cloudflare:workers';
 import { getDb } from '../db';
 import { workers, sessions, loginAttempts } from '../db/schema';
 import { and, eq, lt, sql } from 'drizzle-orm';
@@ -24,19 +23,19 @@ export function sessionCookie(token:string,req:Request,remove=false){const u=new
 export async function principal(req:Request){
  const token=(req.headers.get('cookie')||'').split(';').map(s=>s.trim()).find(s=>s.startsWith('nf_session='))?.slice(11);
  if(!token||!/^[a-f0-9]{64}$/.test(token))throw Error('Please sign in with your email and password.');
- const session=await getDb().select().from(sessions).where(eq(sessions.tokenHash,await digest(token))).get();
+ const session=await getDb().select().from(sessions).where(eq(sessions.tokenHash,await digest(token))).then(rows=>rows[0]);
  if(!session||session.expires<=Date.now())throw Error('Your session expired. Please sign in again.');
  if(session.accountId==='admin')return {id:'admin',name:'Nova Frames Admin',email:ADMIN_EMAIL,roles:[...ROLES],role:'admin',admin:true,branchId:''};
- const w=await getDb().select().from(workers).where(eq(workers.id,session.accountId)).get();
+ const w=await getDb().select().from(workers).where(eq(workers.id,session.accountId)).then(rows=>rows[0]);
  if(!w||!w.active||!ROLES.includes(w.role as Role))throw Error('This worker account is disabled. Contact your administrator.');
  return {id:w.id,name:w.name,email:w.email,roles:workerRoles(w),role:w.role,admin:false,branchId:w.branchId||''};
 }
 export async function login(req:Request,email:string,password:string){
  requireOrigin(req);const db=getDb(),now=Date.now();
- const keys=[await digest('email:'+email),await digest('ip:'+(req.headers.get('cf-connecting-ip')||'local'))];
- for(let i=0;i<keys.length;i++){const row=await db.select().from(loginAttempts).where(eq(loginAttempts.key,keys[i])).get();if(row&&row.expires>now&&row.attempts>=(i===0?8:40))throw Error('Too many login attempts. Try again in 15 minutes.');}
- const w=email===ADMIN_EMAIL?null:await db.select().from(workers).where(eq(workers.email,email)).get();
- const stored=email===ADMIN_EMAIL?(env as unknown as Record<string,string>).NOVA_ADMIN_PASSWORD_HASH:w?.passwordHash;
+ const keys=[await digest('email:'+email),await digest('ip:'+(req.headers.get('x-vercel-forwarded-for')||req.headers.get('cf-connecting-ip')||'local'))];
+ for(let i=0;i<keys.length;i++){const row=await db.select().from(loginAttempts).where(eq(loginAttempts.key,keys[i])).then(rows=>rows[0]);if(row&&row.expires>now&&row.attempts>=(i===0?8:40))throw Error('Too many login attempts. Try again in 15 minutes.');}
+ const w=email===ADMIN_EMAIL?null:await db.select().from(workers).where(eq(workers.email,email)).then(rows=>rows[0]);
+ const stored=email===ADMIN_EMAIL?process.env.NOVA_ADMIN_PASSWORD_HASH:w?.passwordHash;
  if(email===ADMIN_EMAIL&&!stored)throw Error('Administrator password setup is not configured yet.');
  const valid=await checkPassword(password,stored||'pbkdf2:100000:invalid-login-salt:0000000000000000000000000000000000000000000000000000000000000000');
  if(!valid||(email!==ADMIN_EMAIL&&(!w||!w.active))){for(const key of keys)await db.insert(loginAttempts).values({key,attempts:1,expires:now+900000}).onConflictDoUpdate({target:loginAttempts.key,set:{attempts:sql`CASE WHEN ${loginAttempts.expires} <= ${now} THEN 1 ELSE ${loginAttempts.attempts}+1 END`,expires:sql`CASE WHEN ${loginAttempts.expires} <= ${now} THEN ${now+900000} ELSE ${loginAttempts.expires} END`}});throw Error('Incorrect email or password.');}
