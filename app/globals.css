@@ -60,3 +60,11 @@
 @media(prefers-reduced-motion:reduce){.sidebar{transition:none}}
 
 .team-attendance{margin-top:28px;padding-top:22px;border-top:1px solid var(--line)}.team-attendance h3{font-size:16px}.team-attendance>p{font-size:12px;line-height:1.6}.team-attendance .table-wrap{margin-top:16px}
+
+/* Keep account and brand dialogs to one scrollable form body. */
+.worker-modal{display:flex;flex-direction:column;max-height:calc(100dvh - 32px);min-height:0;overflow:hidden}
+.worker-modal>header{flex:0 0 auto}
+.worker-modal>form{display:flex;flex-direction:column;flex:1 1 auto;min-height:0;overflow:hidden}
+.worker-modal>form>.drawer-body{flex:1 1 auto;min-height:0;overflow-x:hidden;overflow-y:auto;overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y}
+.worker-modal>form>.drawer-footer{flex:0 0 auto}
+@media(max-width:800px){.worker-modal{max-height:calc(100dvh - 24px);width:calc(100vw - 24px);max-width:490px}.worker-modal>header{padding-top:calc(20px + env(safe-area-inset-top))}.worker-modal>form>.drawer-footer{padding-bottom:calc(16px + env(safe-area-inset-bottom))}}
