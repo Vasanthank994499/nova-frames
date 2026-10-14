@@ -1,0 +1,11 @@
+import {readFileSync,writeFileSync,mkdirSync} from 'node:fs';
+import path from 'node:path';
+const config=JSON.parse(readFileSync('dist/server/wrangler.json','utf8'));
+const variable=readFileSync(process.argv[2]||'.dev.vars','utf8').match(/^NOVA_ADMIN_PASSWORD_HASH="([^"]+)"/m)?.[1];
+if(!variable)throw Error('Local administrator password hash is missing.');
+config.main=path.resolve('dist/server',config.main);
+config.assets.directory=path.resolve('dist/server',config.assets.directory);
+config.vars.NOVA_ADMIN_PASSWORD_HASH=variable;
+mkdirSync('.sites-runtime',{recursive:true});
+writeFileSync(process.argv[3]||'.sites-runtime/preview.json',JSON.stringify(config),{mode:0o600});
+console.log('Local preview configuration prepared.');
