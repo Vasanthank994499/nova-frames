@@ -12,3 +12,4 @@ export const branches = pgTable('branches', {id:text('id').primaryKey(),name:tex
 export const attendance = pgTable('attendance', {id:text('id').primaryKey(),workerId:text('worker_id').notNull(),day:text('day').notNull(),payload:text('payload').notNull(),updated:text('updated').notNull()});
 export const workEvents = pgTable('work_events', {id:text('id').primaryKey(),at:text('at').notNull(),actorId:text('actor_id').notNull(),jobId:text('job_id').notNull(),payload:text('payload').notNull()});
 export const extraTasks = pgTable('extra_tasks',{id:text('id').primaryKey(),workerId:text('worker_id').notNull(),payload:text('payload').notNull(),updated:text('updated').notNull()});
+export const staffRequests = pgTable('staff_requests',{id:text('id').primaryKey(),workerId:text('worker_id').notNull(),status:text('status').notNull(),payload:text('payload').notNull(),updated:text('updated').notNull()});
