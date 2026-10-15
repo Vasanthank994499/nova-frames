@@ -57,3 +57,27 @@ Accounts with the Cameraman role see New video and My videos. They can create a 
 Overview is the default landing page and is visible to every authenticated account. Its aggregate studio totals are shared across roles; video/task details retain their existing access rules. Only manager and cameraman accounts may create new videos, including workers with either role among multiple roles. The administrator may manage existing video settings and allocations, but cannot create new videos under this rule. Managers may choose initial allocations when creating a video; cameramen are automatically assigned to its shoot. All new videos begin at Content.
 
 Manager navigation: Overview, Projects, Work allocation, Extra tasks, every production stage through Completed, and Attendance. Managers see all videos by stage; Brands, Team, Branches and Reports remain administrator-only. Production submissions require the assigned worker role; managers can inspect links and allocate work.
+
+## Project stage controls
+
+Admins, managers and cameramen can create videos. New videos can start at Content, Shoot, Video editing or Post. Admins and managers can manually change any video’s production stage; a cameraman can change a video they created or are assigned to shoot. Open the video, choose Current stage, and click Save current stage. Manual stage changes are audited and do not fabricate Drive submissions, shoot completion or client approval. Existing client-review, posting and completion actions remain available. Only administrators manage worker roles and accounts.
+
+## Mobile navigation and opening page
+
+On phone and tablet widths up to 800px, the top-left menu opens a vertical drawer listing all pages available to the account. Its page list scrolls independently, closes after navigation, supports Escape and keyboard focus, and restores page scrolling. Long forms scroll inside their drawers; wide attendance and project tables scroll horizontally. Workers and managers open on Attendance after login or a fresh page load; administrators open on Overview. Refreshing data while using another page does not force a return to Attendance.
+
+## Stage-specific allocation and manager attendance
+
+Managers can view daily attendance for all workers and managers, while keeping their own check-in, permission-break, resume and end-day controls. Only administrators may correct attendance. Workers can read only their own attendance. Work allocation filters videos by the selected work type: Content, Shoot, Editing or Ready to post. Changing the type clears the video selection. Project allocation shows only its current production role, and updates preserve every other assignment. The server rejects stale work-type submissions and changes to other steps.
+
+
+## Confirming task reassignment
+
+When a video production step or extra task is already assigned to another person, saving a new assignee opens a warning naming the current and selected people. Cancel leaves the saved assignment unchanged. Assign to another person replaces the current assignee; each task step has exactly one assignee. First assignments and saving the same assignee do not show this warning. The server checks the current assignment and record version before replacement and rejects stale confirmations.
+
+
+## Content batches and shoot-to-editing tasks
+
+Content creation uses a brand, content date and content count; the creator submits one Google Drive link for the batch. Video/task titles are generated from the brand and date for new content batches. Shoot submission takes the content count, a separate name and footage Drive link for every item, plus shoot completion/Drive confirmations. The original record becomes the first editing video, and each remaining item becomes its own editing video. All items retain their brand, content link, shoot attribution and batch reference. New items await their own editor allocation; later approvals and posting remain per video.
+
+For cameramen without manager permission, My videos → New video shows brand, shoot date and locked Video editing stage. Next opens the Shoot form, and Create videos saves the batch as individual editing tasks. Other roles cannot use this camera-only endpoint, and cameramen cannot bypass it to create empty editing records. Admins and managers retain their normal creation and stage controls. Batch writes and audit events are saved atomically; duplicate/stale submissions cannot create extra tasks. Counts are 1–500 per batch. Monthly content totals use the submitted content count, and work details include the content date/count.
