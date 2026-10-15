@@ -1,3 +1,4 @@
+import {ensureAccessStorage,accessEvent} from './access-log';
 import { getDb } from '../db';
 import { workers, sessions, loginAttempts } from '../db/schema';
 import { and, eq, lt, sql } from 'drizzle-orm';
@@ -39,6 +40,8 @@ export async function login(req:Request,email:string,password:string){
  if(email===ADMIN_EMAIL&&!stored)throw Error('Administrator password setup is not configured yet.');
  const valid=await checkPassword(password,stored||'pbkdf2:100000:invalid-login-salt:0000000000000000000000000000000000000000000000000000000000000000');
  if(!valid||(email!==ADMIN_EMAIL&&(!w||!w.active))){for(const key of keys)await db.insert(loginAttempts).values({key,attempts:1,expires:now+900000}).onConflictDoUpdate({target:loginAttempts.key,set:{attempts:sql`CASE WHEN ${loginAttempts.expires} <= ${now} THEN 1 ELSE ${loginAttempts.attempts}+1 END`,expires:sql`CASE WHEN ${loginAttempts.expires} <= ${now} THEN ${now+900000} ELSE ${loginAttempts.expires} END`}});throw Error('Incorrect email or password.');}
- const token=hex(crypto.getRandomValues(new Uint8Array(32)).buffer);await db.insert(sessions).values({tokenHash:await digest(token),accountId:email===ADMIN_EMAIL?'admin':w!.id,expires:now+86400000});
+ const token=hex(crypto.getRandomValues(new Uint8Array(32)).buffer),tokenHash=await digest(token),accountId=email===ADMIN_EMAIL?'admin':w!.id;
+ if(accountId==='admin')await db.insert(sessions).values({tokenHash,accountId,expires:now+86400000});
+ else {await ensureAccessStorage();const event=accessEvent(accountId,'login',now);await db.execute(sql`WITH signed_in AS (INSERT INTO sessions (token_hash,account_id,expires) VALUES (${tokenHash},${accountId},${now+86400000}) RETURNING account_id) INSERT INTO access_events (id,worker_id,day,payload) SELECT ${event.id},account_id,${event.day},${JSON.stringify(event)} FROM signed_in`);}
  await db.delete(loginAttempts).where(eq(loginAttempts.key,keys[0]));await db.delete(loginAttempts).where(lt(loginAttempts.expires,now));await db.delete(sessions).where(lt(sessions.expires,now));return token;
 }
