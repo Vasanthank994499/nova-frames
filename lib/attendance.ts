@@ -7,7 +7,7 @@ export const isHoliday=(day:string)=>new Date(day+'T00:00:00Z').getUTCDay()===0;
 export const dayEnd=(day:string)=>Date.parse(day+'T23:59:59.999+05:30');
 export function totalMs(row:any,now=Date.now()){let total=0,start:number|null=null;for(const e of row?.events||[]){if(e.type==='in'||e.type==='resume')start=e.at;else if(['break','out'].includes(e.type)&&start!==null){total+=Math.max(0,e.at-start);start=null;}}if(start!==null)total+=Math.max(0,Math.min(now,dayEnd(row.day))-start);return row?.overrideMs??total;}
 export function attendanceView(row:any,day:string,now=Date.now()){
- const holiday=isHoliday(day),targetHours=holiday?0:8;const workedMs=totalMs(row,now),past=day<localDay(now);let status=row?.state||'Not marked';
+ const holiday=isHoliday(day),targetHours=holiday||row?.manualStatus==='Approved leave'?0:8;const workedMs=totalMs(row,now),past=day<localDay(now);let status=row?.state||'Not marked';
  if(row?.manualStatus)status=row.manualStatus;
  else if(!row)status=past?'Leave':'Not marked';
  else if(row.state==='Ended'||past)status=workedMs>=TARGET_MS?'Present':workedMs>0?'Short day':'Leave';
