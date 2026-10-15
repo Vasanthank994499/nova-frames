@@ -14,3 +14,4 @@ export const workEvents = pgTable('work_events', {id:text('id').primaryKey(),at:
 export const extraTasks = pgTable('extra_tasks',{id:text('id').primaryKey(),workerId:text('worker_id').notNull(),payload:text('payload').notNull(),updated:text('updated').notNull()});
 export const staffRequests = pgTable('staff_requests',{id:text('id').primaryKey(),workerId:text('worker_id').notNull(),status:text('status').notNull(),payload:text('payload').notNull(),updated:text('updated').notNull()});
 export const expenses = pgTable('expenses',{id:text('id').primaryKey(),workerId:text('worker_id').notNull(),managerId:text('manager_id').notNull(),day:text('day').notNull(),amountCents:bigint('amount_cents',{mode:'number'}).notNull(),payload:text('payload').notNull(),updated:text('updated').notNull()});
+export const accessEvents = pgTable('access_events',{id:text('id').primaryKey(),workerId:text('worker_id').notNull(),day:text('day').notNull(),payload:text('payload').notNull()});
