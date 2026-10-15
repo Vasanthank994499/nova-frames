@@ -1,0 +1,7 @@
+'use client';
+const labels:Record<string,string>={login:'Portal sign-in',logout:'Portal sign-out',in:'Attendance check-in',break:'Permission break',resume:'Work resumed',out:'End day',correction:'Administrator correction','approved-leave':'Leave approved'};
+export const attendanceTime=(at?:number)=>at?new Date(at).toLocaleTimeString('en-IN',{timeZone:'Asia/Kolkata',hour:'2-digit',minute:'2-digit',second:'2-digit'}):'—';
+export function AttendanceTimeline({record,day}:{record:any,day:string}){
+ const events=[...(record.events||[]),...(record.accessEvents||[])].sort((a,b)=>a.at-b.at);
+ return <section className="admin-time-log"><h3>{record.worker.name} · Activity on {day}</h3><p className="muted">Times are in IST. Portal sign-in/out recording starts with this update. Closing a browser or an expired session is not a recorded sign-out.</p><div className="table-wrap"><table><thead><tr><th>TIME (IST)</th><th>ACTIVITY</th><th>REASON / DETAILS</th></tr></thead><tbody>{events.map((event,i)=><tr key={event.id||`${event.type}-${event.at}-${i}`}><td><time dateTime={new Date(event.at).toISOString()}>{attendanceTime(event.at)}</time></td><td>{labels[event.type]||event.type}</td><td>{event.reason||'—'}{event.by&&<small className="cell-small">Recorded by {event.by}</small>}</td></tr>)}</tbody></table>{!events.length&&<p className="muted">No recorded activity for this person on this date.</p>}</div></section>;
+}
