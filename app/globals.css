@@ -68,3 +68,8 @@
 .worker-modal>form>.drawer-body{flex:1 1 auto;min-height:0;overflow-x:hidden;overflow-y:auto;overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y}
 .worker-modal>form>.drawer-footer{flex:0 0 auto}
 @media(max-width:800px){.worker-modal{max-height:calc(100dvh - 24px);width:calc(100vw - 24px);max-width:490px}.worker-modal>header{padding-top:calc(20px + env(safe-area-inset-top))}.worker-modal>form>.drawer-footer{padding-bottom:calc(16px + env(safe-area-inset-bottom))}}
+
+.reassignment-shade{position:fixed;inset:0;z-index:100;background:#12233d77;display:flex;align-items:center;justify-content:center;padding:16px}
+.reassignment-dialog{background:#fff;border-radius:14px;box-shadow:0 18px 70px #13274655;max-width:500px;width:100%;max-height:calc(100dvh - 32px);display:flex;flex-direction:column;overflow:hidden}
+.reassignment-dialog h2{font-size:20px;padding:24px 24px 0;flex-shrink:0}.reassignment-body{padding:8px 24px 20px;overflow-y:auto;min-height:0;line-height:1.7}.reassignment-body>p:last-child{font-size:12px;color:#607894}.reassignment-actions{padding:16px 24px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:10px;flex-shrink:0}
+@media(max-width:500px){.reassignment-dialog h2{font-size:18px;padding:20px 18px 0}.reassignment-body{padding-inline:18px}.reassignment-actions{padding:14px 18px;flex-wrap:wrap}.reassignment-actions button{white-space:normal;flex:1;min-height:44px}}
