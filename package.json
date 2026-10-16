@@ -66,6 +66,9 @@
   "overrides": {
     "miniflare": {
       "sharp": "0.35.4"
+    },
+    "drizzle-kit": {
+      "@esbuild-kit/esm-loader": "npm:tsx@4.22.1"
     }
   },
   "allowScripts": {
