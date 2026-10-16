@@ -89,3 +89,5 @@
 /* Keep the notification bell as the final, aligned header action. */
 .top-right{flex-shrink:0;margin-left:auto}.workspace-status{display:flex;align-items:center;gap:9px}.notification-trigger{display:grid;place-items:center;width:36px;height:36px;padding:0}.notification-trigger svg{display:block;flex-shrink:0}@media(max-width:800px){.topbar{gap:8px}.mobile-topbar-start{flex:1;overflow:hidden}.top-right{gap:4px}.top-right .workspace-status{display:none}.top-right .refresh-button{width:40px;height:40px;padding:0;justify-content:center;flex-shrink:0}.top-right .notification-trigger{display:grid!important;width:40px;height:40px}.notification-dot{right:5px;top:4px}}
 @media(max-width:800px){.notification-panel{left:12px;right:12px;width:auto}}
+
+.overview-sort{display:flex;flex-direction:column;gap:5px;font-size:11px;color:#60758b}.overview-sort select{min-width:190px;max-width:100%}@media(max-width:800px){.overview-sort{flex:1;min-width:0}.overview-sort select{width:100%;min-width:0}}
