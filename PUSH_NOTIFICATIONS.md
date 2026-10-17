@@ -1,6 +1,6 @@
 # Nova Frames device notifications
 
-Open the bell and choose **Enable phone notifications**, then allow the browser prompt. Each worker, manager or administrator enrolls each device separately. Use **Send test** to confirm the device can display alerts. On iPhone/iPad, add the site to the Home Screen first and enable notifications from the installed web app (iOS/iPadOS 16.4+).
+Open the bell and choose **Enable phone notifications**, then allow the browser prompt. Each worker, manager or administrator enrolls each device separately. After enrollment, the entire setup section hides automatically, leaving the notification inbox. Device notification preferences can be managed in browser/OS settings. On iPhone/iPad, add the site to the Home Screen first and enable notifications from the installed web app (iOS/iPadOS 16.4+).
 
 The notification-only service worker handles encrypted Web Push messages while the portal is closed. It does not cache private pages or API data. Tapping an alert opens its work page; the server still enforces the signed-in account's existing permissions.
 
