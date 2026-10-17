@@ -103,7 +103,7 @@
 @media(max-width:500px){.theme-settings-dialog{padding:20px}.theme-settings-body{padding:14px}.theme-settings-copy span{font-size:10px}}
 @media(prefers-reduced-motion:reduce){.theme-settings-switch,.theme-settings-switch span{transition:none}}
 
-html[data-theme=dark]{color-scheme:dark;--bg:#090a0d;--ink:#f5f6f8;--muted:#c4c9d1;--line:#343941;--green:#4d8cf4;--deep:#f5f6f8}
+html[data-theme=dark]{color-scheme:dark;--bg:#090a0d;--ink:#f5f6f8;--muted:#c4c9d1;--line:#343941;--green:#2d6edc;--deep:#f5f6f8}
 html[data-theme=dark] body{background:var(--bg);color:var(--ink)}
 html[data-theme=dark] :where(.sidebar,.topbar,.projects,.stat,.steps,.job-card,.person-card,.brand-detail,.attendance-panel,.report-panel,.allocation-page,.extra-panel,.requests-panel,.unassigned-panel,.expenses-panel,.admin-time-log,.overview-brand-box,.notification-panel,.notification-item,.drawer,.worker-modal,.reassignment-dialog,.login-panel,.access,.secondary,.filters select,.viewtoggle .on,.drawer-footer,.theme-settings-dialog){background:#171a1f;color:var(--ink);border-color:var(--line)}
 html[data-theme=dark] .sidebar .sidebar-bottom{background:#171a1f}
@@ -122,11 +122,11 @@ html[data-theme=dark] :where(label input:disabled,label select:disabled){backgro
 html[data-theme=dark] :where(input,select,textarea)::placeholder{color:#aeb8c6}
 html[data-theme=dark] :where(.navitem,.breadcrumb,.breadcrumb strong,.top-right,.workspace-tag,.subtitle,.hero p,.hero h2,.hero-action,.hero-label,.stat>div,.stat>div svg,.stat small,.section-title>span,.step,.step strong,.step small,.person-card p,.person-card small,.brand-detail p,.brand-contact,.report-hero p:not(.eyebrow),.shift-card p,.account small,.login-story h1,.login-story>p:not(.eyebrow),.login-form>p:not(.eyebrow),.login-help,.login-footer,.overview-sort,.notification-item small,.notification-panel small,.request-form small,.theme-settings-copy span,.theme-settings-hint){color:#c8cdd5}
 html[data-theme=dark] :where(.eyebrow,.brand small,.navlabel,.project-name small,.muted,.cell-small,.tiny-frame,.studio-note p,.login-brand small,.login-studio,.textbutton,.asset-link,.job-tabs button,.task-toggle button,.refresh-button,.notification-trigger,.allocation-person small){color:#bdd6ff}
-html[data-theme=dark] :where(.primary,.theme-settings-switch.on){background:#4d8cf4;color:#fff}
-html[data-theme=dark] :where(.primary:hover){background:#6fa6ff}
+html[data-theme=dark] :where(.primary,.theme-settings-switch.on){background:#2d6edc;color:#fff}
+html[data-theme=dark] :where(.primary:hover){background:#3572da}
 html[data-theme=dark] .secondary:hover{background:#2d333c}
 html[data-theme=dark] .toggle-control{background:#565e69;color:#fff}
-html[data-theme=dark] .toggle-control.on{background:#4d8cf4}
+html[data-theme=dark] .toggle-control.on{background:#2d6edc}
 html[data-theme=dark] :where(.badge,.stage-2,.stage-3,.stage-4,.stage-5,.stage-6,.stage-7,.request-status-approved,.request-status-pending,.request-status-rejected,.request-status-cancelled,.request-notice,.attendance-warning,.revision-feedback,.form-error){background:#333a44;color:#f3f5fa;border-color:#4b535e}
 html[data-theme=dark] .request-status-approved{background:#203d34;color:#c1ead5}
 html[data-theme=dark] .request-status-rejected,html[data-theme=dark] .form-error{background:#4b3035;color:#ffd3ce}
@@ -147,6 +147,8 @@ html[data-theme=dark] .sidebar .sidebar-bottom{background:#111317}
 html[data-theme=dark] .sidebar .navitem.selected{background:#292d35;color:#f7f8fa;box-shadow:inset 3px 0 #78aaff}
 html[data-theme=dark] .sidebar .navitem.selected svg{color:#8db7ff}
 html[data-theme=dark] .sidebar .navitem:hover:not(.selected){background:#24282f;color:#f3f5f8}
+html[data-theme=dark] .sidebar .navitem b{min-width:21px;padding:3px 6px;text-align:center;background:#35547a;border:1px solid #6383ad;color:#fff;font-size:11px;font-weight:750;line-height:1.2;box-shadow:0 1px 4px #0004}
+html[data-theme=dark] .brandmark span{color:#8db7ff}
 html[data-theme=dark] :where(.hero,.login-story){background:linear-gradient(135deg,#25282f 0%,#191c21 65%,#17191e 100%);border:1px solid #3a3f47}
 html[data-theme=dark] .hero h2,html[data-theme=dark] .login-story h1{color:#f6f7f9}
 html[data-theme=dark] :where(.hero-action,.textbutton){color:#a9caff}
@@ -158,5 +160,6 @@ html[data-theme=dark] :where(.stage-2,.stage-4){background:#393344;color:#e5d8f4
 html[data-theme=dark] :where(.stage-3,.stage-5){background:#473b29;color:#f3dcaf}
 html[data-theme=dark] :where(.stage-6,.stage-7){background:#293f3c;color:#c5e9df}
 html[data-theme=dark] .notification-dot{border-color:#111317;box-shadow:0 0 0 1px #111317}
+html[data-theme=dark] .toggle-control.on small{color:#fff}
 html[data-theme=dark] label input:not([type=checkbox]),html[data-theme=dark] label select,html[data-theme=dark] label textarea{background:#111419;color:#f5f6f8;border-color:#484f59}
 html[data-theme=dark] label input:disabled,html[data-theme=dark] label select:disabled{background:#2b3037;color:#b6beca}
