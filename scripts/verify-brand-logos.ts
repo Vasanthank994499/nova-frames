@@ -1,0 +1,9 @@
+import assert from 'node:assert/strict';
+import sharp from 'sharp';
+import {normalizeBrandLogo,mayEditBrandLogo,MAX_LOGO_BYTES} from '../lib/brand-logo-image';
+assert.equal(mayEditBrandLogo({admin:true}),true);assert.equal(mayEditBrandLogo({admin:false}),false);
+// Wide and tall logos must retain both edges, without the square-crop behavior of profile photos.
+for(const [width,height] of [[800,200],[200,800]]){const source=await sharp({create:{width,height,channels:4,background:{r:255,g:0,b:0,alpha:1}}}).withExif({IFD0:{Artist:'Private metadata'}}).png().toBuffer();const result=await normalizeBrandLogo(source),metadata=await sharp(result).metadata();assert.equal(metadata.width,512);assert.equal(metadata.height,512);assert.equal(metadata.format,'png');assert.equal(metadata.exif,undefined);const {data,info}=await sharp(result).raw().toBuffer({resolveWithObject:true});const alpha=(x:number,y:number)=>data[(y*info.width+x)*info.channels+3];assert.equal(alpha(256,256),255);assert.equal(alpha(0,0),0);if(width>height){assert.equal(alpha(0,256),255);assert.equal(alpha(511,256),255);}else{assert.equal(alpha(256,0),255);assert.equal(alpha(256,511),255);}}
+for(const format of ['jpeg','webp'] as const){const source=await sharp({create:{width:300,height:150,channels:3,background:'blue'}}).toFormat(format).toBuffer();assert.equal((await sharp(await normalizeBrandLogo(source)).metadata()).format,'png');}
+await assert.rejects(()=>normalizeBrandLogo(Buffer.from('<svg/>')),/JPG, PNG or WebP/);await assert.rejects(()=>normalizeBrandLogo(Buffer.alloc(MAX_LOGO_BYTES+1)),/smaller than 2 MB/);await assert.rejects(()=>normalizeBrandLogo(Buffer.from([255,216,255,0])),/could not be read/);
+console.log('PASS: admin-only edits, JPG/PNG/WebP support, uncropped wide/tall logos, transparency, metadata stripping and rejected invalid/oversized images.');
