@@ -158,3 +158,5 @@ html[data-theme=dark] :where(.stage-2,.stage-4){background:#393344;color:#e5d8f4
 html[data-theme=dark] :where(.stage-3,.stage-5){background:#473b29;color:#f3dcaf}
 html[data-theme=dark] :where(.stage-6,.stage-7){background:#293f3c;color:#c5e9df}
 html[data-theme=dark] .notification-dot{border-color:#111317;box-shadow:0 0 0 1px #111317}
+html[data-theme=dark] label input:not([type=checkbox]),html[data-theme=dark] label select,html[data-theme=dark] label textarea{background:#111419;color:#f5f6f8;border-color:#484f59}
+html[data-theme=dark] label input:disabled,html[data-theme=dark] label select:disabled{background:#2b3037;color:#b6beca}
