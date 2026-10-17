@@ -91,3 +91,52 @@
 @media(max-width:800px){.notification-panel{left:12px;right:12px;width:auto}}
 
 .overview-sort{display:flex;flex-direction:column;gap:5px;font-size:11px;color:#60758b}.overview-sort select{min-width:190px;max-width:100%}@media(max-width:800px){.overview-sort{flex:1;min-width:0}.overview-sort select{width:100%;min-width:0}}
+
+/* Workspace appearance: shared across desktop, tablet and mobile. */
+.theme-settings-shade{position:fixed;inset:0;z-index:120;display:grid;place-items:center;padding:16px;background:#091629a8}
+.theme-settings-dialog{width:min(430px,100%);max-height:calc(100dvh - 32px);overflow-y:auto;border:1px solid var(--line);border-radius:16px;background:#fff;box-shadow:0 22px 75px #09162950;padding:24px;color:var(--ink)}
+.theme-settings-dialog header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}.theme-settings-dialog h2{font-size:22px}.theme-settings-dialog .eyebrow{display:block;margin-bottom:6px}
+.theme-settings-body{display:flex;align-items:center;gap:13px;margin-top:26px;padding:17px;border:1px solid var(--line);border-radius:11px;background:#f7faff}
+.theme-settings-icon{display:grid;place-items:center;width:40px;height:40px;flex-shrink:0;border-radius:10px;background:#eaf2ff;color:#2563eb}
+.theme-settings-copy{display:flex;flex:1;min-width:0;flex-direction:column;gap:4px}.theme-settings-copy strong{font-size:13px}.theme-settings-copy span,.theme-settings-hint{font-size:11px;line-height:1.5;color:#6b84a6}.theme-settings-hint{margin:15px 2px 0}
+.theme-settings-switch{position:relative;width:45px;height:27px;flex-shrink:0;border-radius:20px;background:#a9bbd0;transition:background .2s}.theme-settings-switch span{position:absolute;left:3px;top:3px;width:21px;height:21px;border-radius:50%;background:#fff;box-shadow:0 1px 3px #12233d44;transition:transform .2s}.theme-settings-switch.on{background:#2563eb}.theme-settings-switch.on span{transform:translateX(18px)}
+@media(max-width:500px){.theme-settings-dialog{padding:20px}.theme-settings-body{padding:14px}.theme-settings-copy span{font-size:10px}}
+@media(prefers-reduced-motion:reduce){.theme-settings-switch,.theme-settings-switch span{transition:none}}
+
+html[data-theme=dark]{color-scheme:dark;--bg:#0b1422;--ink:#e9f1fc;--muted:#9cb6d5;--line:#29415d;--green:#377bef;--deep:#edf4ff}
+html[data-theme=dark] body{background:var(--bg);color:var(--ink)}
+html[data-theme=dark] :where(.sidebar,.topbar,.projects,.stat,.steps,.job-card,.person-card,.brand-detail,.attendance-panel,.report-panel,.allocation-page,.extra-panel,.requests-panel,.unassigned-panel,.expenses-panel,.admin-time-log,.overview-brand-box,.notification-panel,.notification-item,.drawer,.worker-modal,.reassignment-dialog,.login-panel,.access,.secondary,.filters select,.viewtoggle .on,.drawer-footer,.theme-settings-dialog){background:#142338;color:var(--ink);border-color:var(--line)}
+html[data-theme=dark] .sidebar .sidebar-bottom{background:#142338}
+html[data-theme=dark] :where(.workspace-tag,.navitem:hover,.step:hover,.step.chosen,.viewtoggle,.search,.project-icon,.count,.mini-avatar,.avatar,.topavatar,.large-avatar,.owner-card,.add-card,.iconbutton,.access-icon,.link-field i,.rule-note,.asset-link,.brief-card,.job-tabs,.job-tabs .on,.task-toggle .on,.attendance-correction,.report-controls,.report-icon,.allocation-person,.allocation-editor,.request-form,.expense-form,.expense-total,.inactive-records,.shoot-content-item,.theme-settings-body){background:#1d314c;color:var(--ink);border-color:var(--line)}
+html[data-theme=dark] :where(.navitem.selected,.allocation-person.chosen,.notification-item.unread){background:#214069;color:#e8f2ff}
+html[data-theme=dark] :where(.hero,.login-story,.info-banner){background:#1b3353;color:#e9f1fc}
+html[data-theme=dark] .login-shell{background:var(--bg)}
+html[data-theme=dark] .login-frames{background:#234670;border-color:#42658e;color:#e9f1fc}
+html[data-theme=dark] .login-lock,html[data-theme=dark] .theme-settings-icon{background:#25466d;color:#aacdff}
+html[data-theme=dark] :where(.f1,.f2){background:#27507d;color:#e3efff;border-color:#6082a9}
+html[data-theme=dark] .f3{background:#0d2038;color:#aaccf8;border-color:#4c6b93}
+html[data-theme=dark] :where(.table-footer,.notification-panel>footer,.job-tabs,th){background:#192c43;color:#c4d8ef}
+html[data-theme=dark] tbody tr:hover,html[data-theme=dark] .notification-item:hover{background:#1d3452}
+html[data-theme=dark] :where(label input:not([type=checkbox]),label select,label textarea,.filters select,.search input,.overview-sort select,.date-control input){background:#122137;color:#e9f1fc;border-color:#3a5677}
+html[data-theme=dark] :where(label input:disabled,label select:disabled){background:#263b54;color:#93a9c4}
+html[data-theme=dark] :where(input,select,textarea)::placeholder{color:#91a8c4}
+html[data-theme=dark] :where(.navitem,.breadcrumb,.breadcrumb strong,.top-right,.workspace-tag,.subtitle,.hero p,.hero h2,.hero-action,.hero-label,.stat>div,.stat>div svg,.stat small,.section-title>span,.step,.step strong,.step small,.person-card p,.person-card small,.brand-detail p,.brand-contact,.report-hero p:not(.eyebrow),.shift-card p,.account small,.login-story h1,.login-story>p:not(.eyebrow),.login-form>p:not(.eyebrow),.login-help,.login-footer,.overview-sort,.notification-item small,.notification-panel small,.request-form small,.theme-settings-copy span,.theme-settings-hint){color:#b8cde9}
+html[data-theme=dark] :where(.eyebrow,.brand small,.navlabel,.project-name small,.muted,.cell-small,.tiny-frame,.studio-note p,.login-brand small,.login-studio,.textbutton,.asset-link,.job-tabs button,.task-toggle button,.refresh-button,.notification-trigger,.allocation-person small){color:#9fc3f4}
+html[data-theme=dark] :where(.primary,.theme-settings-switch.on){background:#377bef;color:#fff}
+html[data-theme=dark] :where(.primary:hover){background:#5794f9}
+html[data-theme=dark] .secondary:hover{background:#254262}
+html[data-theme=dark] .toggle-control{background:#43536a;color:#fff}
+html[data-theme=dark] .toggle-control.on{background:#377bef}
+html[data-theme=dark] :where(.badge,.stage-2,.stage-3,.stage-4,.stage-5,.stage-6,.stage-7,.request-status-approved,.request-status-pending,.request-status-rejected,.request-status-cancelled,.request-notice,.attendance-warning,.revision-feedback,.form-error){background:#294569;color:#eaf2ff;border-color:#466184}
+html[data-theme=dark] .request-status-approved{background:#1d4c44;color:#baf5da}
+html[data-theme=dark] .request-status-rejected,html[data-theme=dark] .form-error{background:#573338;color:#ffd0ca}
+html[data-theme=dark] .request-status-pending,html[data-theme=dark] .attendance-warning,html[data-theme=dark] .revision-feedback{background:#59472d;color:#ffe2a7}
+html[data-theme=dark] :where(.hours-track,.board-column,.report-sheets>div){background:#20344d;border-color:var(--line);color:#c5d8ef}
+html[data-theme=dark] :where(.notification-panel,.notification-item,.theme-settings-body,.report-sheets>div) *{border-color:var(--line)}
+html[data-theme=dark] :where(.theme-settings-shade,.modal-shade,.reassignment-shade,.mobile-menu-backdrop){background:#020814bd}
+.sidebar .account>div{flex:1;min-width:0}.sidebar .account strong,.sidebar .account small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sidebar .account .iconbutton{flex-shrink:0;margin-left:0}.sidebar .account .settings-trigger{margin-left:auto}
+html[data-theme=dark] :where(.tag-arrow,.art-note,.step-number,.step-arrow,.filters,.viewtoggle button,.count,.search,.search input,.project-icon,.mini-avatar,.priority,.empty,.empty h3,.footer,.board-column h3,.job-card>div,.info-banner strong,.large-avatar,.permission-tags span,.add-card,.access p,label,.form-section>p,.link-field a,.rule-note,.activity strong,.activity small,.brief-card>p:last-of-type,.brief-card small,.job-context,.job-tabs .on,.task-toggle .on,.panel-loading,.attendance-clock,.attendance-clock small,.shift-history strong,.timer-small,.brand-completion strong,.brand-completion small,.role-checkboxes legend,.allocation-person strong,.allocation-person>span:last-child,.extra-row strong,.extra-row small,.extra-row p,.task-instructions,.reassignment-body>p:last-child,.shoot-content-item legend,.request-dates,.expense-total strong,.expense-total small,.inactive-records p,.notification-panel header p,.notification-item span span,.notification-item time,.notification-empty,.notification-panel>footer,.report-sheets span){color:#b9d2f3}
+html[data-theme=dark] :where(th,td,.project-name strong,.search input,.filters select,.viewtoggle .on,.badge,.info-banner,.form-error,.iconbutton,.request-status-approved,.request-status-rejected,.request-status-cancelled,.request-status-pending,.request-notice,.toggle-control.on){color:#e9f1fc}
+html[data-theme=dark] .toggle-control:not(.on){color:#d5e3f4}
+html[data-theme=dark] :where(.priority.high,.revision-tag){color:#ffd797}
+html[data-theme=dark] :where(.priority.urgent,.overdue,.danger-text){color:#ffb3ad}
