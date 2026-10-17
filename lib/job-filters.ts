@@ -1,11 +1,12 @@
 import {allocationRoleForStage,matchesAllocationStage} from './project-stages';
-const keys:Record<string,string>={content:'contentAssignee',camera:'cameraAssignee',editor:'editorAssignee',publisher:'publisherAssignee'};
-export function currentAssignee(job:any):string{return job[keys[job.stage==='Completed'?'publisher':allocationRoleForStage(job.stage)||'']]||'';}
+import {assignmentIds} from './shoot-assignments';
+export function currentAssignees(job:any):string[]{return assignmentIds(job,job.stage==='Completed'?'publisher':allocationRoleForStage(job.stage)||'');}
+export function currentAssignee(job:any):string{return currentAssignees(job)[0]||'';}
 export function matchesJobFilters(job:any,stage='All stages',allocation='',priority='All priorities'){
- const person=currentAssignee(job);
- return (stage==='All stages'||job.stage===stage)&&(priority==='All priorities'||job.priority===priority)&&(!allocation||(allocation==='unassigned'?!person:allocation==='assigned'?!!person:person===allocation));
+ const people=currentAssignees(job);
+ return (stage==='All stages'||job.stage===stage)&&(priority==='All priorities'||job.priority===priority)&&(!allocation||(allocation==='unassigned'?!people.length:allocation==='assigned'?!!people.length:people.includes(allocation)));
 }
-export function isUnassignedAtStage(job:any,step:string){return matchesAllocationStage(job.stage,step)&&!job[keys[step]];}
+export function isUnassignedAtStage(job:any,step:string){return matchesAllocationStage(job.stage,step)&&!assignmentIds(job,step).length;}
 
 export type JobSort='newest'|'oldest'|'name-asc'|'name-desc'|'deadline';
 export function compareJobs(a:any,b:any,order:JobSort){
