@@ -163,3 +163,4 @@ html[data-theme=dark] .notification-dot{border-color:#111317;box-shadow:0 0 0 1p
 html[data-theme=dark] .toggle-control.on small{color:#fff}
 html[data-theme=dark] label input:not([type=checkbox]),html[data-theme=dark] label select,html[data-theme=dark] label textarea{background:#111419;color:#f5f6f8;border-color:#484f59}
 html[data-theme=dark] label input:disabled,html[data-theme=dark] label select:disabled{background:#2b3037;color:#b6beca}
+.unassigned-fields{border:0;padding:0;margin:0;min-width:0}.unassigned-fields>.primary{margin-top:18px}
