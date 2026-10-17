@@ -1,0 +1,20 @@
+import assert from 'node:assert/strict';
+import {createECDH} from 'node:crypto';
+import {readFileSync} from 'node:fs';
+import vm from 'node:vm';
+import webPush from 'web-push';
+import {validateSubscription} from '../lib/push-validation';
+import {notificationItems} from '../lib/notification-items';
+const ecdh=createECDH('prime256v1');ecdh.generateKeys();const subscription={endpoint:'https://fcm.googleapis.com/fcm/send/test',keys:{p256dh:ecdh.getPublicKey().toString('base64url'),auth:Buffer.alloc(16,1).toString('base64url')}};
+assert.deepEqual(validateSubscription(subscription),subscription);
+for(const endpoint of ['http://fcm.googleapis.com/x','https://127.0.0.1/x','https://fcm.googleapis.com.evil.test/x','https://user@fcm.googleapis.com/x','https://fcm.googleapis.com:8443/x'])assert.throws(()=>validateSubscription({...subscription,endpoint}));
+assert.throws(()=>validateSubscription({...subscription,keys:{...subscription.keys,auth:'bad'}}));
+const source=readFileSync('public/sw.js','utf8'),handlers:Record<string,any>={},shown:any[]=[],opened:string[]=[];const origin='https://nova.example';
+vm.runInNewContext(source,{URL,self:{location:{origin},addEventListener:(name:string,handler:any)=>handlers[name]=handler,registration:{showNotification:async(...args:any[])=>shown.push(args)},clients:{matchAll:async()=>[],openWindow:async(url:string)=>opened.push(url)}}});
+let promise:Promise<any>=Promise.resolve();const event=(data:any)=>({data:{json:()=>data},waitUntil:(p:Promise<any>)=>promise=p});
+handlers.push(event({title:'Task assigned',body:'Editing',url:'https://evil.example/x',tag:'work:1'}));await promise;assert.equal(shown[0][1].data.url,origin);assert.equal(shown[0][1].tag,'work:1');
+handlers.push(event({title:'Leave request',url:'/?notification=1&page=Requests'}));await promise;handlers.notificationclick({notification:{close(){},data:shown[1][1].data},waitUntil:(p:Promise<any>)=>promise=p});await promise;assert.equal(opened[0],origin+'/?notification=1&page=Requests');
+const base={jobs:[],events:[],extraTasks:[],hiddenBrands:new Set<string>(),hiddenWorkers:new Set<string>()};const requests=[{id:'r1',workerId:'worker',workerName:'Worker',kind:'Leave',status:'Pending',created:'2026-10-17T00:00:00Z',from:'2026-10-19',to:'2026-10-19',canReview:true}];assert.equal(notificationItems({id:'manager',admin:false,roles:['manager']},{...base,requests})[0].title,'Leave request needs approval');assert.equal(notificationItems({id:'worker',admin:false,roles:['editor']},{...base,requests:[{...requests[0],canReview:false,status:'Approved',reviewedAt:'2026-10-17T01:00:00Z'}]})[0].title,'Your leave request was approved');
+// Confirm library supports encrypted VAPID payloads without making a network request.
+const library=webPush as any,pair=library.generateVAPIDKeys(),details=library.generateRequestDetails(subscription,JSON.stringify({title:'Test'}),{vapidDetails:{subject:'mailto:admin@example.com',...pair},TTL:86400});assert.equal(details.headers['Content-Encoding'],'aes128gcm');assert.ok(details.body.length>0);assert.match(details.headers.Authorization,/^vapid /);
+console.log('Push checks passed: provider validation, encrypted VAPID payload, notification display/click safety, request alerts.');

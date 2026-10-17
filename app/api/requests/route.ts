@@ -1,3 +1,5 @@
+import {after} from 'next/server';
+import {safelyDispatchPush} from '../../../lib/web-push';
 import {getDb} from '../../../db';
 import {staffRequests,workers,attendance} from '../../../db/schema';
 import {principal,requireOrigin,workerRoles} from '../../../lib/auth';
@@ -8,7 +10,7 @@ export const dynamic='force-dynamic';
 const headers={'Cache-Control':'no-store'};
 const clean=(value:unknown,max=2000)=>String(value||'').trim().slice(0,max);
 export async function GET(req:Request){try{const u=await principal(req);await ensureRequestStorage();const db=getDb(),reviewer=u.admin||u.roles.includes('manager');const [rows,people]=await Promise.all([reviewer?db.select().from(staffRequests):db.select().from(staffRequests).where(eq(staffRequests.workerId,u.id)),reviewer?db.select().from(workers):Promise.resolve([])]);const inactive=new Set(people.filter(w=>!w.active||w.removed).map(w=>w.id));const requests=rows.map(row=>JSON.parse(row.payload)).filter(r=>!inactive.has(r.workerId)&&(r.workerId===u.id||mayReviewRequest(u,r,workerRoles(people.find(w=>w.id===r.workerId)||{})))).map(r=>({...r,reviewerName:inactive.has(r.reviewedBy)?'Unavailable reviewer':r.reviewerName,canReview:r.status==='Pending'&&mayReviewRequest(u,r,workerRoles(people.find(w=>w.id===r.workerId)||{}))})).sort((a,b)=>b.created.localeCompare(a.created));return Response.json({requests},{headers});}catch(e){return Response.json({error:(e as Error).message},{status:401,headers});}}
-export async function POST(req:Request){try{requireOrigin(req);const u=await principal(req),body=await req.json();await ensureRequestStorage();const db=getDb();
+async function handlePOST(req:Request){try{requireOrigin(req);const u=await principal(req),body=await req.json();await ensureRequestStorage();const db=getDb();
  if(body.action==='submit'){
   if(u.admin)throw Error('Requests are for workers and managers.');const kind=clean(body.kind,20);if(!['Permission','Leave'].includes(kind))throw Error('Choose Permission or Leave.');const dates=requestDates(body.from,kind==='Permission'?body.from:body.to),reason=clean(body.reason);if(!reason)throw Error('Enter a reason for your request.');if(dates.every(isHoliday))throw Error('Sunday is already a holiday. Select a working day.');
   const startTime=kind==='Permission'?clean(body.startTime,5):'',endTime=kind==='Permission'?clean(body.endTime,5):'';if(kind==='Permission'&&(!/^([01]\d|2[0-3]):[0-5]\d$/.test(startTime)||!/^([01]\d|2[0-3]):[0-5]\d$/.test(endTime)||endTime<=startTime))throw Error('Choose a valid permission start and end time (IST).');
@@ -28,3 +30,5 @@ export async function POST(req:Request){try{requireOrigin(req);const u=await pri
  }else{const saved=await db.update(staffRequests).set({status:updated.status,payload:JSON.stringify(updated),updated:crypto.randomUUID()}).where(and(eq(staffRequests.id,row.id),eq(staffRequests.updated,row.updated))).returning();if(!saved.length)throw Error('This request changed. Refresh and try again.');}
  return Response.json({ok:true},{headers});
  }catch(e){return Response.json({error:(e as Error).message},{status:400,headers});}}
+
+export async function POST(req:Request){const response=await handlePOST(req);if(response.ok)after(safelyDispatchPush);return response;}
