@@ -165,3 +165,19 @@ html[data-theme=dark] label input:not([type=checkbox]),html[data-theme=dark] lab
 html[data-theme=dark] label input:disabled,html[data-theme=dark] label select:disabled{background:#2b3037;color:#b6beca}
 .unassigned-fields{border:0;padding:0;margin:0;min-width:0}.unassigned-fields>.primary{margin-top:18px}
 .shoot-crew{grid-column:1/-1;border:1px solid var(--line);border-radius:10px;min-width:0;padding:16px;margin:18px 0;background:var(--bg)}.shoot-crew legend{font-size:12px;font-weight:700;padding:0 6px;color:var(--ink)}.shoot-crew p,.shoot-crew small{color:var(--muted);font-size:11px;line-height:1.7}.shoot-crew-options{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:12px 0}.shoot-crew-options label{display:flex;align-items:center;gap:10px;padding:12px;border:1px solid var(--line);border-radius:7px;color:var(--ink);overflow-wrap:anywhere}.shoot-crew-options label:has(input:checked){border-color:#6489c0;box-shadow:inset 0 0 0 1px #6489c0}.shoot-crew input[type=checkbox]{margin:0;width:17px;height:17px;flex-shrink:0}@media(max-width:500px){.shoot-crew{padding:12px}.shoot-crew-options{grid-template-columns:1fr}}
+
+/* Dark-blue interaction states throughout the black appearance. */
+html[data-theme=dark]{--selection-bg:#12345b;--selection-hover:#102a49;--selection-border:#497fbe;--selection-ink:#f2f7ff}
+html[data-theme=dark] :is(.allocation-person:not(:disabled),.step,.job-tabs button,.task-toggle button,.viewtoggle button,.secondary,.iconbutton,.refresh-button,.add-card,.job-card):hover{background:var(--selection-hover);color:var(--selection-ink);border-color:var(--selection-border)}
+html[data-theme=dark] tbody tr:hover,html[data-theme=dark] .notification-item:hover{background:var(--selection-hover);color:var(--selection-ink)}
+html[data-theme=dark] .sidebar .navitem:hover:not(.selected){background:var(--selection-hover);color:var(--selection-ink)}
+html[data-theme=dark] :is(.allocation-person.chosen,.step.chosen,.job-tabs button.on,.task-toggle button.on,.viewtoggle button.on,.notification-item.unread,.shoot-crew-options label:has(input:checked),.permission-option:has(input:checked),.role-checkboxes .checkbox:has(input:checked)){background:var(--selection-bg);color:var(--selection-ink);border-color:var(--selection-border)}
+html[data-theme=dark] .sidebar .navitem.selected{background:var(--selection-bg);color:var(--selection-ink)}
+html[data-theme=dark] .allocation-person.chosen{box-shadow:0 0 0 1px var(--selection-border)}
+html[data-theme=dark] .shoot-crew-options label:has(input:checked){box-shadow:inset 0 0 0 1px var(--selection-border)}
+html[data-theme=dark] :is(.allocation-person.chosen,.step.chosen) :is(strong,small,span){color:var(--selection-ink)}
+html[data-theme=dark] :is(.allocation-person.chosen .mini-avatar,.step.chosen .step-number){background:#1f4b7d;color:var(--selection-ink);border-color:var(--selection-border)}
+html[data-theme=dark] input[type=checkbox]{accent-color:#3976bd}
+html[data-theme=dark] select option:checked{background:var(--selection-bg);color:var(--selection-ink)}
+html[data-theme=dark] ::selection{background:#1a4a82;color:#fff}
+html[data-theme=dark] :is(button,a,input,select,textarea):focus-visible{outline-color:#78aaff}
