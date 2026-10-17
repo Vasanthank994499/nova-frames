@@ -103,40 +103,58 @@
 @media(max-width:500px){.theme-settings-dialog{padding:20px}.theme-settings-body{padding:14px}.theme-settings-copy span{font-size:10px}}
 @media(prefers-reduced-motion:reduce){.theme-settings-switch,.theme-settings-switch span{transition:none}}
 
-html[data-theme=dark]{color-scheme:dark;--bg:#0b1422;--ink:#e9f1fc;--muted:#9cb6d5;--line:#29415d;--green:#377bef;--deep:#edf4ff}
+html[data-theme=dark]{color-scheme:dark;--bg:#090a0d;--ink:#f5f6f8;--muted:#c4c9d1;--line:#343941;--green:#4d8cf4;--deep:#f5f6f8}
 html[data-theme=dark] body{background:var(--bg);color:var(--ink)}
-html[data-theme=dark] :where(.sidebar,.topbar,.projects,.stat,.steps,.job-card,.person-card,.brand-detail,.attendance-panel,.report-panel,.allocation-page,.extra-panel,.requests-panel,.unassigned-panel,.expenses-panel,.admin-time-log,.overview-brand-box,.notification-panel,.notification-item,.drawer,.worker-modal,.reassignment-dialog,.login-panel,.access,.secondary,.filters select,.viewtoggle .on,.drawer-footer,.theme-settings-dialog){background:#142338;color:var(--ink);border-color:var(--line)}
-html[data-theme=dark] .sidebar .sidebar-bottom{background:#142338}
-html[data-theme=dark] :where(.workspace-tag,.navitem:hover,.step:hover,.step.chosen,.viewtoggle,.search,.project-icon,.count,.mini-avatar,.avatar,.topavatar,.large-avatar,.owner-card,.add-card,.iconbutton,.access-icon,.link-field i,.rule-note,.asset-link,.brief-card,.job-tabs,.job-tabs .on,.task-toggle .on,.attendance-correction,.report-controls,.report-icon,.allocation-person,.allocation-editor,.request-form,.expense-form,.expense-total,.inactive-records,.shoot-content-item,.theme-settings-body){background:#1d314c;color:var(--ink);border-color:var(--line)}
-html[data-theme=dark] :where(.navitem.selected,.allocation-person.chosen,.notification-item.unread){background:#214069;color:#e8f2ff}
-html[data-theme=dark] :where(.hero,.login-story,.info-banner){background:#1b3353;color:#e9f1fc}
+html[data-theme=dark] :where(.sidebar,.topbar,.projects,.stat,.steps,.job-card,.person-card,.brand-detail,.attendance-panel,.report-panel,.allocation-page,.extra-panel,.requests-panel,.unassigned-panel,.expenses-panel,.admin-time-log,.overview-brand-box,.notification-panel,.notification-item,.drawer,.worker-modal,.reassignment-dialog,.login-panel,.access,.secondary,.filters select,.viewtoggle .on,.drawer-footer,.theme-settings-dialog){background:#171a1f;color:var(--ink);border-color:var(--line)}
+html[data-theme=dark] .sidebar .sidebar-bottom{background:#171a1f}
+html[data-theme=dark] :where(.workspace-tag,.navitem:hover,.step:hover,.step.chosen,.viewtoggle,.search,.project-icon,.count,.mini-avatar,.avatar,.topavatar,.large-avatar,.owner-card,.add-card,.iconbutton,.access-icon,.link-field i,.rule-note,.asset-link,.brief-card,.job-tabs,.job-tabs .on,.task-toggle .on,.attendance-correction,.report-controls,.report-icon,.allocation-person,.allocation-editor,.request-form,.expense-form,.expense-total,.inactive-records,.shoot-content-item,.theme-settings-body){background:#22262d;color:var(--ink);border-color:var(--line)}
+html[data-theme=dark] :where(.navitem.selected,.allocation-person.chosen,.notification-item.unread){background:#292e37;color:#f4f6fa}
+html[data-theme=dark] :where(.hero,.login-story,.info-banner){background:#20242a;color:#f5f6f8}
 html[data-theme=dark] .login-shell{background:var(--bg)}
-html[data-theme=dark] .login-frames{background:#234670;border-color:#42658e;color:#e9f1fc}
-html[data-theme=dark] .login-lock,html[data-theme=dark] .theme-settings-icon{background:#25466d;color:#aacdff}
-html[data-theme=dark] :where(.f1,.f2){background:#27507d;color:#e3efff;border-color:#6082a9}
-html[data-theme=dark] .f3{background:#0d2038;color:#aaccf8;border-color:#4c6b93}
-html[data-theme=dark] :where(.table-footer,.notification-panel>footer,.job-tabs,th){background:#192c43;color:#c4d8ef}
-html[data-theme=dark] tbody tr:hover,html[data-theme=dark] .notification-item:hover{background:#1d3452}
-html[data-theme=dark] :where(label input:not([type=checkbox]),label select,label textarea,.filters select,.search input,.overview-sort select,.date-control input){background:#122137;color:#e9f1fc;border-color:#3a5677}
-html[data-theme=dark] :where(label input:disabled,label select:disabled){background:#263b54;color:#93a9c4}
-html[data-theme=dark] :where(input,select,textarea)::placeholder{color:#91a8c4}
-html[data-theme=dark] :where(.navitem,.breadcrumb,.breadcrumb strong,.top-right,.workspace-tag,.subtitle,.hero p,.hero h2,.hero-action,.hero-label,.stat>div,.stat>div svg,.stat small,.section-title>span,.step,.step strong,.step small,.person-card p,.person-card small,.brand-detail p,.brand-contact,.report-hero p:not(.eyebrow),.shift-card p,.account small,.login-story h1,.login-story>p:not(.eyebrow),.login-form>p:not(.eyebrow),.login-help,.login-footer,.overview-sort,.notification-item small,.notification-panel small,.request-form small,.theme-settings-copy span,.theme-settings-hint){color:#b8cde9}
-html[data-theme=dark] :where(.eyebrow,.brand small,.navlabel,.project-name small,.muted,.cell-small,.tiny-frame,.studio-note p,.login-brand small,.login-studio,.textbutton,.asset-link,.job-tabs button,.task-toggle button,.refresh-button,.notification-trigger,.allocation-person small){color:#9fc3f4}
-html[data-theme=dark] :where(.primary,.theme-settings-switch.on){background:#377bef;color:#fff}
-html[data-theme=dark] :where(.primary:hover){background:#5794f9}
-html[data-theme=dark] .secondary:hover{background:#254262}
-html[data-theme=dark] .toggle-control{background:#43536a;color:#fff}
-html[data-theme=dark] .toggle-control.on{background:#377bef}
-html[data-theme=dark] :where(.badge,.stage-2,.stage-3,.stage-4,.stage-5,.stage-6,.stage-7,.request-status-approved,.request-status-pending,.request-status-rejected,.request-status-cancelled,.request-notice,.attendance-warning,.revision-feedback,.form-error){background:#294569;color:#eaf2ff;border-color:#466184}
-html[data-theme=dark] .request-status-approved{background:#1d4c44;color:#baf5da}
-html[data-theme=dark] .request-status-rejected,html[data-theme=dark] .form-error{background:#573338;color:#ffd0ca}
-html[data-theme=dark] .request-status-pending,html[data-theme=dark] .attendance-warning,html[data-theme=dark] .revision-feedback{background:#59472d;color:#ffe2a7}
-html[data-theme=dark] :where(.hours-track,.board-column,.report-sheets>div){background:#20344d;border-color:var(--line);color:#c5d8ef}
+html[data-theme=dark] .login-frames{background:#2b3038;border-color:#444c58;color:#f5f6f8}
+html[data-theme=dark] .login-lock,html[data-theme=dark] .theme-settings-icon{background:#303741;color:#bed6ff}
+html[data-theme=dark] :where(.f1,.f2){background:#343d4a;color:#e8edf5;border-color:#687586}
+html[data-theme=dark] .f3{background:#13171d;color:#c9d8ef;border-color:#596777}
+html[data-theme=dark] :where(.table-footer,.notification-panel>footer,.job-tabs,th){background:#20242b;color:#d9dde5}
+html[data-theme=dark] tbody tr:hover,html[data-theme=dark] .notification-item:hover{background:#2c323a}
+html[data-theme=dark] :where(label input:not([type=checkbox]),label select,label textarea,.filters select,.search input,.overview-sort select,.date-control input){background:#111419;color:#f5f6f8;border-color:#484f59}
+html[data-theme=dark] :where(label input:disabled,label select:disabled){background:#2b3037;color:#b6beca}
+html[data-theme=dark] :where(input,select,textarea)::placeholder{color:#aeb8c6}
+html[data-theme=dark] :where(.navitem,.breadcrumb,.breadcrumb strong,.top-right,.workspace-tag,.subtitle,.hero p,.hero h2,.hero-action,.hero-label,.stat>div,.stat>div svg,.stat small,.section-title>span,.step,.step strong,.step small,.person-card p,.person-card small,.brand-detail p,.brand-contact,.report-hero p:not(.eyebrow),.shift-card p,.account small,.login-story h1,.login-story>p:not(.eyebrow),.login-form>p:not(.eyebrow),.login-help,.login-footer,.overview-sort,.notification-item small,.notification-panel small,.request-form small,.theme-settings-copy span,.theme-settings-hint){color:#c8cdd5}
+html[data-theme=dark] :where(.eyebrow,.brand small,.navlabel,.project-name small,.muted,.cell-small,.tiny-frame,.studio-note p,.login-brand small,.login-studio,.textbutton,.asset-link,.job-tabs button,.task-toggle button,.refresh-button,.notification-trigger,.allocation-person small){color:#bdd6ff}
+html[data-theme=dark] :where(.primary,.theme-settings-switch.on){background:#4d8cf4;color:#fff}
+html[data-theme=dark] :where(.primary:hover){background:#6fa6ff}
+html[data-theme=dark] .secondary:hover{background:#2d333c}
+html[data-theme=dark] .toggle-control{background:#565e69;color:#fff}
+html[data-theme=dark] .toggle-control.on{background:#4d8cf4}
+html[data-theme=dark] :where(.badge,.stage-2,.stage-3,.stage-4,.stage-5,.stage-6,.stage-7,.request-status-approved,.request-status-pending,.request-status-rejected,.request-status-cancelled,.request-notice,.attendance-warning,.revision-feedback,.form-error){background:#333a44;color:#f3f5fa;border-color:#4b535e}
+html[data-theme=dark] .request-status-approved{background:#203d34;color:#c1ead5}
+html[data-theme=dark] .request-status-rejected,html[data-theme=dark] .form-error{background:#4b3035;color:#ffd3ce}
+html[data-theme=dark] .request-status-pending,html[data-theme=dark] .attendance-warning,html[data-theme=dark] .revision-feedback{background:#4d3d28;color:#f3d6a2}
+html[data-theme=dark] :where(.hours-track,.board-column,.report-sheets>div){background:#252a31;border-color:var(--line);color:#d9dde5}
 html[data-theme=dark] :where(.notification-panel,.notification-item,.theme-settings-body,.report-sheets>div) *{border-color:var(--line)}
-html[data-theme=dark] :where(.theme-settings-shade,.modal-shade,.reassignment-shade,.mobile-menu-backdrop){background:#020814bd}
+html[data-theme=dark] :where(.theme-settings-shade,.modal-shade,.reassignment-shade,.mobile-menu-backdrop){background:#000000c4}
 .sidebar .account>div{flex:1;min-width:0}.sidebar .account strong,.sidebar .account small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sidebar .account .iconbutton{flex-shrink:0;margin-left:0}.sidebar .account .settings-trigger{margin-left:auto}
-html[data-theme=dark] :where(.tag-arrow,.art-note,.step-number,.step-arrow,.filters,.viewtoggle button,.count,.search,.search input,.project-icon,.mini-avatar,.priority,.empty,.empty h3,.footer,.board-column h3,.job-card>div,.info-banner strong,.large-avatar,.permission-tags span,.add-card,.access p,label,.form-section>p,.link-field a,.rule-note,.activity strong,.activity small,.brief-card>p:last-of-type,.brief-card small,.job-context,.job-tabs .on,.task-toggle .on,.panel-loading,.attendance-clock,.attendance-clock small,.shift-history strong,.timer-small,.brand-completion strong,.brand-completion small,.role-checkboxes legend,.allocation-person strong,.allocation-person>span:last-child,.extra-row strong,.extra-row small,.extra-row p,.task-instructions,.reassignment-body>p:last-child,.shoot-content-item legend,.request-dates,.expense-total strong,.expense-total small,.inactive-records p,.notification-panel header p,.notification-item span span,.notification-item time,.notification-empty,.notification-panel>footer,.report-sheets span){color:#b9d2f3}
-html[data-theme=dark] :where(th,td,.project-name strong,.search input,.filters select,.viewtoggle .on,.badge,.info-banner,.form-error,.iconbutton,.request-status-approved,.request-status-rejected,.request-status-cancelled,.request-status-pending,.request-notice,.toggle-control.on){color:#e9f1fc}
-html[data-theme=dark] .toggle-control:not(.on){color:#d5e3f4}
+html[data-theme=dark] :where(.tag-arrow,.art-note,.step-number,.step-arrow,.filters,.viewtoggle button,.count,.search,.search input,.project-icon,.mini-avatar,.priority,.empty,.empty h3,.footer,.board-column h3,.job-card>div,.info-banner strong,.large-avatar,.permission-tags span,.add-card,.access p,label,.form-section>p,.link-field a,.rule-note,.activity strong,.activity small,.brief-card>p:last-of-type,.brief-card small,.job-context,.job-tabs .on,.task-toggle .on,.panel-loading,.attendance-clock,.attendance-clock small,.shift-history strong,.timer-small,.brand-completion strong,.brand-completion small,.role-checkboxes legend,.allocation-person strong,.allocation-person>span:last-child,.extra-row strong,.extra-row small,.extra-row p,.task-instructions,.reassignment-body>p:last-child,.shoot-content-item legend,.request-dates,.expense-total strong,.expense-total small,.inactive-records p,.notification-panel header p,.notification-item span span,.notification-item time,.notification-empty,.notification-panel>footer,.report-sheets span){color:#d5d9e0}
+html[data-theme=dark] :where(th,td,.project-name strong,.search input,.filters select,.viewtoggle .on,.badge,.info-banner,.form-error,.iconbutton,.request-status-approved,.request-status-rejected,.request-status-cancelled,.request-status-pending,.request-notice,.toggle-control.on){color:#f5f6f8}
+html[data-theme=dark] .toggle-control:not(.on){color:#e5e7eb}
 html[data-theme=dark] :where(.priority.high,.revision-tag){color:#ffd797}
 html[data-theme=dark] :where(.priority.urgent,.overdue,.danger-text){color:#ffb3ad}
+
+/* True-black appearance with clear hierarchy and restrained blue accents. */
+html[data-theme=dark] :where(.sidebar,.topbar){background:#111317;border-color:#30343b}
+html[data-theme=dark] .sidebar .sidebar-bottom{background:#111317}
+html[data-theme=dark] .sidebar .navitem.selected{background:#292d35;color:#f7f8fa;box-shadow:inset 3px 0 #78aaff}
+html[data-theme=dark] .sidebar .navitem.selected svg{color:#8db7ff}
+html[data-theme=dark] .sidebar .navitem:hover:not(.selected){background:#24282f;color:#f3f5f8}
+html[data-theme=dark] :where(.hero,.login-story){background:linear-gradient(135deg,#25282f 0%,#191c21 65%,#17191e 100%);border:1px solid #3a3f47}
+html[data-theme=dark] .hero h2,html[data-theme=dark] .login-story h1{color:#f6f7f9}
+html[data-theme=dark] :where(.hero-action,.textbutton){color:#a9caff}
+html[data-theme=dark] :where(.stat,.projects,.person-card,.brand-detail,.attendance-panel,.report-panel,.allocation-page,.extra-panel,.requests-panel,.unassigned-panel,.expenses-panel,.admin-time-log,.overview-brand-box,.notification-panel,.theme-settings-dialog){box-shadow:0 10px 30px #00000020;border-color:#383d45}
+html[data-theme=dark] .theme-settings-dialog{background:#1a1d22;box-shadow:0 24px 80px #000000a6}
+html[data-theme=dark] .theme-settings-body{background:#24282f;border-color:#3b414a}
+html[data-theme=dark] :where(.job-tabs .on,.task-toggle .on,.viewtoggle .on){background:#343a44;color:#f3f5f8}
+html[data-theme=dark] :where(.stage-2,.stage-4){background:#393344;color:#e5d8f4}
+html[data-theme=dark] :where(.stage-3,.stage-5){background:#473b29;color:#f3dcaf}
+html[data-theme=dark] :where(.stage-6,.stage-7){background:#293f3c;color:#c5e9df}
+html[data-theme=dark] .notification-dot{border-color:#111317;box-shadow:0 0 0 1px #111317}
