@@ -1,3 +1,4 @@
+import {brandLogoVersions} from '../../../lib/brand-logos';
 import {profilePhotoVersions} from '../../../lib/profile-photos';
 import {after} from 'next/server';
 import {safelyDispatchPush} from '../../../lib/web-push';
@@ -42,7 +43,8 @@ export async function GET(req:Request){try{
  const disabledBrandIds=new Set(allBrands.filter(b=>JSON.parse(b.payload).active===false).map(b=>b.id)),disabledWorkerIds=new Set(allWorkers.filter(w=>!w.active||w.removed).map(w=>w.id));
  const enabledBrands=allBrands.filter(b=>!disabledBrandIds.has(b.id)),parsed=allJobs.map(x=>JSON.parse(x.payload)).filter(j=>!disabledBrandIds.has(j.brandId));
  const visibleJob=(j:any)=>u.admin||u.roles.includes('manager')||j.stage==='Client approval'||j.publisherAssignee===u.id||productionRoles.some(r=>u.roles.includes(r)&&assignedTo(j,r,u.id));
- const brandRecords=enabledBrands.map(b=>{const value=JSON.parse(b.payload);if(u.admin||u.roles.includes('manager'))return value;const mayRead=u.roles.some(r=>['content','camera','editor'].includes(r))||parsed.some(j=>j.brandId===b.id&&visibleJob(j));return mayRead?{...value,contact:'',email:'',phone:''}:{id:b.id,name:b.name,active:true};});
+ const logoVersions=await brandLogoVersions(allBrands.filter(b=>u.admin||!disabledBrandIds.has(b.id)).map(b=>b.id));
+ const brandRecords=enabledBrands.map(b=>{const value={...JSON.parse(b.payload),logoVersion:logoVersions[b.id]||''};if(u.admin||u.roles.includes('manager'))return value;const mayRead=u.roles.some(r=>['content','camera','editor'].includes(r))||parsed.some(j=>j.brandId===b.id&&visibleJob(j));return mayRead?{...value,contact:'',email:'',phone:''}:{id:b.id,name:b.name,active:true,logoVersion:logoVersions[b.id]||''};});
  return Response.json({user:{...u,photoVersion:photoVersions[u.id]||''},overview:{...overviewTotals(parsed),brands:brandOverview(parsed,enabledBrands)},jobs:parsed.filter(visibleJob).map(j=>taskView(j,u,disabledWorkerIds)),brands:brandRecords,workers:u.admin||u.roles.includes('manager')?allWorkers.filter(w=>!disabledWorkerIds.has(w.id)).map(w=>({...publicWorker(w),photoVersion:photoVersions[w.id]||''})):[],branches:allBranches.map(b=>JSON.parse(b.payload)),extraTasks:allExtra.map(t=>JSON.parse(t.payload)).filter(t=>!disabledBrandIds.has(t.brandId)&&!disabledWorkerIds.has(t.workerId)),...(u.admin?{inactiveBrands:allBrands.filter(b=>disabledBrandIds.has(b.id)).map(b=>JSON.parse(b.payload)),inactiveWorkers:allWorkers.filter(w=>!w.active&&!w.removed).map(w=>({...publicWorker(w),photoVersion:photoVersions[w.id]||''}))}:{})},{headers:noStore});
  }catch(e){return Response.json({error:(e as Error).message},{status:401,headers:noStore});}}
 async function handlePOST(req:Request){try{requireOrigin(req);const u=await principal(req),db=getDb(),b:any=await req.json();if(!b||typeof b!=='object')throw Error('Invalid request.');
