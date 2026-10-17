@@ -1,0 +1,31 @@
+import assert from 'node:assert/strict';
+import {unassignedContent,unassignedExtra} from '../lib/unassigned-work';
+
+const actor={id:'creator-1',name:'Content QA',email:'content@example.test',admin:false,roles:['content']},brand={id:'brand-1',name:'QA brand',active:true,branchId:'branch-1',branchName:'QA branch'},at='2026-10-17T09:00:00.000Z';
+const content={submissionId:crypto.randomUUID(),brandId:brand.id,contentDate:'2026-10-17',contentCount:5,contentLink:'https://drive.google.com/drive/folders/qa',contentAssignee:'another-worker',stage:'Completed'};
+const link=(value:unknown)=>String(value||'');
+const saved=unassignedContent(content,actor,brand,at,link);
+assert.equal(saved.record.stage,'Shoot');assert.equal(saved.record.contentAssignee,actor.id);assert.equal(saved.record.cameraAssignee,'');assert.equal(saved.record.contentCount,5);assert.equal(saved.record.contentLink,content.contentLink);assert.equal(saved.record.branchId,brand.branchId);
+assert.deepEqual(saved.events.map(e=>e.action),['created','submit-content']);assert.equal(saved.events[1].contentCount,5);assert.equal(saved.events[1].actorId,actor.id);assert.equal(saved.events[1].assignedId,actor.id);
+assert.throws(()=>unassignedContent(content,{...actor,roles:['camera']},brand,at,link),/access required/);
+assert.doesNotThrow(()=>unassignedContent(content,{...actor,roles:['manager']},brand,at,link));
+assert.doesNotThrow(()=>unassignedContent(content,{...actor,admin:true,roles:[]},brand,at,link));
+for(const count of [0,501,1.2,'abc'])assert.throws(()=>unassignedContent({...content,contentCount:count},actor,brand,at,link),/1 to 500/);
+assert.throws(()=>unassignedContent({...content,contentDate:'2026-02-30'},actor,brand,at,link),/valid date/);
+assert.throws(()=>unassignedContent({...content,contentLink:''},actor,brand,at,link),/Drive link/);
+assert.throws(()=>unassignedContent(content,actor,{...brand,active:false},at,link),/active brand/);
+assert.throws(()=>unassignedContent({...content,submissionId:'reused-title'},actor,brand,at,link),/Reopen/);
+
+const extra={submissionId:crypto.randomUUID(),title:'Type captions',category:'Typing',status:'Completed',result:'Final captions',workerId:'another-worker',completedAt:'2000-01-01'};
+const done=unassignedExtra(extra,actor,null,{id:'branch-1',name:'QA branch'},at);
+assert.equal(done.record.workerId,actor.id);assert.equal(done.record.completedAt,at);assert.equal(done.record.result,extra.result);assert.equal(done.record.brandId,'');assert.equal(done.events.length,1);assert.equal(done.events[0].action,'extra-task-complete');assert.equal(done.events[0].actorId,actor.id);
+const ongoing=unassignedExtra({...extra,status:'In progress',result:''},{...actor,roles:['camera']},null,null,at);
+assert.equal(ongoing.events.length,0);assert.equal(ongoing.record.completedAt,undefined);assert.equal(ongoing.record.status,'In progress');
+assert.throws(()=>unassignedExtra({...extra,result:''},actor,null,null,at),/Add your typed output/);
+assert.throws(()=>unassignedExtra({...extra,status:'Assigned'},actor,null,null,at),/In progress or Completed/);
+assert.throws(()=>unassignedExtra({...extra,title:''},actor,null,null,at),/title/);
+assert.throws(()=>unassignedExtra({...extra,category:'invalid'},actor,null,null,at),/category/);
+assert.throws(()=>unassignedExtra({...extra,brandId:brand.id},actor,{...brand,active:false},null,at),/active brand/);
+assert.throws(()=>unassignedExtra({...extra,brandId:'missing'},actor,null,null,at),/active brand/);
+assert.equal(unassignedExtra({...extra,brandId:brand.id},actor,brand,null,at).record.brandName,brand.name);
+console.log('PASS: content role permissions, required fields, counts, shoot handoff, self-attribution, active brands, extra task states, completion audit events, and report attribution.');
