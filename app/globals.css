@@ -181,3 +181,11 @@ html[data-theme=dark] input[type=checkbox]{accent-color:#3976bd}
 html[data-theme=dark] select option:checked{background:var(--selection-bg);color:var(--selection-ink)}
 html[data-theme=dark] ::selection{background:#1a4a82;color:#fff}
 html[data-theme=dark] :is(button,a,input,select,textarea):focus-visible{outline-color:#78aaff}
+
+/* Device push controls share the portal's light and dark palettes. */
+.notification-panel{max-height:calc(100dvh - 80px);overflow-y:auto;overscroll-behavior:contain}
+.push-settings{padding:14px 18px;border-bottom:1px solid var(--border,#e2e8f0);background:#eff6ff;color:#173b70}
+.push-settings strong{font-size:13px}.push-settings p{font-size:12px;line-height:1.6;margin:6px 0;overflow-wrap:anywhere}
+.push-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:9px}.push-actions button{font:inherit;font-size:12px;border:1px solid #93b8ef;background:#fff;color:#174a96;border-radius:8px;padding:9px 12px;min-height:38px;cursor:pointer}.push-actions .push-enable{background:#2563eb;color:#fff;border-color:#2563eb}.push-actions button:disabled{opacity:.6;cursor:wait}
+[data-theme="dark"] .push-settings{background:#0c1d38;color:#d9e8ff;border-color:#203d65}[data-theme="dark"] .push-actions button{background:#102d53;color:#e0edff;border-color:#2c5183}[data-theme="dark"] .push-actions .push-enable{background:#205ec3;color:#fff}
+@media(max-width:800px){.notification-panel{max-height:calc(100dvh - 76px)}.push-settings{padding:12px 14px}}
