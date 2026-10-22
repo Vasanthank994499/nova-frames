@@ -1,5 +1,5 @@
 'use client';
-import {indiaDay} from '../lib/allocation-dates';
+import {indiaDay,workOverdue} from '../lib/allocation-dates';
 import {NotificationBell} from './notification-bell';
 import dynamic from 'next/dynamic';
 import {currentPushEndpoint} from './push-notifications';
@@ -69,7 +69,7 @@ export default function Workspace(){
  const overview=brandId?data?.overview?.brands?.find(b=>b.id===brandId):data?.overview;
  const pages:Record<string,string>={Content:'Content',Shoots:'Shoot',Editing:'Editing',Approvals:'Client approval','Ready to post':'Ready to post',Posted:'Posted',Completed:'Completed'};
  const today=new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Kolkata'});
- const deadlineState=(j:Job)=>!j.due||['Posted','Completed'].includes(j.stage)?'':j.due<today?'overdue':j.due===today?'today':'';
+ const deadlineState=(j:Job)=>workOverdue(j,today)?'overdue':!j.due||['Posted','Completed'].includes(j.stage)?'':j.due<today?'overdue':j.due===today?'today':'';
  const matchesQuick=(j:Job,key:string)=>key==='all'||(key==='mine'?!!data?.user.id&&currentAssignees(j).includes(data.user.id)&&!['Posted','Completed'].includes(j.stage):key==='unassigned'?!!allocationRoleForStage(j.stage)&&!currentAssignees(j).length:deadlineState(j)===key);
  const matching=all.filter(j=>(page!=='My videos'||assignedTo(j,'camera',data?.user.id)||j.createdBy===data?.user.id)&&(canAllocate||!['Content','Shoots','Editing'].includes(page)||(page==='Content'?j.contentAssignee===data?.user.id:page==='Shoots'?assignedTo(j,'camera',data?.user.id):page==='Editing'?j.editorAssignee===data?.user.id:j.publisherAssignee===data?.user.id))&&(!pages[page]||(submitted&&!canAllocate?STAGES.indexOf(j.stage)>STAGES.indexOf(pages[page]):j.stage===pages[page]))&&(!brandId||j.brandId===brandId)&&(!canAllocate||matchesJobFilters(j,stageFilter,allocationFilter,priorityFilter))&&(canAllocate||stageFilter==='All stages'||j.stage===stageFilter)&&`${j.title} ${j.brandName}`.toLowerCase().includes(query.toLowerCase())).sort((a,b)=>compareJobs(a,b,page==='Overview'?sortOrder:'deadline'));
  const filtered=matching.filter(j=>matchesQuick(j,quickView));
