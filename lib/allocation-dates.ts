@@ -11,3 +11,11 @@ export function workAvailable(task:any,today=indiaDay()):boolean {
  const day=task.workerId?task.allocationDate:task.allocationDates?.[role||''];
  return !day||day<=today;
 }
+
+/** A scheduled production step is overdue only after its allocation day ends. */
+export function workOverdue(task:any,today=indiaDay()):boolean {
+ if(task.status==='Completed'||task.stage==='Completed'||task.stage==='Client approval')return false;
+ const role=allocationRoleForStage(task.stage||'');
+ const day=task.workerId?task.allocationDate:task.allocationDates?.[role||''];
+ return !!day&&day<today;
+}
