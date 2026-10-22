@@ -1,3 +1,4 @@
+import {workAvailable} from './allocation-dates';
 import {allocationRoleForStage} from './project-stages';
 import {assignmentIds,assignedTo} from './shoot-assignments';
 const assignments:Record<string,string>={content:'contentAssignee',camera:'cameraAssignee',editor:'editorAssignee',publisher:'publisherAssignee'};
@@ -13,11 +14,11 @@ export function notificationItems(user:{id:string,admin:boolean,roles:string[]},
   for(const role of Object.keys(assignments))for(const recipient of assignmentIds(snapshot,role))if(!assignedTo(previous,role,recipient)||(previousStage!==event.stage&&allocationRoleForStage(event.stage)===role)){assignmentEvents.set(event.jobId+':'+role+':'+recipient,{...event,recipient});}
   latestAssignments.set(event.jobId,snapshot);latestStages.set(event.jobId,event.stage);
  }
- for(const job of data.jobs){if(data.hiddenBrands.has(job.brandId))continue;const role=allocationRoleForStage(job.stage);if(!role||['Client approval','Posted'].includes(job.stage))continue;const assignee=user.id;if(!assignedTo(job,role,user.id)||(role!=='publisher'&&!user.roles.includes(role)))continue;
+ for(const job of data.jobs){if(!workAvailable(job)||data.hiddenBrands.has(job.brandId))continue;const role=allocationRoleForStage(job.stage);if(!role||['Client approval','Posted'].includes(job.stage))continue;const assignee=user.id;if(!assignedTo(job,role,user.id)||(role!=='publisher'&&!user.roles.includes(role)))continue;
   const event=assignmentEvents.get(job.id+':'+role+':'+user.id),source=event?.recipient===user.id?event:null;
   items.push({id:`work:${job.id}:${role}:${source?.id||assignee}`,title:source?.action==='review'?'Video returned for re-edit':'Work assigned to you',body:`${roleNames[role]} · ${job.title} · ${job.brandName||'Brand'}`,at:source?.at||job.created,page:pages[role],jobId:job.id});
  }
- for(const task of data.extraTasks){if(task.workerId!==user.id||task.status==='Completed'||data.hiddenBrands.has(task.brandId)||data.hiddenWorkers.has(task.workerId))continue;
+ for(const task of data.extraTasks){if(!workAvailable(task)||task.workerId!==user.id||task.status==='Completed'||data.hiddenBrands.has(task.brandId)||data.hiddenWorkers.has(task.workerId))continue;
   // Include assignment history so reassignment back to this worker creates a fresh alert.
   const assigned=(task.history||[]).filter((h:any)=>h.detail==='Task allocated').at(-1);
   items.push({id:`extra:${task.id}:${assigned?.at||task.created}`,title:'Extra task assigned to you',body:`${task.title} · ${task.category||'Extra task'}`,at:assigned?.at||task.created,page:'Extra tasks'});
