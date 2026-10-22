@@ -13,15 +13,15 @@ export function ThemeSettings({user,onPhotoSaved}:{user?:{id:string,name:string,
  const trigger=useRef<HTMLButtonElement>(null);
  const closeButton=useRef<HTMLButtonElement>(null);
 
- useEffect(()=>{if(!open)return;const returnFocus=trigger.current;closeButton.current?.focus();const onKey=(event:KeyboardEvent)=>{
-  if(event.key==='Escape')setOpen(false);
-  if(event.key==='Tab'){
+ useEffect(()=>{if(!open)return;const previousOverflow=document.body.style.overflow;document.body.style.overflow='hidden';const returnFocus=trigger.current;closeButton.current?.focus();const onKey=(event:KeyboardEvent)=>{
+  if(event.key==='Escape'){event.preventDefault();event.stopImmediatePropagation();setOpen(false);}
+  if(event.key==='Tab'){event.stopImmediatePropagation();
    const dialog=document.querySelector<HTMLElement>('.theme-settings-dialog');
    const buttons=Array.from(dialog?.querySelectorAll<HTMLElement>('button:not(:disabled),input:not(:disabled),a[href]')||[]);
    if(event.shiftKey&&document.activeElement===buttons[0]){event.preventDefault();buttons.at(-1)?.focus();}
    else if(!event.shiftKey&&document.activeElement===buttons.at(-1)){event.preventDefault();buttons[0]?.focus();}
   }
- };document.addEventListener('keydown',onKey);return()=>{document.removeEventListener('keydown',onKey);returnFocus?.focus();};},[open]);
+ };document.addEventListener('keydown',onKey,true);return()=>{document.body.style.overflow=previousOverflow;document.removeEventListener('keydown',onKey,true);returnFocus?.focus();};},[open]);
 
  function changeTheme(next:boolean){
   setDark(next);
