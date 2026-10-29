@@ -8,6 +8,8 @@ export type Role=typeof ROLES[number];
 export function workerRoles(w:any):string[]{try{const stored=JSON.parse(w.permissions||'[]');const roles=Array.isArray(stored)?stored.filter(r=>ROLES.includes(r)):[];return roles.length?roles:[w.role];}catch{return [w.role];}}
 const encoder=new TextEncoder();
 const hex=(b:ArrayBuffer)=>Array.from(new Uint8Array(b),v=>v.toString(16).padStart(2,'0')).join('');
+let loginAttemptStorageReady:Promise<unknown>|undefined;
+function ensureLoginAttemptStorage(){return loginAttemptStorageReady??=getDb().execute(sql`CREATE TABLE IF NOT EXISTS login_attempts (key text PRIMARY KEY, attempts integer NOT NULL, expires bigint NOT NULL)`).catch(error=>{loginAttemptStorageReady=undefined;throw error;});}
 export async function digest(s:string){return hex(await crypto.subtle.digest('SHA-256',encoder.encode(s)));}
 export async function hashPassword(password:string,salt=hex(crypto.getRandomValues(new Uint8Array(16)).buffer)){
  const key=await crypto.subtle.importKey('raw',encoder.encode(password),'PBKDF2',false,['deriveBits']);
@@ -32,7 +34,7 @@ export async function principal(req:Request){
  return {id:w.id,name:w.name,email:w.email,roles:workerRoles(w),role:w.role,admin:false,branchId:w.branchId||''};
 }
 export async function login(req:Request,email:string,password:string){
- requireOrigin(req);const db=getDb(),now=Date.now();
+ requireOrigin(req);const db=getDb(),now=Date.now();await ensureLoginAttemptStorage();
  const keys=[await digest('email:'+email),await digest('ip:'+(req.headers.get('x-vercel-forwarded-for')||req.headers.get('cf-connecting-ip')||'local'))];
  for(let i=0;i<keys.length;i++){const row=await db.select().from(loginAttempts).where(eq(loginAttempts.key,keys[i])).then(rows=>rows[0]);if(row&&row.expires>now&&row.attempts>=(i===0?8:40))throw Error('Too many login attempts. Try again in 15 minutes.');}
  const w=email===ADMIN_EMAIL?null:await db.select().from(workers).where(eq(workers.email,email)).then(rows=>rows[0]);
