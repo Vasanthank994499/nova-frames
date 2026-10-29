@@ -14,7 +14,7 @@ export function notificationItems(user:{id:string,admin:boolean,roles:string[]},
   for(const role of Object.keys(assignments))for(const recipient of assignmentIds(snapshot,role))if(!assignedTo(previous,role,recipient)||(previousStage!==event.stage&&allocationRoleForStage(event.stage)===role)){assignmentEvents.set(event.jobId+':'+role+':'+recipient,{...event,recipient});}
   latestAssignments.set(event.jobId,snapshot);latestStages.set(event.jobId,event.stage);
  }
- for(const job of data.jobs){if(!workAvailable(job)||data.hiddenBrands.has(job.brandId))continue;const role=allocationRoleForStage(job.stage);if(!role||['Client approval','Posted'].includes(job.stage))continue;const assignee=user.id;if(!assignedTo(job,role,user.id)||(role!=='publisher'&&!user.roles.includes(role)))continue;
+ for(const job of data.jobs){if(!workAvailable(job)||data.hiddenBrands.has(job.brandId))continue;const role=allocationRoleForStage(job.stage);if(!role||job.stage==='Client approval')continue;const assignee=user.id;if(!assignedTo(job,role,user.id)||(role!=='publisher'&&!user.roles.includes(role)))continue;
   const event=assignmentEvents.get(job.id+':'+role+':'+user.id),source=event?.recipient===user.id?event:null;
   items.push({id:`work:${job.id}:${role}:${source?.id||assignee}`,title:source?.action==='review'?'Video returned for re-edit':'Work assigned to you',body:`${roleNames[role]} · ${job.title} · ${job.brandName||'Brand'}`,at:source?.at||job.created,page:pages[role],jobId:job.id});
  }

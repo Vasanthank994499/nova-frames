@@ -21,10 +21,9 @@ Removing a brand preserves its name and existing video history. Removing a worke
 2. **Shoots**: the cameraman sees assigned shoot tasks and the content link. Confirm Shoot completed, Uploaded to Drive, and submit the footage Drive link. Updated in system is an optional checkbox. There is no system-copy workflow stage or requirement.
 3. **Editing**: the editor sees allocated videos, content/footage Drive links, brief and client feedback. Submit the completed, ready-to-post video Drive link and confirm Editing completed to send it for Client approval.
 4. **Client approval**: any signed-in staff member records the client's decision. Changes requested requires feedback, sends the video back to Editing and keeps the same editor. Approved sends it to Ready to post.
-5. **Ready to post**: publishers and administrators see the pending videos by brand with their final Drive links. Publishing is manual; mark the video Posted after publishing it.
-6. **Posted**: paste the live Instagram link and mark the video Completed.
+5. **Ready to post**: any signed-in staff member can publish the approved video. Add its Instagram link if available; the link is optional. Complete the video directly from this step.
 
-Submitting a replacement edited video resets approval and clears an old Instagram link. The portal stores links; it does not upload footage to Drive, copy files to a computer, or post automatically to Instagram. Client decisions may be recorded by any signed-in staff member after communicating with the client.
+Submitting a replacement edited video resets approval and clears an old Instagram link. Existing records from the former Posted step appear in Ready to post so staff can finish them using the current flow. The portal stores links; it does not upload footage to Drive, copy files to a computer, or post automatically to Instagram. Client decisions may be recorded by any signed-in staff member after communicating with the client.
 
 ## Development and deployment
 
@@ -44,7 +43,7 @@ Local preview: http://127.0.0.1:4173/ . The source, built app and local D1 data 
 
 ## Flexible work allocation and switches
 - Brands and Team have administrator-controlled On/Off switches. Off brands keep their history and completion totals but pause new allocations and production/extra-task updates. Off people cannot log in; their sessions are revoked and running attendance is paused. Enable the account to allow sign-in again, then resume attendance.
-- Brand cards and profiles show completed/total video counts, posted counts (including completed videos), a progress bar and pending completion counts.
+- Brand cards and profiles show completed/total video counts, a progress bar and pending completion counts.
 - Multiple role checkboxes are available in Team. Production allocations require the relevant role; posting can go to any active worker or manager. Every signed-in staff member can record client approval or request changes.
 - Work allocation is a separate page for administrator and managers. Select a listed person, choose a video and production step, and save the allocation.
 - Extra tasks supports typing, research, administration, design and other work. Administrator/managers assign tasks to people; assignees update progress and submit typed output, notes or Drive links. Only the assignee can complete the task. Completed extra tasks appear in monthly Excel reports.
@@ -103,9 +102,9 @@ Expenses is available to every account. Workers record their own expenses; manag
 
 ## Allocation queue, management filters and administrator audit
 
-Work allocation lists only unassigned videos at the selected work type and priority. Saving an allocation removes that video from this queue. Existing assigned videos remain in Projects and their stage pages, where the existing Cancel / Assign to another person warning handles reassignment. Status, current allocation (unassigned, assigned, or a named person) and priority filters are available to administrators and managers across video lists. The posting, posted and completed lists retain a priority column alongside their video links. Workers do not see the management filters.
+Work allocation lists only unassigned videos at the selected work type and priority. Saving an allocation removes that video from this queue. Existing assigned videos remain in Projects and their stage pages, where the existing Cancel / Assign to another person warning handles reassignment. Status, current allocation (unassigned, assigned, or a named person) and priority filters are available to administrators and managers across video lists. Ready-to-post and completed lists retain a priority column alongside their video links. Workers do not see the management filters.
 
-Only the administrator can manually move an existing video to any of the seven workflow stages, including Completed. Use the project's Current stage control and Save current stage. The override retains existing assets, allocations and client decisions and records an audit entry. It does not invent a worker submission, Instagram link or client approval. Managers and cameramen can still create videos through their permitted creation flows; they cannot manually move existing tasks to another stage. Production submission, client review and posting actions continue normally.
+Only the administrator can manually move an existing video to any of the six workflow stages, including Completed. Use the project's Current stage control and Save current stage. The override retains existing assets, allocations and client decisions and records an audit entry. It does not invent a worker submission, Instagram link or client approval. Managers and cameramen can still create videos through their permitted creation flows; they cannot manually move existing tasks to another stage. Production submission, client review and posting actions continue normally.
 
 Attendance shows administrators exact check-in, latest break, latest resume and end-day times in IST. View times opens the full chronological attendance and portal access timeline for the selected person/date. Successful worker/manager portal sign-ins and explicit sign-outs are recorded separately from worked hours from this update onward; historical portal sign-ins cannot be reconstructed. Closing a tab or session expiry is not treated as an observed sign-out. Managers retain team status, hours and reasons; event timestamps are omitted from non-admin attendance API responses, including their own responses. Workers retain their own attendance controls and summary. The access_events table is initialized idempotently on first use; the corresponding SQL migration is included under drizzle/postgres.
 
