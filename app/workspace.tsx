@@ -63,7 +63,7 @@ export default function Workspace(){
   finally{if(revision===loadRevision.current)setLoading(false);}
  },[]);
  useEffect(()=>()=>{loadRevision.current++;loadController.current?.abort();},[]);
- useEffect(()=>{reload();let lastRefresh=Date.now();const refresh=()=>{if(document.visibilityState==='visible'&&Date.now()-lastRefresh>=5000){lastRefresh=Date.now();void reload();}};const timer=setInterval(refresh,30000);window.addEventListener('focus',refresh);document.addEventListener('visibilitychange',refresh);return()=>{clearInterval(timer);window.removeEventListener('focus',refresh);document.removeEventListener('visibilitychange',refresh);};},[reload]);
+ useEffect(()=>{reload();let lastRefresh=Date.now();const refresh=()=>{if(document.visibilityState==='visible'&&Date.now()-lastRefresh>=60000){lastRefresh=Date.now();void reload();}};const timer=setInterval(refresh,120000);window.addEventListener('focus',refresh);document.addEventListener('visibilitychange',refresh);return()=>{clearInterval(timer);window.removeEventListener('focus',refresh);document.removeEventListener('visibilitychange',refresh);};},[reload]);
  
  useEffect(()=>{if(!notice)return;const t=setTimeout(()=>setNotice(''),4000);return()=>clearTimeout(t);},[notice]);
  const modalOpen=!!job||!!worker||!!brand||!!branch;
