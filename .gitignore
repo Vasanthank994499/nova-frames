@@ -57,3 +57,7 @@ next-env.d.ts
 
 .dev.vars*
 *.tsbuildinfo
+
+# local dev database (PGlite)
+.local-db/
+certificates/

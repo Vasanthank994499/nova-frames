@@ -1,0 +1,51 @@
+// Self-check for the QA-report fixes (session 2026-11-19): strict dates/times, origin allow-list, developer/admin access rules.
+// Uses a throwaway local DB; never touches the dev database.
+import assert from 'node:assert';
+import {mkdtempSync} from 'node:fs';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+process.env.DATABASE_URL='pglite:'+mkdtempSync(join(tmpdir(),'nf-qafix-'));
+process.env.NOVA_DEVELOPER_EMAILS='dev@example.test';delete process.env.APP_ORIGINS;delete process.env.TRUST_PROXY_HEADERS;
+(async()=>{
+ const {isValidDay,isValidTime}=await import('../lib/dates');
+ for(const d of ['2026-02-28','2028-02-29','2000-02-29','2026-12-31','2026-01-01'])assert(isValidDay(d),d);
+ for(const d of ['2026-02-29','2026-02-30','2100-02-29','2026-04-31','2026-13-01','2026-00-10','2026-1-1','26-01-01','2026-01-01T00:00','','2026-02-30 '])assert(!isValidDay(d),d);
+ for(const t of ['00:00','09:30','23:59'])assert(isValidTime(t),t);for(const t of ['24:00','25:99','12:60','9:30','12:5',''])assert(!isValidTime(t),t);
+ const {zonedToUtc}=await import('../lib/shoot-schedule');
+ assert.throws(()=>zonedToUtc('2026-12-05','25:99','Asia/Kolkata'),/^Error: Choose a valid date and time\.$/);
+ assert.throws(()=>zonedToUtc('2026-02-30','10:00','Asia/Kolkata'),/Choose a valid date and time/);
+ assert.throws(()=>zonedToUtc('2026-03-08','02:30','America/New_York'),/does not exist/,'real DST gap still reported as DST');
+ assert.equal(zonedToUtc('2028-02-29','10:00','Asia/Kolkata'),'2028-02-29T04:30:00.000Z');
+ const {requireOrigin}=await import('../lib/auth');
+ const req=(origin:string|null,h:Record<string,string>={})=>new Request('http://localhost:3100/api/x',{method:'POST',headers:{...(origin?{origin}:{}),...h}});
+ assert.doesNotThrow(()=>requireOrigin(req('http://localhost:3100')));
+ for(const o of ['http://127.0.0.1:3100','https://evil.example','null',null as any,'http://localhost:3101'])assert.throws(()=>requireOrigin(req(o)),/Invalid request origin/,String(o));
+ process.env.APP_ORIGINS='http://localhost:3100, http://127.0.0.1:3100, *, https://*.example.com, not a url';
+ assert.doesNotThrow(()=>requireOrigin(req('http://127.0.0.1:3100')));
+ for(const o of ['https://evil.example','https://a.example.com','*','null'])assert.throws(()=>requireOrigin(req(o)),/Invalid request origin/,'wildcards/garbage never allowed: '+o);
+ assert.throws(()=>requireOrigin(req('https://nova.example',{'x-forwarded-host':'nova.example','x-forwarded-proto':'https'})),/Invalid/,'proxy headers ignored by default');
+ process.env.TRUST_PROXY_HEADERS='1';
+ assert.doesNotThrow(()=>requireOrigin(req('https://nova.example',{'x-forwarded-host':'nova.example','x-forwarded-proto':'https'})));
+ assert.throws(()=>requireOrigin(req('https://evil.example',{'x-forwarded-host':'nova.example','x-forwarded-proto':'https'})),/Invalid/);
+ assert.throws(()=>requireOrigin(req('javascript://nova.example',{'x-forwarded-host':'nova.example','x-forwarded-proto':'javascript'})),/Invalid/);
+ delete process.env.TRUST_PROXY_HEADERS;process.env.APP_ORIGINS='http://localhost:3100';
+ // Access rules through the real handlers.
+ const {getDb}=await import('../db');const {workers,sessions}=await import('../db/schema');const {digest,hashPassword,principal}=await import('../lib/auth');
+ const db=getDb();
+ const mk=async(id:string,email:string,perms:string[],role='editor')=>db.insert(workers).values({id,name:id,email,specialty:'x',permissions:JSON.stringify(perms),role,active:1,removed:0,passwordHash:await hashPassword('Password-123')});
+ await mk('dev1','dev@example.test',['manager'],'manager');await mk('m1','manager@example.test',['manager'],'manager');await mk('e1','editor@example.test',['editor']);
+ const sess=async(acc:string)=>{const t=crypto.getRandomValues(new Uint8Array(32)).reduce((s,b)=>s+b.toString(16).padStart(2,'0'),'');await db.insert(sessions).values({tokenHash:await digest(t),accountId:acc,expires:Date.now()+3600000});return 'nf_session='+t;};
+ const as=async(acc:string,method='GET',body?:any)=>{const {GET,POST}=await import('../app/api/workspace/route');const r=new Request('http://localhost:3100/api/workspace',{method,headers:{cookie:await sess(acc),origin:'http://localhost:3100','content-type':'application/json'},body:body?JSON.stringify(body):undefined});return (method==='GET'?GET(r):POST(r)) as Promise<Response>;};
+ const p=async(acc:string)=>principal(new Request('http://localhost:3100/',{headers:{cookie:await sess(acc)}}));
+ const dev=await p('dev1');assert.equal(dev.admin,true,'developer has full workspace access');assert.equal((dev as any).developer,true);
+ const list=await (await as('admin')).json();assert(!list.workers.some((w:any)=>w.email==='dev@example.test'),'developer hidden from team list');assert(list.workers.some((w:any)=>w.id==='m1'));
+ const listDev=await (await as('dev1')).json();assert(!listDev.workers.some((w:any)=>w.email==='dev@example.test'),'hidden even from the developer view');
+ let r=await as('admin','POST',{type:'worker',worker:{name:'X',email:'dev@example.test',roles:['editor'],password:'Password-123'}});assert.match((await r.json()).error,/reserved for a developer/);
+ r=await as('admin','POST',{type:'worker',worker:{id:'dev1',name:'Dev',email:'dev@example.test',roles:['editor']}});assert.match((await r.json()).error,/server configuration|reserved/);
+ r=await as('admin','POST',{type:'remove-worker',id:'dev1'});assert.match((await r.json()).error,/server configuration/);
+ r=await as('m1','POST',{type:'worker',worker:{id:'e1',name:'e1',email:'editor@example.test',roles:['editor','admin']}});assert.match((await r.json()).error,/Administrator access required/,'manager cannot grant admin');
+ r=await as('admin','POST',{type:'worker',worker:{id:'e1',name:'e1',email:'editor@example.test',roles:['editor','admin']}});assert.equal(r.status,200,await r.clone().text());
+ const e1=await p('e1');assert.equal(e1.admin,true,'admin granted through the Team role flow');assert.equal((e1 as any).developer,false);
+ const shown=(await (await as('admin')).json()).workers.find((w:any)=>w.id==='e1');assert(shown.roles.includes('admin'));
+ console.log('qa-fixes self-check ok');process.exit(0);
+})().catch(e=>{console.error(e);process.exit(1);});

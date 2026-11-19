@@ -2,5 +2,11 @@
   "framework": "nextjs",
   "buildCommand": "env -u npm_config_cache_dir -u NPM_CONFIG_CACHE_DIR npm run build",
   "outputDirectory": ".next",
-  "installCommand": "env -u npm_config_cache_dir -u NPM_CONFIG_CACHE_DIR npm ci"
+  "installCommand": "env -u npm_config_cache_dir -u NPM_CONFIG_CACHE_DIR npm ci",
+  "crons": [
+    {
+      "path": "/api/reminders/cron",
+      "schedule": "0 * * * *"
+    }
+  ]
 }

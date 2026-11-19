@@ -10,6 +10,7 @@ export const sessions = pgTable('sessions', { tokenHash:text('token_hash').prima
 export const loginAttempts = pgTable('login_attempts', { key:text('key').primaryKey(), attempts:integer('attempts').notNull(), expires:bigint('expires',{mode:'number'}).notNull() });
 export const branches = pgTable('branches', {id:text('id').primaryKey(),name:text('name').notNull(),payload:text('payload').notNull()});
 export const attendance = pgTable('attendance', {id:text('id').primaryKey(),workerId:text('worker_id').notNull(),day:text('day').notNull(),payload:text('payload').notNull(),updated:text('updated').notNull()});
+export const calendarHolidays = pgTable('calendar_holidays', {day:text('day').primaryKey(),reason:text('reason').notNull(),markedBy:text('marked_by').notNull(),markedAt:bigint('marked_at',{mode:'number'}).notNull()});
 export const workEvents = pgTable('work_events', {id:text('id').primaryKey(),at:text('at').notNull(),actorId:text('actor_id').notNull(),jobId:text('job_id').notNull(),payload:text('payload').notNull()});
 export const extraTasks = pgTable('extra_tasks',{id:text('id').primaryKey(),workerId:text('worker_id').notNull(),payload:text('payload').notNull(),updated:text('updated').notNull()});
 export const staffRequests = pgTable('staff_requests',{id:text('id').primaryKey(),workerId:text('worker_id').notNull(),status:text('status').notNull(),payload:text('payload').notNull(),updated:text('updated').notNull()});
