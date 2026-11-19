@@ -413,3 +413,27 @@ html[data-theme=dark] .client-shell .review-feedback textarea{background:rgba(0,
 .client-shell .review-feedback .primary{background:linear-gradient(135deg,#2563eb,#4f8cff);color:#fff;border:0}
 .client-shell .cp-review .client-list{align-items:start}
 .shoot-move{flex-basis:100%;display:flex;flex-wrap:wrap;gap:8px;align-items:end;padding:12px;border-radius:12px;background:rgba(37,99,235,.06)}.shoot-move label{display:grid;gap:4px;font-size:12px;font-weight:600}.shoot-move input{padding:9px;border:1px solid var(--line);border-radius:9px;background:rgba(255,255,255,.75);color:var(--ink)}html[data-theme=dark] .shoot-move input{background:rgba(0,0,0,.25)}.shoot-move .form-error{flex-basis:100%;margin:0}.shoot-move-msg{flex-basis:100%;margin:0}
+/* Client portal pages: sidebar on desktop, slide-in drawer on phones. */
+.cp-layout{display:flex}.cp-side{position:sticky;top:0;height:100dvh;width:250px;flex-shrink:0;display:flex;flex-direction:column;gap:6px;padding:22px 14px;background:var(--g-bg);border-right:1px solid var(--g-line);box-shadow:inset -1px 0 0 var(--g-edge);-webkit-backdrop-filter:blur(20px) saturate(160%);backdrop-filter:blur(20px) saturate(160%);z-index:40;overflow-y:auto}
+.cp-side .brand{padding:0 8px 8px}.cp-side-brand{margin:4px 8px 14px;padding:8px 10px;border-radius:10px;background:rgba(37,99,235,.10);color:#2563eb;font-size:12px;font-weight:700;letter-spacing:.02em}
+.cp-side nav{display:grid;gap:4px}.cp-nav{display:flex;align-items:center;gap:11px;width:100%;padding:11px 12px;border:0;border-radius:11px;background:transparent;color:var(--ink);font-size:14px;font-weight:600;text-align:left;cursor:pointer;min-height:44px}
+.cp-nav:hover{background:rgba(37,99,235,.08)}.cp-nav.on{background:linear-gradient(135deg,#2563eb,#4f8cff);color:#fff;box-shadow:0 8px 20px rgba(37,99,235,.30)}.cp-nav span{flex:1}
+.cp-badge{min-width:22px;padding:2px 7px;border-radius:999px;background:#f59e0b;color:#fff;font-size:11px;text-align:center}.cp-nav.on .cp-badge{background:#fff;color:#2563eb}
+.cp-signout{margin-top:auto;color:var(--muted)}
+.cp-body{flex:1;min-width:0}.client-shell .cp-top{display:flex;align-items:center;gap:12px;width:auto;max-width:none;margin:12px 16px 0;justify-content:flex-start}.cp-top strong{font-family:Manrope,sans-serif;font-size:17px;flex:1}.cp-top-name{font-size:13px;color:var(--muted)}
+.cp-menu-btn{display:none;align-items:center;justify-content:center;width:42px;height:42px;border-radius:11px;border:1px solid var(--g-line);background:rgba(255,255,255,.5);color:var(--ink);cursor:pointer}
+.cp-scrim{display:none}
+.cp-quick{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px;margin-bottom:18px}
+.cp-quick-card{display:flex;align-items:center;gap:10px;padding:16px;border-radius:16px;border:1px solid var(--g-line);background:var(--g-bg);box-shadow:var(--g-shadow);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);color:var(--ink);font-weight:600;font-size:14px;cursor:pointer;text-align:left;transition:transform .15s}
+.cp-quick-card:hover{transform:translateY(-2px)}.cp-quick-card svg:first-child{color:#2563eb}.cp-quick-card span{flex:1}.cp-quick-card svg:last-child{color:var(--muted)}
+.client-hero button.client-hero-cta{border:0;cursor:pointer;font:inherit}
+.cp-layout .client-main{margin:0;max-width:1080px}
+@media(max-width:900px){
+ .cp-side{position:fixed;inset:0 auto 0 0;width:min(290px,84vw);transform:translateX(-105%);transition:transform .25s ease;visibility:hidden;background:rgba(255,255,255,.88)}
+ html[data-theme=dark] .cp-side{background:rgba(16,19,25,.92)}
+ .menu-open .cp-side{transform:none;visibility:visible;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+ .cp-scrim{display:block;position:fixed;inset:0;z-index:35;background:rgba(9,22,41,.35);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);opacity:0;pointer-events:none;transition:opacity .25s}
+ .menu-open .cp-scrim{opacity:1;pointer-events:auto}
+ .cp-menu-btn{display:inline-flex}.client-shell .cp-top{margin:10px 10px 0}.cp-quick{grid-template-columns:1fr 1fr}
+}
+@media(prefers-reduced-motion:reduce){.cp-side,.cp-scrim,.cp-quick-card{transition:none}}

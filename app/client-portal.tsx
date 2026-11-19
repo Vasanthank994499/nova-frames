@@ -1,30 +1,30 @@
 'use client';
 import {useCallback,useEffect,useState} from 'react';
-import {CalendarDays,FileText,Bell,LogOut,Loader2,ArrowUpRight,UserPlus,BarChart3,TrendingUp} from 'lucide-react';
+import {CalendarDays,FileText,Bell,LogOut,Loader2,ArrowUpRight,UserPlus,BarChart3,TrendingUp,Menu,LayoutDashboard,Clapperboard,Camera} from 'lucide-react';
 const fmtDay=(d:string)=>{const t=new Date(d+'T00:00:00');return isNaN(+t)?d:t.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});};
 const fmtMonth=(m:string)=>{const t=new Date(m+'-01T00:00:00');return isNaN(+t)?m:t.toLocaleDateString('en-IN',{month:'long',year:'numeric'});};
 const fmtAt=(at:string)=>{const t=new Date(at);return isNaN(+t)?at:t.toLocaleString('en-IN',{day:'numeric',month:'short',hour:'numeric',minute:'2-digit',timeZone:'Asia/Kolkata'});};
 const ACTIONS:Record<string,string>={shoot:'',created:'New video added','submit-shoot':'Shoot delivered to editing',updated:'Video updated',stage:'Moved to a new stage'};
 function Empty({text}:{text:string}){return <p className="client-empty">{text}</p>;}
 // The dashboard body, shared by the client login and the admin/manager view.
-export function ClientDashboard({dashboard,editable=false,onSaved}:{dashboard:any,editable?:boolean,onSaved?:()=>void}){
- const t=dashboard.totals||{};
+export function ClientDashboard({dashboard,editable=false,onSaved,page}:{dashboard:any,editable?:boolean,onSaved?:()=>void,page?:string}){
+ const t=dashboard.totals||{},on=(k:string)=>!page||page===k;
  return <div className="client-dashboard">
-  <div className="client-stats">{[['Active videos',t.active],['Awaiting your approval',t.awaiting],['Ready to post',t.ready],['Completed',t.completed]].map(([label,n])=><div className="stat" key={label as string}><span>{label}</span><strong>{String(n??0).padStart(2,'0')}</strong></div>)}</div>
-  <ContentReview items={dashboard.content||[]} canDecide={!editable} onSaved={onSaved}/>
-  <InstagramSection brandId={dashboard.brand.id} ig={dashboard.instagram} editable={editable} onSaved={onSaved}/>
-  <section className="client-section" id="cp-reports"><h2><FileText size={18}/>Reports</h2>
+  {on('overview')&&<div className="client-stats">{[['Active videos',t.active],['Awaiting your approval',t.awaiting],['Ready to post',t.ready],['Completed',t.completed]].map(([label,n])=><div className="stat" key={label as string}><span>{label}</span><strong>{String(n??0).padStart(2,'0')}</strong></div>)}</div>}
+  {on('review')&&<ContentReview items={dashboard.content||[]} canDecide={!editable} onSaved={onSaved}/>}
+  {on('instagram')&&<InstagramSection brandId={dashboard.brand.id} ig={dashboard.instagram} editable={editable} onSaved={onSaved}/>}
+  {on('reports')&&<section className="client-section" id="cp-reports"><h2><FileText size={18}/>Reports</h2>
    {dashboard.reports.length?dashboard.reports.map((r:any)=><details key={r.month} className="client-report"><summary><strong>{fmtMonth(r.month)}</strong><span>{r.count} video{r.count===1?'':'s'} delivered</span></summary><ul>{r.items.map((v:any)=><li key={v.id}><span>{v.title}</span>{v.link?<a href={v.link} target="_blank" rel="noopener noreferrer">View post<ArrowUpRight size={14}/></a>:<em>{v.stage}</em>}</li>)}</ul></details>):<Empty text="No reports yet. Monthly reports appear here once videos are posted."/>}
-  </section>
-  <section className="client-section" id="cp-shoots"><h2><CalendarDays size={18}/>Shoots</h2>
+  </section>}
+  {on('shoots')&&<section className="client-section" id="cp-shoots"><h2><CalendarDays size={18}/>Shoots</h2>
    {dashboard.shoots?.length?<ul className="client-list">{dashboard.shoots.map((s:any)=><ShootRow key={s.id} s={s} canMove={!editable} onSaved={onSaved}/>)}</ul>:<Empty text="No shoots scheduled yet. Confirmed shoots will appear here with their date, time and location."/>}
-  </section>
-  <section className="client-section" id="cp-schedule"><h2><CalendarDays size={18}/>Schedule</h2>
+  </section>}
+  {on('schedule')&&<section className="client-section" id="cp-schedule"><h2><CalendarDays size={18}/>Schedule</h2>
    {dashboard.schedules.length?<ul className="client-list">{dashboard.schedules.map((s:any)=><li key={s.id}><time>{fmtDay(s.date)}</time><span><strong>{s.kind}</strong> · {s.title}</span><em>{s.stage}</em></li>)}</ul>:<Empty text="Nothing scheduled. Upcoming shoots and deadlines will show here."/>}
-  </section>
-  <section className="client-section" id="cp-updates"><h2><Bell size={18}/>Updates</h2>
+  </section>}
+  {on('updates')&&<section className="client-section" id="cp-updates"><h2><Bell size={18}/>Updates</h2>
    {dashboard.updates.length?<ul className="client-list">{dashboard.updates.map((u:any)=><li key={u.id}><time>{fmtAt(u.at)}</time><span><strong>{u.action==='shoot'?u.stage:ACTIONS[u.action]||'Video updated'}</strong> · {u.title}</span>{u.stage&&u.action!=='shoot'&&<em>{u.stage}</em>}</li>)}</ul>:<Empty text="No updates yet."/>}
-  </section>
+  </section>}
  </div>;
 }
 // One shoot; the client may move an upcoming confirmed shoot to a new date and time.
@@ -44,16 +44,30 @@ export function ClientPortal({initial,onSignedOut}:{initial:any,onSignedOut:()=>
  const reload=async()=>{const r=await fetch('/api/client',{cache:'no-store'});if(r.ok)setState(await r.json());};
  async function signOut(){setBusy(true);try{await fetch('/api/auth',{method:'DELETE',headers:{'Content-Type':'application/json'},body:'{}'});}finally{onSignedOut();}}
  const awaiting=dashboard.totals?.awaiting||0,hour=new Date().getHours(),greet=hour<12?'Good morning':hour<17?'Good afternoon':'Good evening';
- const links:[string,string][]=[['cp-review','Content review'],['cp-instagram','Instagram'],['cp-shoots','Shoots'],['cp-schedule','Schedule'],['cp-reports','Reports'],['cp-updates','Updates']];
- return <div className="client-shell">
-  <header className="client-top"><span className="brand"><span className="brandmark"><img src="/logo.svg" alt="" width={39} height={39}/></span><span>NOVA FRAMES<small>CLIENT DASHBOARD</small></span></span><button className="secondary" onClick={signOut} disabled={busy}>{busy?<Loader2 size={15} className="spin"/>:<LogOut size={15}/>}Sign out</button></header>
-  <main className="client-main">
-   <section className="client-hero"><div><p className="eyebrow">{dashboard.brand.name.toUpperCase()}</p><h1>{greet}, {viewer.name}.</h1><p className="client-lead">Your videos, shoots and results from Nova Frames, all in one place.</p></div>
-    {awaiting>0?<a className="client-hero-cta" href="#cp-review"><strong>{awaiting}</strong><span>video{awaiting===1?'':'s'} waiting for your approval</span><ArrowUpRight size={16}/></a>:<div className="client-hero-cta calm"><strong>✓</strong><span>You're all caught up</span></div>}
-   </section>
-   <nav className="client-jump" aria-label="Sections">{links.map(([id,l])=><a key={id} href={'#'+id}>{l}</a>)}</nav>
-   <ClientDashboard dashboard={dashboard} onSaved={reload}/>
-  </main>
+ const PAGES:[string,string,any][]=[['overview','Overview',LayoutDashboard],['review','Content review',Clapperboard],['shoots','Shoots',Camera],['schedule','Schedule',CalendarDays],['instagram','Instagram',BarChart3],['reports','Reports',FileText],['updates','Updates',Bell]];
+ const [page,setPage]=useState('overview'),[menu,setMenu]=useState(false);
+ // Each section is its own page, kept in the URL hash so Back and refresh work.
+ useEffect(()=>{const read=()=>{const h=location.hash.slice(1);setPage(PAGES.some(p=>p[0]===h)?h:'overview');setMenu(false);};read();addEventListener('hashchange',read);return ()=>removeEventListener('hashchange',read);},[]);
+ useEffect(()=>{if(!menu)return;const k=(e:KeyboardEvent)=>{if(e.key==='Escape')setMenu(false);};addEventListener('keydown',k);return ()=>removeEventListener('keydown',k);},[menu]);
+ const go=(id:string)=>{if(location.hash.slice(1)===id)setMenu(false);else location.hash=id;scrollTo({top:0});};const title=PAGES.find(p=>p[0]===page)![1];
+ return <div className={'client-shell cp-layout'+(menu?' menu-open':'')}>
+  <aside className="cp-side" aria-label="Client menu">
+   <span className="brand"><span className="brandmark"><img src="/logo.svg" alt="" width={36} height={36}/></span><span>NOVA FRAMES<small>CLIENT DASHBOARD</small></span></span>
+   <p className="cp-side-brand">{dashboard.brand.name}</p>
+   <nav>{PAGES.map(([id,label,Icon])=><button key={id} className={'cp-nav'+(page===id?' on':'')} aria-current={page===id?'page':undefined} onClick={()=>go(id)}><Icon size={17}/><span>{label}</span>{id==='review'&&awaiting>0&&<b className="cp-badge">{awaiting}</b>}</button>)}</nav>
+   <button className="cp-nav cp-signout" onClick={signOut} disabled={busy}>{busy?<Loader2 size={17} className="spin"/>:<LogOut size={17}/>}<span>Sign out</span></button>
+  </aside>
+  <div className="cp-scrim" aria-hidden="true" onClick={()=>setMenu(false)}/>
+  <div className="cp-body">
+   <header className="client-top cp-top"><button className="cp-menu-btn" aria-label="Open menu" aria-expanded={menu} onClick={()=>setMenu(true)}><Menu size={20}/></button><strong>{title}</strong><span className="cp-top-name">{viewer.name}</span></header>
+   <main className="client-main">
+    {page==='overview'&&<><section className="client-hero"><div><p className="eyebrow">{dashboard.brand.name.toUpperCase()}</p><h1>{greet}, {viewer.name}.</h1><p className="client-lead">Your videos, shoots and results from Nova Frames, all in one place.</p></div>
+     {awaiting>0?<button className="client-hero-cta" onClick={()=>go('review')}><strong>{awaiting}</strong><span>video{awaiting===1?'':'s'} waiting for your approval</span><ArrowUpRight size={16}/></button>:<div className="client-hero-cta calm"><strong>✓</strong><span>You're all caught up</span></div>}
+    </section>
+    <div className="cp-quick">{PAGES.slice(1).map(([id,label,Icon])=><button key={id} className="cp-quick-card" onClick={()=>go(id)}><Icon size={20}/><span>{label}</span><ArrowUpRight size={15}/></button>)}</div></>}
+    <ClientDashboard dashboard={dashboard} onSaved={reload} page={page}/>
+   </main>
+  </div>
  </div>;
 }
 // Admin and manager page: pick any brand's dashboard; admins also manage client logins.
