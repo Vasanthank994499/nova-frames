@@ -1,6 +1,6 @@
 'use client';
 import {useCallback,useEffect,useState} from 'react';
-import {CalendarDays,FileText,Bell,LogOut,Loader2,ArrowUpRight,UserPlus,BarChart3,TrendingUp,Menu,LayoutDashboard,Clapperboard,Camera} from 'lucide-react';
+import {CalendarDays,FileText,Bell,LogOut,Loader2,ArrowUpRight,UserPlus,BarChart3,TrendingUp,Menu,LayoutDashboard,Clapperboard,Camera,Moon,Sun} from 'lucide-react';
 const fmtDay=(d:string)=>{const t=new Date(d+'T00:00:00');return isNaN(+t)?d:t.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});};
 const fmtMonth=(m:string)=>{const t=new Date(m+'-01T00:00:00');return isNaN(+t)?m:t.toLocaleDateString('en-IN',{month:'long',year:'numeric'});};
 const fmtAt=(at:string)=>{const t=new Date(at);return isNaN(+t)?at:t.toLocaleString('en-IN',{day:'numeric',month:'short',hour:'numeric',minute:'2-digit',timeZone:'Asia/Kolkata'});};
@@ -46,6 +46,9 @@ export function ClientPortal({initial,onSignedOut}:{initial:any,onSignedOut:()=>
  const awaiting=dashboard.totals?.awaiting||0,hour=new Date().getHours(),greet=hour<12?'Good morning':hour<17?'Good afternoon':'Good evening';
  const PAGES:[string,string,any][]=[['overview','Overview',LayoutDashboard],['review','Content review',Clapperboard],['shoots','Shoots',Camera],['schedule','Schedule',CalendarDays],['instagram','Instagram',BarChart3],['reports','Reports',FileText],['updates','Updates',Bell]];
  const [page,setPage]=useState('overview'),[menu,setMenu]=useState(false);
+ // Same saved theme as the staff workspace (layout.tsx reads it before paint).
+ const [dark,setDark]=useState(false);useEffect(()=>setDark(document.documentElement.dataset.theme==='dark'),[]);
+ const toggleTheme=()=>{const next=!dark;setDark(next);document.documentElement.dataset.theme=next?'dark':'light';try{localStorage.setItem('nova-frames-theme',next?'dark':'light');}catch{}};
  // Each section is its own page, kept in the URL hash so Back and refresh work.
  useEffect(()=>{const read=()=>{const h=location.hash.slice(1);setPage(PAGES.some(p=>p[0]===h)?h:'overview');setMenu(false);};read();addEventListener('hashchange',read);return ()=>removeEventListener('hashchange',read);},[]);
  useEffect(()=>{if(!menu)return;const k=(e:KeyboardEvent)=>{if(e.key==='Escape')setMenu(false);};addEventListener('keydown',k);return ()=>removeEventListener('keydown',k);},[menu]);
@@ -55,11 +58,12 @@ export function ClientPortal({initial,onSignedOut}:{initial:any,onSignedOut:()=>
    <span className="brand"><span className="brandmark"><img src="/logo.svg" alt="" width={36} height={36}/></span><span>NOVA FRAMES<small>CLIENT DASHBOARD</small></span></span>
    <p className="cp-side-brand">{dashboard.brand.name}</p>
    <nav>{PAGES.map(([id,label,Icon])=><button key={id} className={'cp-nav'+(page===id?' on':'')} aria-current={page===id?'page':undefined} onClick={()=>go(id)}><Icon size={17}/><span>{label}</span>{id==='review'&&awaiting>0&&<b className="cp-badge">{awaiting}</b>}</button>)}</nav>
-   <button className="cp-nav cp-signout" onClick={signOut} disabled={busy}>{busy?<Loader2 size={17} className="spin"/>:<LogOut size={17}/>}<span>Sign out</span></button>
+   <button className="cp-nav cp-theme" role="switch" aria-checked={dark} onClick={toggleTheme}>{dark?<Sun size={17}/>:<Moon size={17}/>}<span>{dark?'Light mode':'Dark mode'}</span><i className={'cp-switch'+(dark?' on':'')}/></button>
+   <button className="cp-nav cp-signout-btn" onClick={signOut} disabled={busy}>{busy?<Loader2 size={17} className="spin"/>:<LogOut size={17}/>}<span>Sign out</span></button>
   </aside>
   <div className="cp-scrim" aria-hidden="true" onClick={()=>setMenu(false)}/>
   <div className="cp-body">
-   <header className="client-top cp-top"><button className="cp-menu-btn" aria-label="Open menu" aria-expanded={menu} onClick={()=>setMenu(true)}><Menu size={20}/></button><strong>{title}</strong><span className="cp-top-name">{viewer.name}</span></header>
+   <header className="client-top cp-top"><button className="cp-menu-btn" aria-label="Open menu" aria-expanded={menu} onClick={()=>setMenu(true)}><Menu size={20}/></button><strong>{title}</strong><button className="cp-theme-top" aria-label={dark?'Switch to light mode':'Switch to dark mode'} onClick={toggleTheme}>{dark?<Sun size={18}/>:<Moon size={18}/>}</button><span className="cp-top-name">{viewer.name}</span></header>
    <main className="client-main">
     {page==='overview'&&<><section className="client-hero"><div><p className="eyebrow">{dashboard.brand.name.toUpperCase()}</p><h1>{greet}, {viewer.name}.</h1><p className="client-lead">Your videos, shoots and results from Nova Frames, all in one place.</p></div>
      {awaiting>0?<button className="client-hero-cta" onClick={()=>go('review')}><strong>{awaiting}</strong><span>video{awaiting===1?'':'s'} waiting for your approval</span><ArrowUpRight size={16}/></button>:<div className="client-hero-cta calm"><strong>✓</strong><span>You're all caught up</span></div>}
