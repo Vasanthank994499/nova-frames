@@ -13,16 +13,16 @@ export function ClientDashboard({dashboard,editable=false,onSaved}:{dashboard:an
   <div className="client-stats">{[['Active videos',t.active],['Awaiting your approval',t.awaiting],['Ready to post',t.ready],['Completed',t.completed]].map(([label,n])=><div className="stat" key={label as string}><span>{label}</span><strong>{String(n??0).padStart(2,'0')}</strong></div>)}</div>
   <ContentReview items={dashboard.content||[]} canDecide={!editable} onSaved={onSaved}/>
   <InstagramSection brandId={dashboard.brand.id} ig={dashboard.instagram} editable={editable} onSaved={onSaved}/>
-  <section className="client-section"><h2><FileText size={18}/>Reports</h2>
+  <section className="client-section" id="cp-reports"><h2><FileText size={18}/>Reports</h2>
    {dashboard.reports.length?dashboard.reports.map((r:any)=><details key={r.month} className="client-report"><summary><strong>{fmtMonth(r.month)}</strong><span>{r.count} video{r.count===1?'':'s'} delivered</span></summary><ul>{r.items.map((v:any)=><li key={v.id}><span>{v.title}</span>{v.link?<a href={v.link} target="_blank" rel="noopener noreferrer">View post<ArrowUpRight size={14}/></a>:<em>{v.stage}</em>}</li>)}</ul></details>):<Empty text="No reports yet. Monthly reports appear here once videos are posted."/>}
   </section>
-  <section className="client-section"><h2><CalendarDays size={18}/>Shoots</h2>
+  <section className="client-section" id="cp-shoots"><h2><CalendarDays size={18}/>Shoots</h2>
    {dashboard.shoots?.length?<ul className="client-list">{dashboard.shoots.map((s:any)=>{const soon=s.status==='Confirmed'&&Date.parse(s.startsAt)-Date.now()<172800000&&Date.parse(s.startsAt)>Date.now();return <li key={s.id} className={soon?'shoot-soon':''}><time>{s.when}</time><span><strong>{s.title}</strong>{s.location?` · ${s.location}`:''}{s.details?<><br/><small>{s.details}</small></>:null}</span><em className={'shoot-status shoot-'+s.status.toLowerCase().replace(' ','-')}>{soon?'Coming up · ':''}{s.status}</em></li>;})}</ul>:<Empty text="No shoots scheduled yet. Confirmed shoots will appear here with their date, time and location."/>}
   </section>
-  <section className="client-section"><h2><CalendarDays size={18}/>Schedule</h2>
+  <section className="client-section" id="cp-schedule"><h2><CalendarDays size={18}/>Schedule</h2>
    {dashboard.schedules.length?<ul className="client-list">{dashboard.schedules.map((s:any)=><li key={s.id}><time>{fmtDay(s.date)}</time><span><strong>{s.kind}</strong> · {s.title}</span><em>{s.stage}</em></li>)}</ul>:<Empty text="Nothing scheduled. Upcoming shoots and deadlines will show here."/>}
   </section>
-  <section className="client-section"><h2><Bell size={18}/>Updates</h2>
+  <section className="client-section" id="cp-updates"><h2><Bell size={18}/>Updates</h2>
    {dashboard.updates.length?<ul className="client-list">{dashboard.updates.map((u:any)=><li key={u.id}><time>{fmtAt(u.at)}</time><span><strong>{u.action==='shoot'?u.stage:ACTIONS[u.action]||'Video updated'}</strong> · {u.title}</span>{u.stage&&u.action!=='shoot'&&<em>{u.stage}</em>}</li>)}</ul>:<Empty text="No updates yet."/>}
   </section>
  </div>;
@@ -32,9 +32,17 @@ export function ClientPortal({initial,onSignedOut}:{initial:any,onSignedOut:()=>
  const [busy,setBusy]=useState(false),[state,setState]=useState(initial);const {viewer,dashboard}=state;
  const reload=async()=>{const r=await fetch('/api/client',{cache:'no-store'});if(r.ok)setState(await r.json());};
  async function signOut(){setBusy(true);try{await fetch('/api/auth',{method:'DELETE',headers:{'Content-Type':'application/json'},body:'{}'});}finally{onSignedOut();}}
+ const awaiting=dashboard.totals?.awaiting||0,hour=new Date().getHours(),greet=hour<12?'Good morning':hour<17?'Good afternoon':'Good evening';
+ const links:[string,string][]=[['cp-review','Content review'],['cp-instagram','Instagram'],['cp-shoots','Shoots'],['cp-schedule','Schedule'],['cp-reports','Reports'],['cp-updates','Updates']];
  return <div className="client-shell">
   <header className="client-top"><span className="brand"><span className="brandmark"><img src="/logo.svg" alt="" width={39} height={39}/></span><span>NOVA FRAMES<small>CLIENT DASHBOARD</small></span></span><button className="secondary" onClick={signOut} disabled={busy}>{busy?<Loader2 size={15} className="spin"/>:<LogOut size={15}/>}Sign out</button></header>
-  <main className="client-main"><p className="eyebrow">{dashboard.brand.name.toUpperCase()}</p><h1>Welcome, {viewer.name}.</h1><p className="client-lead">Your videos, schedule and latest updates from Nova Frames.</p><ClientDashboard dashboard={dashboard} onSaved={reload}/></main>
+  <main className="client-main">
+   <section className="client-hero"><div><p className="eyebrow">{dashboard.brand.name.toUpperCase()}</p><h1>{greet}, {viewer.name}.</h1><p className="client-lead">Your videos, shoots and results from Nova Frames, all in one place.</p></div>
+    {awaiting>0?<a className="client-hero-cta" href="#cp-review"><strong>{awaiting}</strong><span>video{awaiting===1?'':'s'} waiting for your approval</span><ArrowUpRight size={16}/></a>:<div className="client-hero-cta calm"><strong>✓</strong><span>You're all caught up</span></div>}
+   </section>
+   <nav className="client-jump" aria-label="Sections">{links.map(([id,l])=><a key={id} href={'#'+id}>{l}</a>)}</nav>
+   <ClientDashboard dashboard={dashboard} onSaved={reload}/>
+  </main>
  </div>;
 }
 // Admin and manager page: pick any brand's dashboard; admins also manage client logins.
@@ -98,7 +106,7 @@ function MetricsForm({brandId,jobId,fields,month,onSaved,label}:{brandId:string,
 }
 function InstagramSection({brandId,ig,editable,onSaved}:{brandId:string,ig:any,editable:boolean,onSaved?:()=>void}){
  if(!ig)return null;const c=ig.current;
- return <section className="client-section"><h2><BarChart3 size={18}/>Instagram performance · {fmtMonth(ig.month)}</h2>
+ return <section className="client-section" id="cp-instagram"><h2><BarChart3 size={18}/>Instagram performance · {fmtMonth(ig.month)}</h2>
   <Connection brandId={brandId} c={ig.connection} onSaved={onSaved}/>
   <div className="client-stats">{[['Reels posted this month',ig.postedThisMonth,false],['Total posts on account',ig.totalPosts??null,false],['Growth since tracking began',ig.overallGrowth??null,true],['Follower growth',c?.growth??null,true],['Reach',c?.reach??null,false],['Views',c?.views??null,false],['Engagement',c?.engagement??null,false],['Engagement rate',c?.engagementRate??null,'%']].map(([label,val,kind])=><div className="stat" key={label as string}><span>{label}</span><strong>{val===null?'—':kind===true?signed(val as number):kind==='%'?val+'%':num(val as number)}</strong></div>)}</div>
   {!c&&<p className="client-empty">{ig.connection?.connected?'No account insights for this month yet. Sync to load them; Meta can delay data by up to 48 hours.':'No Instagram numbers for this month yet.'}</p>}
@@ -111,23 +119,23 @@ function InstagramSection({brandId,ig,editable,onSaved}:{brandId:string,ig:any,e
   {editable&&!ig.connection?.connected&&<details className="ig-entry"><summary>Enter monthly account numbers</summary><MetricsForm brandId={brandId} month={ig.month} fields={['followers','reach','views','engagement']} label="Account totals for the month" onSaved={onSaved}/></details>}
  </section>;
 }
-// Client review: open the edited video (Google Drive link), approve it, or reject it with feedback. Staff see the same list read-only.
+// Client review: open the edited video (Google Drive link), approve it, or return it to edit with the correction needed. Staff see the same list read-only.
 const REVIEW_CLASS:Record<string,string>={'Awaiting approval':'inv-pending',Rejected:'inv-overdue',Editing:'inv-void',Approved:'inv-paid',Completed:'shoot-confirmed'};
 function ContentReview({items,canDecide,onSaved}:{items:any[],canDecide:boolean,onSaved?:()=>void}){
  const [rejecting,setRejecting]=useState(''),[feedback,setFeedback]=useState(''),[busy,setBusy]=useState(''),[err,setErr]=useState(''),[done,setDone]=useState('');
- async function decide(item:any,decision:string){setBusy(item.id+decision);setErr('');try{const r=await fetch('/api/client',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'content-review',jobId:item.id,decision,feedback:decision==='Rejected'?feedback:'',version:item.version})}),d=await r.json();if(!r.ok)throw Error(d.error);setRejecting('');setFeedback('');setDone(decision==='Approved'?`Approved “${item.title}”. Thank you!`:`Feedback sent for “${item.title}”. The team will share a new version.`);onSaved?.();}catch(e){setErr((e as Error).message);}finally{setBusy('');}}
+ async function decide(item:any,decision:string){setBusy(item.id+decision);setErr('');try{const r=await fetch('/api/client',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'content-review',jobId:item.id,decision,feedback:decision==='Rejected'?feedback:'',version:item.version})}),d=await r.json();if(!r.ok)throw Error(d.error);setRejecting('');setFeedback('');setDone(decision==='Approved'?`Approved “${item.title}”. Thank you!`:`Correction sent for “${item.title}”. The team will share a corrected version.`);onSaved?.();}catch(e){setErr((e as Error).message);}finally{setBusy('');}}
  const waiting=items.filter(i=>i.status==='Awaiting approval').length;
- return <section className="client-section"><h2><FileText size={18}/>Content review{waiting>0&&<span className="count">{waiting} waiting</span>}</h2>
+ return <section className="client-section cp-review" id="cp-review"><h2><FileText size={18}/>Content review{waiting>0&&<span className="count">{waiting} waiting</span>}</h2>
   {done&&<p className="ig-ok">{done}</p>}{err&&<p className="form-error" role="alert">{err}</p>}
   {items.length?<ul className="client-list">{items.map(i=><li key={i.id} className={i.status==='Awaiting approval'?'shoot-soon':''}>
-   <span><strong>{i.title}</strong>{i.revision>0&&<small> · version {i.revision+1}</small>}{i.feedback&&<><br/><small>Your feedback: {i.feedback}</small></>}</span>
-   <em className={'shoot-status '+REVIEW_CLASS[i.status]}>{i.status==='Rejected'?'Rejected · being re-edited':i.status}</em>
+   <span><strong>{i.title}</strong>{i.revision>0&&<small> · version {i.revision+1}</small>}{i.feedback&&<><br/><small>Your correction: {i.feedback}</small></>}</span>
+   <em className={'shoot-status '+REVIEW_CLASS[i.status]}>{i.status==='Rejected'?'Returned to edit · being corrected':i.status}</em>
    {i.reviewLink&&<a className="secondary review-open" href={i.reviewLink} target="_blank" rel="noopener noreferrer">Open video<ArrowUpRight size={14}/></a>}
    {i.postLink&&<a href={i.postLink} target="_blank" rel="noopener noreferrer">View post<ArrowUpRight size={14}/></a>}
    {canDecide&&i.status==='Awaiting approval'&&<div className="shoot-actions review-actions">
     <button className="primary" disabled={!!busy} onClick={()=>decide(i,'Approved')}>{busy===i.id+'Approved'&&<Loader2 size={14} className="spin"/>}Approve</button>
-    <button className="secondary" disabled={!!busy} onClick={()=>{setRejecting(rejecting===i.id?'':i.id);setFeedback('');}}>Reject</button>
-    {rejecting===i.id&&<form className="review-feedback" onSubmit={e=>{e.preventDefault();decide(i,'Rejected');}}><label>What should we change?<textarea required rows={3} value={feedback} onChange={e=>setFeedback(e.target.value)} placeholder="e.g. Use the brighter shot at 0:12, shorten the intro"/></label><button className="primary" disabled={!!busy||!feedback.trim()}>{busy===i.id+'Rejected'&&<Loader2 size={14} className="spin"/>}Send feedback</button></form>}
+    <button className="secondary" disabled={!!busy} onClick={()=>{setRejecting(rejecting===i.id?'':i.id);setFeedback('');}}>Return to edit</button>
+    {rejecting===i.id&&<form className="review-feedback" onSubmit={e=>{e.preventDefault();decide(i,'Rejected');}}><label>What is the correction?<textarea required rows={3} value={feedback} onChange={e=>setFeedback(e.target.value)} placeholder="e.g. Use the brighter shot at 0:12, shorten the intro" autoFocus/></label><button className="primary" disabled={!!busy||!feedback.trim()}>{busy===i.id+'Rejected'&&<Loader2 size={14} className="spin"/>}Send correction</button><button type="button" className="secondary" onClick={()=>{setRejecting('');setFeedback('');}}>Cancel</button></form>}
    </div>}
   </li>)}</ul>:<Empty text="Nothing to review yet. Edited videos appear here when they are ready for your approval."/>}
  </section>;

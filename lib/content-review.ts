@@ -20,15 +20,15 @@ export function clientContent(rowsIn:{payload:string,updated:string}[]){
 }
 // The client decides on their own video: same transition and event as the staff review, scoped to the client's brand in SQL.
 export async function clientReview(client:{id:string,name:string,email:string,brandId:string},jobId:string,decision:string,feedback:string,version:string){
- if(!['Approved','Rejected'].includes(decision))throw Error('Choose approve or reject.');
- const notes=feedback.trim().slice(0,2000);if(decision==='Rejected'&&!notes)throw Error('Tell the team what to change.');
+ if(!['Approved','Rejected'].includes(decision))throw Error('Choose approve or return to edit.');
+ const notes=feedback.trim().slice(0,2000);if(decision==='Rejected'&&!notes)throw Error('Type the correction you need.');
  const db=getDb(),row=rows(await db.execute(sql`SELECT payload,updated FROM jobs WHERE id=${jobId} AND payload::jsonb->>'brandId'=${client.brandId}`))[0];
  if(!row)throw Error('Video not found.');const prev=JSON.parse(row.payload);
  if(prev.stage!=='Client approval')throw Error('This video is no longer waiting for your approval.');
  if(!prev.editLink)throw Error('There is nothing to review yet.');
  const at=new Date().toISOString(),j={...prev,reviewNotes:notes,approval:decision==='Approved'?'Approved':'Changes requested',reviewedBy:'client',reviewedAt:at};
  let detail;if(decision==='Approved'){j.stage='Ready to post';detail='Client approved in the client dashboard · Ready to post';}
- else{j.stage='Editing';j.editingCompleted=false;j.instagramLink='';j.revisionCount=(j.revisionCount||0)+1;detail='Client rejected in the client dashboard · Returned to the same editor';}
+ else{j.stage='Editing';j.editingCompleted=false;j.instagramLink='';j.revisionCount=(j.revisionCount||0)+1;detail='Client returned it to edit in the client dashboard · Correction: '+notes;}
  j.history=[...(prev.history||[]),{at,by:client.email,actorId:'client:'+client.id,actorName:client.name+' (client)',detail:detail+(notes?` · “${notes.slice(0,300)}”`:'')}];
  const newVersion=crypto.randomUUID();
  const saved=rows(await db.execute(sql`UPDATE jobs SET payload=${JSON.stringify(j)},updated=${newVersion} WHERE id=${jobId} AND updated=${version||row.updated} RETURNING id`));
