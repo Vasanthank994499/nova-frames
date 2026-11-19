@@ -8,8 +8,8 @@ assert.equal(invoiceStatus({...inv,payments:[{amountPaise:2000000}]},'2026-11-19
 assert.equal(withStatus({...inv,payments:[{amountPaise:2000000}]},'2026-11-17').balancePaise,3000000);
 assert.equal(invoiceStatus({...inv,payments:[{amountPaise:2000000},{amountPaise:3000000}]},'2027-01-01'),'Paid');
 assert.equal(invoiceStatus({...inv,void:true},'2027-01-01'),'Void');
-for(const k of ['RESEND_API_KEY','INVOICE_FROM_EMAIL','WHATSAPP_TOKEN','WHATSAPP_PHONE_NUMBER_ID','WHATSAPP_REMINDER_TEMPLATE'])delete process.env[k];
-const c=reminderChannels();assert(!c.email.configured&&!c.whatsapp.configured);assert.deepEqual(c.email.missing,['RESEND_API_KEY','INVOICE_FROM_EMAIL']);
+for(const k of ['GMAIL_USER','GMAIL_APP_PASSWORD','RESEND_API_KEY','INVOICE_FROM_EMAIL','WHATSAPP_TOKEN','WHATSAPP_PHONE_NUMBER_ID','WHATSAPP_REMINDER_TEMPLATE'])delete process.env[k];
+const c=reminderChannels();assert(!c.email.configured&&!c.whatsapp.configured);assert.deepEqual(c.email.missing,['GMAIL_USER','GMAIL_APP_PASSWORD']); // Gmail is the suggested setup; Resend still works when set
 console.log('invoices self-check ok');
 // Delivery adapters against stubbed providers: correct endpoints, auth, recipients and template params.
 (async()=>{
