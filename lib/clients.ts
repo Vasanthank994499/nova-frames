@@ -37,7 +37,7 @@ export async function clientDashboard(brandId:string){
  const payload=JSON.parse(brand.payload||'{}');
  // Clients see shoots once confirmed (never internal drafts), with no team names.
  const shoots=(await brandShoots(brandId)).filter(s=>s.status!=='Pending'&&(s.status!=='Cancelled'||s.confirmedAt));
- const shootList=shoots.filter(s=>s.status!=='Cancelled'||Date.parse(s.startsAt)>Date.now()-7*86400000).map(s=>({id:s.id,title:s.title,when:formatInZone(s.startsAt,s.timeZone),startsAt:s.startsAt,durationMins:s.durationMins,location:s.location,details:s.details,status:s.status,crewCount:s.crewIds.length}));
+ const shootList=shoots.filter(s=>s.status!=='Cancelled'||Date.parse(s.startsAt)>Date.now()-7*86400000).map(s=>({id:s.id,title:s.title,when:formatInZone(s.startsAt,s.timeZone),startsAt:s.startsAt,durationMins:s.durationMins,date:s.date,time:s.time,location:s.location,details:s.details,status:s.status,crewCount:s.crewIds.length}));
  const shootUpdates=shoots.flatMap(s=>shootNotices(s,'client')).map(n=>({id:n.id,at:n.at,title:n.body,action:'shoot',stage:n.title}));
  await ensureClientStorage();
  const metricRows=rows(await db.execute(sql`SELECT month,job_id,payload FROM instagram_metrics WHERE brand_id=${brandId} ORDER BY month`)).map(r=>({month:String(r.month),jobId:String(r.job_id||''),...JSON.parse(r.payload)}));

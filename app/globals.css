@@ -412,3 +412,4 @@ html[data-theme=dark] .client-shell .review-feedback textarea{background:rgba(0,
 .client-shell .review-actions>.primary{background:linear-gradient(135deg,#16a34a,#22c55e);color:#fff;border:0;box-shadow:0 6px 16px rgba(22,163,74,.28)}.client-shell .review-actions>.primary:hover{filter:brightness(1.05)}
 .client-shell .review-feedback .primary{background:linear-gradient(135deg,#2563eb,#4f8cff);color:#fff;border:0}
 .client-shell .cp-review .client-list{align-items:start}
+.shoot-move{flex-basis:100%;display:flex;flex-wrap:wrap;gap:8px;align-items:end;padding:12px;border-radius:12px;background:rgba(37,99,235,.06)}.shoot-move label{display:grid;gap:4px;font-size:12px;font-weight:600}.shoot-move input{padding:9px;border:1px solid var(--line);border-radius:9px;background:rgba(255,255,255,.75);color:var(--ink)}html[data-theme=dark] .shoot-move input{background:rgba(0,0,0,.25)}.shoot-move .form-error{flex-basis:100%;margin:0}.shoot-move-msg{flex-basis:100%;margin:0}

@@ -17,7 +17,7 @@ export function ClientDashboard({dashboard,editable=false,onSaved}:{dashboard:an
    {dashboard.reports.length?dashboard.reports.map((r:any)=><details key={r.month} className="client-report"><summary><strong>{fmtMonth(r.month)}</strong><span>{r.count} video{r.count===1?'':'s'} delivered</span></summary><ul>{r.items.map((v:any)=><li key={v.id}><span>{v.title}</span>{v.link?<a href={v.link} target="_blank" rel="noopener noreferrer">View post<ArrowUpRight size={14}/></a>:<em>{v.stage}</em>}</li>)}</ul></details>):<Empty text="No reports yet. Monthly reports appear here once videos are posted."/>}
   </section>
   <section className="client-section" id="cp-shoots"><h2><CalendarDays size={18}/>Shoots</h2>
-   {dashboard.shoots?.length?<ul className="client-list">{dashboard.shoots.map((s:any)=>{const soon=s.status==='Confirmed'&&Date.parse(s.startsAt)-Date.now()<172800000&&Date.parse(s.startsAt)>Date.now();return <li key={s.id} className={soon?'shoot-soon':''}><time>{s.when}</time><span><strong>{s.title}</strong>{s.location?` · ${s.location}`:''}{s.details?<><br/><small>{s.details}</small></>:null}</span><em className={'shoot-status shoot-'+s.status.toLowerCase().replace(' ','-')}>{soon?'Coming up · ':''}{s.status}</em></li>;})}</ul>:<Empty text="No shoots scheduled yet. Confirmed shoots will appear here with their date, time and location."/>}
+   {dashboard.shoots?.length?<ul className="client-list">{dashboard.shoots.map((s:any)=><ShootRow key={s.id} s={s} canMove={!editable} onSaved={onSaved}/>)}</ul>:<Empty text="No shoots scheduled yet. Confirmed shoots will appear here with their date, time and location."/>}
   </section>
   <section className="client-section" id="cp-schedule"><h2><CalendarDays size={18}/>Schedule</h2>
    {dashboard.schedules.length?<ul className="client-list">{dashboard.schedules.map((s:any)=><li key={s.id}><time>{fmtDay(s.date)}</time><span><strong>{s.kind}</strong> · {s.title}</span><em>{s.stage}</em></li>)}</ul>:<Empty text="Nothing scheduled. Upcoming shoots and deadlines will show here."/>}
@@ -26,6 +26,17 @@ export function ClientDashboard({dashboard,editable=false,onSaved}:{dashboard:an
    {dashboard.updates.length?<ul className="client-list">{dashboard.updates.map((u:any)=><li key={u.id}><time>{fmtAt(u.at)}</time><span><strong>{u.action==='shoot'?u.stage:ACTIONS[u.action]||'Video updated'}</strong> · {u.title}</span>{u.stage&&u.action!=='shoot'&&<em>{u.stage}</em>}</li>)}</ul>:<Empty text="No updates yet."/>}
   </section>
  </div>;
+}
+// One shoot; the client may move an upcoming confirmed shoot to a new date and time.
+function ShootRow({s,canMove,onSaved}:{s:any,canMove:boolean,onSaved?:()=>void}){
+ const [open,setOpen]=useState(false),[date,setDate]=useState(s.date||''),[time,setTime]=useState(s.time||''),[busy,setBusy]=useState(false),[err,setErr]=useState(''),[ok,setOk]=useState('');
+ const start=Date.parse(s.startsAt),soon=s.status==='Confirmed'&&start-Date.now()<172800000&&start>Date.now(),movable=canMove&&s.status==='Confirmed'&&start>Date.now();
+ async function save(e:React.FormEvent){e.preventDefault();setBusy(true);setErr('');try{const r=await fetch('/api/client',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'shoot-date',id:s.id,date,time})}),d=await r.json();if(!r.ok)throw Error(d.error);setOpen(false);setOk(`Shoot moved to ${d.when}. The team has been told.`);onSaved?.();}catch(e){setErr((e as Error).message);}finally{setBusy(false);}}
+ return <li className={soon?'shoot-soon':''}><time>{s.when}</time><span><strong>{s.title}</strong>{s.location?` · ${s.location}`:''}{s.details?<><br/><small>{s.details}</small></>:null}</span><em className={'shoot-status shoot-'+s.status.toLowerCase().replace(' ','-')}>{soon?'Coming up · ':''}{s.status}</em>
+  {movable&&!open&&<button className="secondary" onClick={()=>{setOpen(true);setOk('');}}>Change date</button>}
+  {ok&&<p className="ig-ok shoot-move-msg">{ok}</p>}
+  {open&&<form className="shoot-move" onSubmit={save}><label>New date<input type="date" required min={new Date(Date.now()+19800000).toISOString().slice(0,10)} value={date} onChange={e=>setDate(e.target.value)}/></label><label>New time<input type="time" required value={time} onChange={e=>setTime(e.target.value)}/></label><button className="primary" disabled={busy}>{busy&&<Loader2 size={14} className="spin"/>}Save new date</button><button type="button" className="secondary" onClick={()=>{setOpen(false);setErr('');}}>Cancel</button>{err&&<p className="form-error" role="alert">{err}</p>}</form>}
+ </li>;
 }
 // Full-page portal shown when a client account signs in.
 export function ClientPortal({initial,onSignedOut}:{initial:any,onSignedOut:()=>void}){
