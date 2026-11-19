@@ -15,14 +15,29 @@ export async function nextInvoiceNumber(){const y=istToday().slice(0,4),r=rows(a
 export const rupees=(p:number)=>'₹'+(p/100).toLocaleString('en-IN',{minimumFractionDigits:p%100?2:0,maximumFractionDigits:2});
 // Reminder channels: only real, configured integrations. Nothing is simulated.
 export function reminderChannels(){
- const email={configured:!!(process.env.RESEND_API_KEY&&process.env.INVOICE_FROM_EMAIL),missing:[!process.env.RESEND_API_KEY&&'RESEND_API_KEY',!process.env.INVOICE_FROM_EMAIL&&'INVOICE_FROM_EMAIL'].filter(Boolean) as string[]};
+ // Email: Gmail (GMAIL_USER + GMAIL_APP_PASSWORD) is used when set, otherwise Resend.
+ const gmail=!!(process.env.GMAIL_USER&&process.env.GMAIL_APP_PASSWORD),resend=!!(process.env.RESEND_API_KEY&&process.env.INVOICE_FROM_EMAIL);
+ const email={configured:gmail||resend,provider:gmail?'Gmail':resend?'Resend':'',from:gmail?process.env.GMAIL_USER:resend?process.env.INVOICE_FROM_EMAIL:'',missing:gmail||resend?[]:['GMAIL_USER','GMAIL_APP_PASSWORD']};
  const waBase=[!process.env.WHATSAPP_TOKEN&&'WHATSAPP_TOKEN',!process.env.WHATSAPP_PHONE_NUMBER_ID&&'WHATSAPP_PHONE_NUMBER_ID'].filter(Boolean) as string[];
  const whatsapp={configured:!waBase.length&&!!process.env.WHATSAPP_REMINDER_TEMPLATE,missing:[...waBase,...(!process.env.WHATSAPP_REMINDER_TEMPLATE?['WHATSAPP_REMINDER_TEMPLATE']:[])]};
  const whatsappInvoice={configured:!waBase.length&&!!process.env.WHATSAPP_INVOICE_TEMPLATE,missing:[...waBase,...(!process.env.WHATSAPP_INVOICE_TEMPLATE?['WHATSAPP_INVOICE_TEMPLATE']:[])]};
  return {email,whatsapp,whatsappInvoice};
 }
 export function reminderText(inv:any,brandName:string){const s=withStatus(inv);return {subject:`Payment reminder: invoice ${inv.number} (${rupees(s.balancePaise)} ${s.status==='Overdue'?'overdue':'due '+inv.dueDate})`,body:`Hello ${brandName},\n\nThis is a reminder that invoice ${inv.number}${inv.description?` for ${inv.description}`:''} has ${rupees(s.balancePaise)} outstanding, ${s.status==='Overdue'?'which was due on':'due on'} ${inv.dueDate}.\n\nPlease ignore this message if you have already paid.\n\nThank you,\nNova Frames`};}
+// Gmail over SMTP (smtp.gmail.com:465, TLS) with a Google app password. Gmail only sends as the signed-in address (or its verified aliases).
+export function gmailTransport(){const nodemailer=require('nodemailer');return nodemailer.createTransport({host:'smtp.gmail.com',port:465,secure:true,auth:{user:process.env.GMAIL_USER,pass:process.env.GMAIL_APP_PASSWORD}});}
+export let emailTransportForTests:null|(()=>{sendMail:(m:any)=>Promise<any>})=null;
+export function setEmailTransportForTests(t:typeof emailTransportForTests){emailTransportForTests=t;}
 export async function sendEmailReminder(to:string,subject:string,text:string){
+ if(process.env.GMAIL_USER&&process.env.GMAIL_APP_PASSWORD){
+  const from=`${process.env.INVOICE_FROM_NAME||'Nova Frames'} <${process.env.GMAIL_USER}>`;
+  let info:any;
+  try{info=await (emailTransportForTests?emailTransportForTests():gmailTransport()).sendMail({from,to,subject,text,...(process.env.INVOICE_REPLY_TO?{replyTo:process.env.INVOICE_REPLY_TO}:{})});}
+  // Never echo the server's full response (it can include account details); keep the reason short.
+  catch(e:any){const code=String(e?.responseCode||e?.code||'');throw Error(code==='535'||code==='EAUTH'?'Gmail refused the sign-in. Check GMAIL_USER and the app password.':`Gmail could not send the email${code?` (${code})`:''}.`);}
+  if(info?.rejected?.length)throw Error('Gmail rejected the recipient address.');
+  return String(info?.messageId||'');
+ }
  const r=await fetch('https://api.resend.com/emails',{method:'POST',headers:{Authorization:'Bearer '+process.env.RESEND_API_KEY,'Content-Type':'application/json'},body:JSON.stringify({from:process.env.INVOICE_FROM_EMAIL,to:[to],subject,text,...(process.env.INVOICE_REPLY_TO?{reply_to:process.env.INVOICE_REPLY_TO}:{})})});
  const d:any=await r.json().catch(()=>({}));if(!r.ok)throw Error(d?.message||`Email provider returned ${r.status}.`);return String(d.id||'');
 }

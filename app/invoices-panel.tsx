@@ -60,7 +60,7 @@ export function InvoicesPanel({admin}:{admin:boolean}){
      <button className="secondary" disabled={!!busy||!ch.email.configured||!inv.billingEmail} onClick={()=>post({type:'remind',channel:'email',id:inv.id,version:inv.version},'em')}>{busy==='em'?<Loader2 size={14} className="spin"/>:<Mail size={14}/>}Email{inv.billingEmail?` ${inv.billingEmail}`:''}</button>
      <button className="secondary" disabled={!!busy||ch.whatsappSetup.step!=='ready'||!inv.billingPhone} onClick={()=>post({type:'remind',channel:'whatsapp',id:inv.id,version:inv.version},'wa')}>{busy==='wa'?<Loader2 size={14} className="spin"/>:<MessageCircle size={14}/>}WhatsApp{inv.billingPhone?` ${inv.billingPhone}`:''}</button>
     </div>
-    {!ch.email.configured&&<p className="ig-note">Email reminders need setup: {ch.email.missing.join(', ')} (a Resend account with a verified sending domain).</p>}
+    {!ch.email.configured&&<p className="ig-note">Email reminders need setup: {ch.email.missing.join(', ')} (a Gmail address with a Google app password, or a Resend account).</p>}
     {ch.whatsappSetup.step!=='ready'&&<p className="ig-note">WhatsApp reminders need the WhatsApp setup above to be finished.</p>}
     {ch.email.configured&&!inv.billingEmail&&<p className="ig-note">Add a billing email to send email reminders.</p>}
     {ch.whatsappSetup.step==='ready'&&!inv.billingPhone&&<p className="ig-note">Add a WhatsApp number to send WhatsApp reminders.</p>}</>}

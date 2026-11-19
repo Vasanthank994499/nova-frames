@@ -19,7 +19,7 @@ export function RemindersPanel(){
  return <section className="leads-panel">
   <div className="client-section"><h2 className="ig-sub">Channels</h2>
    <ul className="client-list">
-    <li><span><strong>Email</strong> · Resend</span><em className={'shoot-status '+(s.email.configured?'inv-paid':'inv-void')}>{s.email.configured?'Ready':'Not set up'}</em>{!s.email.configured&&<small>Missing: {s.email.missing.join(', ')}</small>}</li>
+    <li><span><strong>Email</strong> · {s.email.provider||'Gmail or Resend'}{s.email.from?` · from ${s.email.from}`:''}</span><em className={'shoot-status '+(s.email.configured?'inv-paid':'inv-void')}>{s.email.configured?'Ready':'Not set up'}</em>{!s.email.configured&&<small>Missing: {s.email.missing.join(', ')}</small>}</li>
     <li><span><strong>WhatsApp</strong> · {wa.step==='ready'?`${wa.displayPhone} (${wa.verifiedName})`:'Nova Frames number not connected'}</span><em className={'shoot-status '+(wa.step==='ready'?'inv-paid':'inv-void')}>{wa.step==='ready'?'Ready':'Setup incomplete'}</em>{wa.step!=='ready'&&<small>Finish Invoices → WhatsApp setup first.</small>}</li>
     <li><span><strong>Schedule</strong> · runs every hour</span><em className={'shoot-status '+(s.cron?'inv-paid':'inv-void')}>{s.cron?'Ready':'Not set up'}</em>{!s.cron&&<small>Set CRON_SECRET on the server; Vercel calls /api/reminders/cron hourly.</small>}</li>
    </ul>
