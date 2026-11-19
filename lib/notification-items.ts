@@ -18,6 +18,10 @@ export function notificationItems(user:{id:string,admin:boolean,roles:string[]},
   const event=assignmentEvents.get(job.id+':'+role+':'+user.id),source=event?.recipient===user.id?event:null;
   items.push({id:`work:${job.id}:${role}:${source?.id||assignee}`,title:source?.action==='review'?'Video returned for re-edit':'Work assigned to you',body:`${roleNames[role]} · ${job.title} · ${job.brandName||'Brand'}`,at:source?.at||job.created,page:pages[role],jobId:job.id});
  }
+ // Client decisions from the client dashboard, for admins and managers; each review is its own alert and clears once the video moves on.
+ if(user.admin||user.roles.includes('manager'))for(const job of data.jobs){if(data.hiddenBrands.has(job.brandId)||job.reviewedBy!=='client'||!job.reviewedAt)continue;
+  const changes=job.approval==='Changes requested'&&job.stage==='Editing',approved=job.approval==='Approved'&&job.stage==='Ready to post';if(!changes&&!approved)continue;
+  items.push({id:`feedback:${job.id}:${job.reviewedAt}`,title:changes?'Client requested changes':'Client approved a video',body:`${job.title} · ${job.brandName||'Brand'}${changes&&job.reviewNotes?` · “${String(job.reviewNotes).slice(0,140)}”`:''}`,at:job.reviewedAt,page:changes?'Editing':'Ready to post',jobId:job.id});}
  for(const task of data.extraTasks){if(!workAvailable(task)||task.workerId!==user.id||task.status==='Completed'||data.hiddenBrands.has(task.brandId)||data.hiddenWorkers.has(task.workerId))continue;
   // Include assignment history so reassignment back to this worker creates a fresh alert.
   const assigned=(task.history||[]).filter((h:any)=>h.detail==='Task allocated').at(-1);

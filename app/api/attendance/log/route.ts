@@ -1,3 +1,4 @@
+import {developerPrivate} from '../../../../lib/developer-privacy';
 import {getDb} from '../../../../db';
 import {accessEvents,attendance,workers} from '../../../../db/schema';
 import {principal,requireOrigin} from '../../../../lib/auth';
@@ -12,7 +13,7 @@ type EditHistoryEntry={at:number;by:string;reason:string;previousAt:number;previ
 type ActivityEvent={id?:string;type:string;at:number;reason?:string;editHistory?:EditHistoryEntry[];[key:string]:unknown};
 type AttendanceRecord={events?:ActivityEvent[];[key:string]:unknown};
 
-export async function POST(req:Request){
+async function POST_(req:Request){
  try{
   requireOrigin(req);
   const user=await principal(req);
@@ -56,3 +57,4 @@ export async function POST(req:Request){
   return Response.json({ok:true,event:events[eventIndex]},{headers});
  }catch(error){return Response.json({error:(error as Error).message},{status:400,headers});}
 }
+export const POST=developerPrivate(POST_);

@@ -1,6 +1,7 @@
+import {developerPrivate} from '../../../lib/developer-privacy';
 import {getDb} from '../../../db';
 import {expenses,workers} from '../../../db/schema';
-import {principal,requireOrigin,workerRoles} from '../../../lib/auth';
+import {isDeveloperEmail,principal,requireOrigin,workerRoles} from '../../../lib/auth';
 import {ensureExpenseStorage,expenseCents} from '../../../lib/expenses';
 import {normalizeExpenseProof,MAX_EXPENSE_PROOF_BYTES} from '../../../lib/expense-proof-image';
 import {productionDate} from '../../../lib/production-batches';
@@ -11,11 +12,11 @@ export const runtime='nodejs';
 const headers={'Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff'};
 const clean=(value:unknown,max=2000)=>String(value||'').trim().slice(0,max);
 
-export async function GET(req:Request){
+async function GET_(req:Request){
  try{
   const u=await principal(req);await ensureExpenseStorage();const db=getDb(),month=new URL(req.url).searchParams.get('month')||localDay().slice(0,7);
   if(!/^\d{4}-(0[1-9]|1[0-2])$/.test(month))throw Error('Choose a valid month.');
-  const [people,rows]=await Promise.all([db.select({id:workers.id,name:workers.name,permissions:workers.permissions,role:workers.role,active:workers.active,removed:workers.removed}).from(workers),u.admin?db.select({payload:expenses.payload}).from(expenses).where(like(expenses.day,month+'-%')):db.select({payload:expenses.payload}).from(expenses).where(and(like(expenses.day,month+'-%'),u.roles.includes('manager')?or(eq(expenses.workerId,u.id),eq(expenses.managerId,u.id)):eq(expenses.workerId,u.id)))]);
+  const [people,rows]=await Promise.all([db.select({id:workers.id,name:workers.name,email:workers.email,permissions:workers.permissions,role:workers.role,active:workers.active,removed:workers.removed}).from(workers).then(r=>r.filter(w=>!isDeveloperEmail(w.email))),u.admin?db.select({payload:expenses.payload}).from(expenses).where(like(expenses.day,month+'-%')):db.select({payload:expenses.payload}).from(expenses).where(and(like(expenses.day,month+'-%'),u.roles.includes('manager')?or(eq(expenses.workerId,u.id),eq(expenses.managerId,u.id)):eq(expenses.workerId,u.id)))]);
   const active=people.filter(w=>!!w.active&&!w.removed),inactive=new Set(people.filter(w=>!w.active||w.removed).map(w=>w.id)),entries=rows.map(r=>JSON.parse(r.payload)).filter(e=>!inactive.has(e.workerId)&&!inactive.has(e.managerId)).sort((a,b)=>b.day.localeCompare(a.day)||b.created.localeCompare(a.created));
   let proofIds=new Set<string>();
   if(u.admin&&entries.length){const ids=entries.map(e=>sql`${e.id}`),proofRows=await db.execute(sql`SELECT expense_id FROM expense_proofs WHERE expense_id IN (${sql.join(ids,sql`,`)})`);proofIds=new Set(proofRows.rows.map(row=>String(row.expense_id)));}
@@ -24,7 +25,7 @@ export async function GET(req:Request){
  }catch(e){return Response.json({error:(e as Error).message},{status:401,headers});}
 }
 
-export async function POST(req:Request){
+async function POST_(req:Request){
  let u;try{requireOrigin(req);u=await principal(req);}catch(e){return Response.json({error:(e as Error).message},{status:401,headers});}
  const contentType=req.headers.get('content-type')||'',multipart=contentType.startsWith('multipart/form-data');
  if(!multipart&&!contentType.startsWith('application/json'))return Response.json({error:'Submit the expense form with an optional receipt photo.'},{status:400,headers});
@@ -63,3 +64,5 @@ export async function POST(req:Request){
   return Response.json({ok:true},{headers});
  }catch(e){return Response.json({error:(e as Error).message},{status:400,headers});}
 }
+export const GET=developerPrivate(GET_);
+export const POST=developerPrivate(POST_);
