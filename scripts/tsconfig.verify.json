@@ -1,0 +1,1 @@
+{"extends":"../tsconfig.json","compilerOptions":{"baseUrl":"..","paths":{"next/server":["scripts/stubs/next-server.ts"]}}}

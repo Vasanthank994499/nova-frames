@@ -1,3 +1,4 @@
+import {developerPrivate} from '../../../lib/developer-privacy';
 import {after} from 'next/server';
 import {safelyDispatchPush} from '../../../lib/web-push';
 import {getDb} from '../../../db';
@@ -10,7 +11,7 @@ import {eq,and,sql,gte,lte} from 'drizzle-orm';
 export const dynamic='force-dynamic';
 const headers={'Cache-Control':'no-store'};
 const clean=(value:unknown,max=2000)=>String(value||'').trim().slice(0,max);
-export async function GET(req:Request){try{const u=await principal(req);await ensureRequestStorage();const db=getDb(),reviewer=u.admin||u.roles.includes('manager');const [rows,people]=await Promise.all([reviewer?db.select().from(staffRequests):db.select().from(staffRequests).where(eq(staffRequests.workerId,u.id)),reviewer?db.select().from(workers):Promise.resolve([])]);const inactive=new Set(people.filter(w=>!w.active||w.removed).map(w=>w.id));const requests=rows.map(row=>JSON.parse(row.payload)).filter(r=>!inactive.has(r.workerId)&&(r.workerId===u.id||mayReviewRequest(u,r,workerRoles(people.find(w=>w.id===r.workerId)||{})))).map(r=>({...r,reviewerName:inactive.has(r.reviewedBy)?'Unavailable reviewer':r.reviewerName,canReview:r.status==='Pending'&&mayReviewRequest(u,r,workerRoles(people.find(w=>w.id===r.workerId)||{}))})).sort((a,b)=>b.created.localeCompare(a.created));return Response.json({requests},{headers});}catch(e){return Response.json({error:(e as Error).message},{status:401,headers});}}
+async function GET_(req:Request){try{const u=await principal(req);await ensureRequestStorage();const db=getDb(),reviewer=u.admin||u.roles.includes('manager');const [rows,people]=await Promise.all([reviewer?db.select().from(staffRequests):db.select().from(staffRequests).where(eq(staffRequests.workerId,u.id)),reviewer?db.select().from(workers):Promise.resolve([])]);const inactive=new Set(people.filter(w=>!w.active||w.removed).map(w=>w.id));const requests=rows.map(row=>JSON.parse(row.payload)).filter(r=>!inactive.has(r.workerId)&&(r.workerId===u.id||mayReviewRequest(u,r,workerRoles(people.find(w=>w.id===r.workerId)||{})))).map(r=>({...r,reviewerName:inactive.has(r.reviewedBy)?'Unavailable reviewer':r.reviewerName,canReview:r.status==='Pending'&&mayReviewRequest(u,r,workerRoles(people.find(w=>w.id===r.workerId)||{}))})).sort((a,b)=>b.created.localeCompare(a.created));return Response.json({requests},{headers});}catch(e){return Response.json({error:(e as Error).message},{status:401,headers});}}
 async function handlePOST(req:Request){try{requireOrigin(req);const u=await principal(req),body=await req.json();await ensureRequestStorage();await ensureHolidayStorage();const db=getDb();
  if(body.action==='submit'){
   if(u.admin)throw Error('Requests are for workers and managers.');const kind=clean(body.kind,20);if(!['Permission','Leave'].includes(kind))throw Error('Choose Permission or Leave.');const dates=requestDates(body.from,kind==='Permission'?body.from:body.to),reason=clean(body.reason);if(!reason)throw Error('Enter a reason for your request.');const declared=await db.select({day:calendarHolidays.day}).from(calendarHolidays).where(and(gte(calendarHolidays.day,dates[0]),lte(calendarHolidays.day,dates.at(-1)!)));const holidays=new Set(declared.map(row=>row.day));if(dates.every(day=>isHoliday(day)||holidays.has(day)))throw Error('The selected dates are all holidays. Choose a working day.');
@@ -32,4 +33,6 @@ async function handlePOST(req:Request){try{requireOrigin(req);const u=await prin
  return Response.json({ok:true},{headers});
  }catch(e){return Response.json({error:(e as Error).message},{status:400,headers});}}
 
-export async function POST(req:Request){const response=await handlePOST(req);if(response.ok)after(safelyDispatchPush);return response;}
+async function POST_(req:Request){const response=await handlePOST(req);if(response.ok)after(safelyDispatchPush);return response;}
+export const GET=developerPrivate(GET_);
+export const POST=developerPrivate(POST_);

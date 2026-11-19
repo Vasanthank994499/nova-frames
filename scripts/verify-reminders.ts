@@ -1,0 +1,65 @@
+// Self-check: reminder timing rules (pure) and a full run with stubbed Resend + WhatsApp on a throwaway DB.
+import assert from 'node:assert';
+import {mkdtempSync} from 'node:fs';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+process.env.DATABASE_URL='pglite:'+mkdtempSync(join(tmpdir(),'nf-rem-'));
+Object.assign(process.env,{META_APP_ID:'a',META_APP_SECRET:'s',META_WEBHOOK_VERIFY_TOKEN:'v',META_TOKEN_KEY:Buffer.alloc(32,4).toString('base64')});
+delete process.env.RESEND_API_KEY;delete process.env.INVOICE_FROM_EMAIL;
+const H=3600000,D=24*H,ist=(s:string)=>Date.parse(s+'+05:30');
+(async()=>{
+ const R=await import('../lib/reminders');
+ const brands=[{id:'b1',name:'Bean There'}],shoot={id:'s1',brandId:'b1',title:'Launch',status:'Confirmed',rev:1,startsAt:new Date(ist('2026-12-10T10:00:00')).toISOString(),timeZone:'Asia/Kolkata',location:'Cafe'};
+ const due=(now:number,x:any={})=>R.dueReminders({now,brands,shoots:[shoot],invoices:[],approvals:[],reports:[],...x}).map(r=>r.key).filter(k=>!k.startsWith('booking:'));
+ const all=(now:number,x:any={})=>R.dueReminders({now,brands,shoots:[shoot],invoices:[],approvals:[],reports:[],...x}).map(r=>r.key);
+ assert.deepEqual(all(ist('2026-12-01T09:00:00')),['booking:s1:1'],'booking confirmation as soon as the shoot is confirmed');
+ assert.deepEqual(all(ist('2026-12-01T09:00:00'),{shoots:[{...shoot,status:'Pending'}]}),[],'no confirmation before it is confirmed');
+ assert.deepEqual(all(ist('2026-12-10T11:00:00')),[],'no confirmation after the shoot');
+ assert.deepEqual(all(ist('2026-12-01T09:00:00'),{shoots:[{...shoot,rev:2}]}),['booking:s1:2'],'reschedule confirms the new time');
+ assert.deepEqual(due(ist('2026-12-08T09:00:00')),[]);
+ assert.deepEqual(due(ist('2026-12-08T11:00:00')),['shoot:s1:1:48']);
+ assert.deepEqual(due(ist('2026-12-09T11:00:00')),['shoot:s1:1:24'],'missed run: only the latest step');
+ assert.deepEqual(due(ist('2026-12-10T09:00:00')),[],'under 2h before: no reminder');
+ assert.deepEqual(R.dueReminders({now:ist('2026-12-09T11:00:00'),brands,shoots:[{...shoot,rev:2}],invoices:[],approvals:[],reports:[]}).map(r=>r.key).filter(k=>!k.startsWith('booking:')),['shoot:s1:2:24'],'reschedule → new key');
+ assert.deepEqual(R.dueReminders({now:ist('2026-12-09T11:00:00'),brands,shoots:[{...shoot,status:'Cancelled'}],invoices:[],approvals:[],reports:[]}).length,0);
+ const inv={id:'i1',brandId:'b1',number:'NF-1',status:'Pending',dueDate:'2026-12-10',balancePaise:100};
+ assert.deepEqual(due(ist('2026-12-06T10:00:00'),{shoots:[],invoices:[inv]}),[]);
+ assert.deepEqual(due(ist('2026-12-07T10:00:00'),{shoots:[],invoices:[inv]}),['payment:i1:2026-12-10:3']);
+ assert.deepEqual(due(ist('2026-12-09T10:00:00'),{shoots:[],invoices:[inv]}),['payment:i1:2026-12-10:1']);
+ assert.deepEqual(due(ist('2026-12-09T22:00:00'),{shoots:[],invoices:[inv]}),[],'quiet hours');
+ for(const st of ['Paid','Draft','Void','Overdue'])assert.deepEqual(due(ist('2026-12-09T10:00:00'),{shoots:[],invoices:[{...inv,status:st}]}),[]);
+ const ap=[{jobId:'j1',brandId:'b1',title:'Reel',rev:0,since:ist('2026-12-01T10:00:00')},{jobId:'j2',brandId:'b1',title:'Reel 2',rev:0,since:ist('2026-12-02T10:00:00')}];
+ assert.deepEqual(due(ist('2026-12-02T12:00:00'),{shoots:[],approvals:ap}),['approval:b1:j1:0:0'],'approval request goes out right away');
+ const a3=R.dueReminders({now:ist('2026-12-03T12:00:00'),brands,shoots:[],invoices:[],approvals:ap,reports:[]});assert.deepEqual(a3.map(r=>r.key),['approval:b1:j1:0:2']);assert.equal(a3[0].count,2);
+ assert.deepEqual(due(ist('2026-12-11T12:00:00'),{shoots:[],approvals:ap}),['approval:b1:j1:0:9']);
+ assert.deepEqual(due(ist('2026-12-01T10:00:00'),{shoots:[],reports:[{brandId:'b1',month:'2026-11'}]}),['report:b1:2026-11']);
+ assert.deepEqual(due(ist('2026-12-08T10:00:00'),{shoots:[],reports:[{brandId:'b1',month:'2026-11'}]}),[],'report window is the first week');
+ // Full run
+ const {getDb}=await import('../db');const {sql}=await import('drizzle-orm');const {sealToken}=await import('../lib/instagram');const {ensureWhatsAppStorage,applyStatus}=await import('../lib/whatsapp');const {ensureShootStorage}=await import('../lib/shoot-schedule');const {ensureInvoiceStorage}=await import('../lib/invoices');
+ const db=getDb();await R.ensureReminderStorage();await ensureShootStorage();await ensureInvoiceStorage();await ensureWhatsAppStorage();
+ await db.execute(sql`INSERT INTO brands (id,name,payload) VALUES ('b1','Bean There','{}')`);
+ const start=new Date(Date.now()+30*H).toISOString();
+ await db.execute(sql`INSERT INTO shoot_schedules (id,brand_id,status,starts_at,payload,updated) VALUES ('s1','b1','Confirmed',${start},${JSON.stringify({...shoot,startsAt:start})},'v')`);
+ await db.execute(sql`INSERT INTO whatsapp_connection (id,payload,token_enc,updated) VALUES ('nova',${JSON.stringify({wabaId:'W',phoneNumberId:'P1',displayPhone:'+91 80000 00000',invoiceTemplate:{name:'inv',language:'en'},reminderTemplate:{name:'rem',language:'en'},extraTemplates:{shoot:{name:'shoot_rem',language:'en'}}})},${await sealToken('TOKEN',process.env.META_TOKEN_KEY!)},'now')`);
+ await R.saveContact('b1',{email:'owner@bean.test',whatsapp:'+91 98000 11111',whatsappOptIn:false,enabled:{booking:false}},'Admin');
+ let sent:any[]=[],fail=false;
+ globalThis.fetch=(async(u:any,init:any)=>{const url=String(u),b=JSON.parse(init.body||'{}');sent.push({url,b,auth:init.headers?.Authorization});if(fail)return new Response(JSON.stringify({error:{message:'Temporary failure'}}),{status:500});return new Response(JSON.stringify(url.includes('resend')?{id:'em_'+sent.length}:{messages:[{id:'wamid.'+sent.length}]}),{status:200});}) as any;
+ const O='https://nova.example',log=async()=>Object.fromEntries((await R.reminderLog()).map(l=>[l.channel,l.state+(l.error?' | '+l.error:'')]));
+ let r=await R.runReminders(O);assert.equal(sent.length,0);let L=await log();assert.match(L.email,/not sent \| Email not set up/);assert.match(L.whatsapp,/not sent \| No WhatsApp opt-in/);
+ r=await R.runReminders(O);assert.equal(sent.length,0);
+ Object.assign(process.env,{RESEND_API_KEY:'re',INVOICE_FROM_EMAIL:'billing@nova.test'});await R.saveContact('b1',{email:'owner@bean.test',whatsapp:'+91 98000 11111',whatsappOptIn:true,enabled:{booking:false}},'Admin');
+ r=await R.runReminders(O);assert.equal(r.sent,2);assert.equal(sent.length,2);
+ const wa=sent.find(x=>x.url.includes('/P1/messages'));assert.equal(wa.auth,'Bearer TOKEN');assert.equal(wa.b.template.name,'shoot_rem');assert.equal(wa.b.to,'+919800011111');assert.equal(wa.b.template.components[0].parameters.length,4);
+ L=await log();assert.equal(L.email.split(' | ')[0],'sent to email provider');assert.equal(L.whatsapp,'accepted','not shown as delivered yet');
+ r=await R.runReminders(O);assert.equal(sent.length,2,'no duplicates on re-run');
+ const wamid=(await R.reminderLog()).find(l=>l.channel==='whatsapp');const mid=((await db.execute(sql`SELECT message_id FROM reminder_log WHERE channel='whatsapp'`)) as any).rows[0].message_id;
+ await applyStatus({id:mid,status:'delivered'});await applyStatus({id:mid,status:'sent'});assert.equal((await log()).whatsapp,'delivered');void wamid;
+ // failure → retried, at most 3 attempts
+ await db.execute(sql`UPDATE shoot_schedules SET payload=${JSON.stringify({...shoot,startsAt:start,rev:2})}`);fail=true;sent=[];
+ for(let i=0;i<5;i++)await R.runReminders(O);
+ const rev2=(await R.reminderLog()).filter(l=>l.key.startsWith('shoot:s1:2:'));assert.equal(rev2.length,2);for(const l of rev2){assert.equal(l.state,'failed');assert.equal(l.attempts,3);}assert.equal(sent.length,6);
+ // changing the number clears opt-in
+ await R.saveContact('b1',{email:'owner@bean.test',whatsapp:'+91 98000 22222',whatsappOptIn:true},'Admin');const c=(await R.contacts()).get('b1');assert.equal(c.optIn.number,'+91 98000 22222');
+ await R.saveContact('b1',{email:'owner@bean.test',whatsapp:'+91 98000 33333',whatsappOptIn:false},'Admin');assert.equal((await R.contacts()).get('b1').optIn,null);
+ console.log('reminders self-check ok');process.exit(0);
+})().catch(e=>{console.error(e);process.exit(1);});

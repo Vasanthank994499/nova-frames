@@ -1,0 +1,20 @@
+// Self-check: time zones (incl. DST), reminder windows, reschedule/cancel effects, per-person notices.
+import assert from 'node:assert';
+import {zonedToUtc,shootNotices,formatInZone} from '../lib/shoot-schedule';
+assert.equal(zonedToUtc('2026-12-05','10:00','Asia/Kolkata'),'2026-12-05T04:30:00.000Z');
+assert.equal(zonedToUtc('2026-07-01','09:00','America/New_York'),'2026-07-01T13:00:00.000Z');
+assert.equal(zonedToUtc('2026-12-01','09:00','America/New_York'),'2026-12-01T14:00:00.000Z');
+assert.throws(()=>zonedToUtc('2026-03-08','02:30','America/New_York'),/does not exist/);
+assert.match(formatInZone('2026-12-05T04:30:00.000Z','Asia/Kolkata'),/10:00\s?am.*IST/i);
+const start=Date.parse('2026-12-05T04:30:00.000Z'),H=3600000;
+const s:any={id:'s1',title:'Launch shoot',startsAt:new Date(start).toISOString(),timeZone:'Asia/Kolkata',status:'Confirmed',rev:1,crewIds:['w1'],location:'Studio',notices:[{id:'n1',at:'2026-11-20T00:00:00Z',title:'Shoot confirmed',audience:['crew','client']},{id:'n2',at:'2026-11-21T00:00:00Z',title:'You were removed from a shoot',audience:['crew'],only:['w2']}]};
+const ids=(xs:any[])=>xs.map(x=>x.id);
+assert.deepEqual(ids(shootNotices(s,'crew','w1',start-49*H)),['shoot:s1:n1']);
+assert.deepEqual(ids(shootNotices(s,'crew','w1',start-47*H)),['shoot:s1:n1','shoot-reminder:s1:1:48']);
+assert.deepEqual(ids(shootNotices(s,'client','',start-23*H)),['shoot:s1:n1','shoot-reminder:s1:1:48','shoot-reminder:s1:1:24']);
+assert.deepEqual(ids(shootNotices(s,'crew','w1',start+H)),['shoot:s1:n1']);
+assert.deepEqual(ids(shootNotices(s,'crew','w2',start-23*H)),['shoot:s1:n2']);
+assert.deepEqual(ids(shootNotices(s,'crew','w9',start-23*H)),[]);
+assert.deepEqual(ids(shootNotices({...s,rev:2},'crew','w1',start-23*H)).slice(1),['shoot-reminder:s1:2:48','shoot-reminder:s1:2:24']);
+assert.deepEqual(ids(shootNotices({...s,status:'Cancelled'},'client','',start-23*H)),['shoot:s1:n1']);
+console.log('shoot schedule self-check ok');
