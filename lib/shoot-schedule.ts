@@ -40,3 +40,17 @@ export async function shootBellItems(user:{id:string,admin:boolean,roles:string[
  for(const s of await allShoots()){for(const n of shootNotices(s,'crew',user.id,now))out.push({...n,page:'Shoot schedule'});if(manager)for(const n of shootNotices(s,'manager',user.id,now))out.push({...n,id:n.id+':m',page:'Shoot schedule'});}
  return out;
 }
+// A client moves its own upcoming confirmed shoot. Crew, managers and the client are notified; only date and time change.
+export async function clientReschedule(client:{name:string,brandId:string},id:string,date:string,time:string){
+ await ensureShootStorage();const db=getDb(),row=rows(await db.execute(sql`SELECT payload,updated FROM shoot_schedules WHERE id=${id} AND brand_id=${client.brandId}`))[0];
+ if(!row)throw Error('Shoot not found.');const old=JSON.parse(row.payload);
+ if(old.status!=='Confirmed')throw Error('Only an upcoming confirmed shoot can be moved. Contact Nova Frames.');
+ if(!isValidDay(date)||!isValidTime(time))throw Error('Choose a date and time.');
+ const startsAt=zonedToUtc(date,time,old.timeZone||STUDIO_TZ);if(Date.parse(startsAt)<=Date.now())throw Error('Choose a date and time in the future.');
+ if(startsAt===old.startsAt)throw Error('That is the current date and time.');
+ const at=new Date().toISOString(),notices=(old.notices||[]).map((n:any)=>n.when?n:{...n,when:formatInZone(old.startsAt,old.timeZone),where:old.location||''});
+ const s={...old,date,time,startsAt,rev:(old.rev||0)+1,history:[...(old.history||[]),{at,by:client.name+' (client)',detail:`Client rescheduled from ${formatInZone(old.startsAt,old.timeZone)}`}],notices:[...notices,{id:crypto.randomUUID(),at,title:'Client moved the shoot',audience:['crew','client','manager'],when:formatInZone(startsAt,old.timeZone),where:old.location||''}]};
+ const ok=rows(await db.execute(sql`UPDATE shoot_schedules SET starts_at=${startsAt},payload=${JSON.stringify(s)},updated=${crypto.randomUUID()} WHERE id=${id} AND updated=${row.updated} RETURNING id`));
+ if(!ok.length)throw Error('This shoot was just changed. Reload and try again.');
+ return {when:formatInZone(startsAt,old.timeZone)};
+}

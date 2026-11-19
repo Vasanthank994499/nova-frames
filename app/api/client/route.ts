@@ -7,6 +7,7 @@ import {sql} from 'drizzle-orm';
 import {principal,requireOrigin,hashPassword,ADMIN_EMAIL} from '../../../lib/auth';
 import {clientPrincipal,viewer,clientDashboard as baseDashboard,ensureClientStorage,CLIENT_PREFIX} from '../../../lib/clients';
 import {connectionStatus} from '../../../lib/instagram';
+import {clientReschedule} from '../../../lib/shoot-schedule';
 async function clientDashboard(brandId:string){const d=await baseDashboard(brandId);return {...d,instagram:{...d.instagram,connection:await connectionStatus(brandId)}};}
 export const dynamic='force-dynamic';
 const noStore={'Cache-Control':'no-store'};
@@ -27,7 +28,7 @@ async function GET_(req:Request){
 // Administrator only: create, edit, enable or disable client logins.
 async function POST_(req:Request){
  // Clients review their own videos here; everything else in this route is for staff.
- if(!(await principal(req).then(()=>true,()=>false))){try{requireOrigin(req);const c=await clientPrincipal(req),b:any=await req.json();if(b?.type!=='content-review')throw Error('Invalid request.');const r=await clientReview(c,clean(b.jobId,100),clean(b.decision,20),String(b.feedback||''),clean(b.version,100));after(safelyDispatchPush);return Response.json({ok:true,...r},{headers:noStore});}catch(e){return fail(e,400);}}
+ if(!(await principal(req).then(()=>true,()=>false))){try{requireOrigin(req);const c=await clientPrincipal(req),b:any=await req.json();if(b?.type==='shoot-date'){const r=await clientReschedule(c,clean(b.id,100),clean(b.date,10),clean(b.time,5));after(safelyDispatchPush);return Response.json({ok:true,...r},{headers:noStore});}if(b?.type!=='content-review')throw Error('Invalid request.');const r=await clientReview(c,clean(b.jobId,100),clean(b.decision,20),String(b.feedback||''),clean(b.version,100));after(safelyDispatchPush);return Response.json({ok:true,...r},{headers:noStore});}catch(e){return fail(e,400);}}
  try{
   requireOrigin(req);const u=await principal(req);
   const b:any=await req.json(),db=getDb();await ensureClientStorage();
