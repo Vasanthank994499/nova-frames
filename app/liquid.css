@@ -1,0 +1,650 @@
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap');
+/* Nova Frames — "Midnight & Champagne" identity. Built on Astryx neutral tokens (studio.css), overriding brand,
+   type and surfaces. 3D scene + motion hooks come from app/liquid-effects.tsx. Presentation only. */
+
+:root[data-astryx-theme] {
+  --nv-ink: light-dark(#14151b, #f3f1ec);
+  --nv-ink-2: light-dark(#4b4e5a, #b4b3bd);
+  --nv-base: light-dark(#f4f1ea, #08090d);
+  --nv-indigo: light-dark(#3f3bd1, #a9a6ff);
+  --nv-indigo-deep: light-dark(#2b26a8, #c9c7ff);
+  --nv-violet: light-dark(#7c5cff, #8f7bff);
+  --nv-gold: light-dark(#8a6220, #e3c27c);
+  --nv-gold-soft: light-dark(rgb(200 160 90 / .2), rgb(227 194 124 / .14));
+  --nv-glass: light-dark(rgb(255 253 248 / .8), rgb(20 21 28 / .74));
+  --nv-glass-hi: light-dark(rgb(255 254 250 / .88), rgb(24 25 33 / .88));
+  --nv-hair: light-dark(rgb(20 21 27 / .08), rgb(255 255 255 / .08));
+  --nv-edge: light-dark(rgb(255 255 255 / .9), rgb(255 255 255 / .1));
+  --nv-blur: blur(26px) saturate(170%);
+  --nv-r: 20px;
+  --nv-ease: cubic-bezier(.16, 1, .3, 1);
+  --nv-shadow: 0 1px 0 var(--nv-edge) inset, 0 0 0 1px var(--nv-hair), 0 12px 32px -14px light-dark(rgb(40 30 80 / .22), rgb(0 0 0 / .7)), 0 2px 6px -3px light-dark(rgb(40 30 80 / .1), rgb(0 0 0 / .5));
+  --nv-shadow-lift: 0 1px 0 var(--nv-edge) inset, 0 0 0 1px var(--nv-hair), 0 34px 70px -24px light-dark(rgb(50 40 120 / .35), rgb(0 0 0 / .8)), 0 10px 24px -10px light-dark(rgb(50 40 120 / .2), rgb(0 0 0 / .6));
+  --nf-brand: var(--nv-indigo);
+  --nf-brand-strong: var(--nv-indigo-deep);
+  --nf-brand-soft: light-dark(#ecebfd, #1d1c33);
+  --color-text-primary: var(--nv-ink);
+  --color-text-secondary: var(--nv-ink-2);
+  --color-background-body: var(--nv-base);
+  --color-background-surface: light-dark(#fffdf8, #15161d);
+  --color-background-muted: light-dark(#efebe2, #1a1b23);
+  --color-background-popover: light-dark(#fffdf8, #15161d);
+  --color-border: var(--nv-hair);
+  --color-border-emphasized: light-dark(#d9d3c6, #33343f);
+  --color-on-accent: light-dark(#ffffff, #0d0c22);
+  --font-family-body: Geist, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-family-heading: Geist, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --nv-serif: "Instrument Serif", "Iowan Old Style", Georgia, serif;
+  --nv-mono: "Geist Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+/* ---------- Page + type ---------- */
+:root[data-astryx-theme] body { background: var(--nv-base); font-family: var(--font-family-body); letter-spacing: -.005em; }
+:root[data-astryx-theme] :is(.shell, .main, .content, .client-shell, .cp-body, .login-shell) { background: transparent; }
+:root[data-astryx-theme] :is(.page-heading h1, .client-hero h1, .login-story h1, main.client-main > h1) {
+  font-family: var(--nv-serif); font-weight: 400; font-size: clamp(36px, 4.2vw, 60px); line-height: 1; letter-spacing: -.02em;
+  background: linear-gradient(115deg, var(--nv-ink) 0%, var(--nv-ink) 45%, var(--nv-indigo) 78%, var(--nv-violet) 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+:root[data-astryx-theme] :is(h2, h3) { font-family: var(--font-family-heading); font-weight: 600; letter-spacing: -.02em; }
+:root[data-astryx-theme] .eyebrow { font-family: var(--nv-mono); font-size: 10px; letter-spacing: .18em; color: var(--nv-gold); font-weight: 500; }
+:root[data-astryx-theme] .eyebrow::before { content: ""; display: inline-block; width: 18px; height: 1px; background: currentColor; vertical-align: middle; margin-right: 10px; }
+:root[data-astryx-theme] .brand { font-family: var(--nv-serif); font-weight: 400; font-size: 21px; letter-spacing: .01em; }
+:root[data-astryx-theme] .brand small { font-family: var(--nv-mono); letter-spacing: .22em; color: var(--nv-gold); }
+:root[data-astryx-theme] :is(.stat strong, .stat b, .count, .expense-total) { font-family: var(--nv-mono); font-weight: 500; font-variant-numeric: tabular-nums; letter-spacing: -.04em; }
+:root[data-astryx-theme] .stat :is(strong, b) { font-size: 40px; }
+:root[data-astryx-theme] .navlabel { font-family: var(--nv-mono); font-size: 9.5px; letter-spacing: .2em; color: var(--nv-ink-2); }
+
+/* ---------- 3D scene (injected by liquid-effects.tsx) ---------- */
+.nv-scene { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; perspective: 900px; }
+.nv-aurora { position: absolute; inset: -25vmax; filter: blur(60px); opacity: .9; animation: nv-drift 30s var(--nv-ease) infinite alternate;
+  background: radial-gradient(34vmax 34vmax at 18% 22%, light-dark(rgb(124 92 255 / .36), rgb(124 92 255 / .3)), transparent 60%),
+              radial-gradient(30vmax 30vmax at 82% 12%, light-dark(rgb(63 59 209 / .26), rgb(63 59 209 / .4)), transparent 60%),
+              radial-gradient(28vmax 28vmax at 78% 88%, light-dark(rgb(227 194 124 / .5), rgb(168 122 44 / .25)), transparent 60%),
+              radial-gradient(24vmax 24vmax at 12% 92%, light-dark(rgb(224 122 143 / .26), rgb(192 86 111 / .22)), transparent 60%); }
+.nv-grain { position: absolute; inset: 0; opacity: .05; mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+:root[data-theme="dark"] .nv-grain { opacity: .07; mix-blend-mode: screen; }
+@keyframes nv-drift { 50% { transform: translate3d(4vmax, -3vmax, 0) rotate(8deg) scale(1.08); } 100% { transform: translate3d(-3vmax, 2vmax, 0) rotate(-6deg); } }
+
+/* ---------- Glass surfaces ---------- */
+:root[data-astryx-theme] :is(.stat, .job-card, .person-card, .client-section, .report-panel, .shoot-card, .request-card, .lead-card, .shift-card, .brief-card, .owner-card, .add-card, .cp-quick-card, .invoice-public, .projects, .attendance-panel, .shoot-panel, .leads-column, .client-hero, .info-banner) {
+  background: var(--nv-glass); backdrop-filter: var(--nv-blur); -webkit-backdrop-filter: var(--nv-blur);
+  border: 0; border-radius: var(--nv-r); box-shadow: var(--nv-shadow); position: relative;
+}
+:root[data-astryx-theme] .info-banner { background: linear-gradient(120deg, var(--nf-brand-soft), var(--nv-glass)); color: var(--nv-ink); }
+:root[data-astryx-theme] .client-hero { background: linear-gradient(135deg, var(--nv-glass-hi), var(--nv-glass)); overflow: hidden; }
+:root[data-astryx-theme] .client-hero::after { content: ""; position: absolute; right: -60px; top: -60px; width: 220px; height: 220px; border-radius: 50%; border: 1px solid var(--nv-gold); opacity: .35; box-shadow: 0 0 0 30px var(--nv-gold-soft); pointer-events: none; }
+
+:root[data-astryx-theme] .lq-tilt { transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(var(--lift, 0px)); transition: transform 600ms var(--nv-ease), box-shadow 600ms var(--nv-ease); }
+:root[data-astryx-theme] .lq-tilt:hover { --lift: -3px; box-shadow: var(--nv-shadow-lift); }
+:root[data-astryx-theme] .lq-tilt::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity 400ms var(--nv-ease);
+  background: radial-gradient(380px circle at var(--mx, 50%) var(--my, 0%), light-dark(rgb(255 255 255 / .7), rgb(169 166 255 / .12)), transparent 45%); }
+:root[data-astryx-theme] .lq-tilt:hover::after { opacity: 1; }
+
+:root[data-astryx-theme] .nv-reveal { opacity: 0; transform: translateY(22px) scale(.98); filter: blur(6px); transition: opacity 800ms var(--nv-ease), transform 800ms var(--nv-ease), filter 800ms var(--nv-ease); }
+:root[data-astryx-theme] .nv-reveal.nv-in { opacity: 1; transform: none; filter: none; }
+
+/* ---------- Chrome ---------- */
+:root[data-astryx-theme] :is(.sidebar, .cp-side, .topbar, .cp-top, .client-top) { background: var(--nv-glass); backdrop-filter: var(--nv-blur); -webkit-backdrop-filter: var(--nv-blur); border-color: var(--nv-hair); }
+@media (min-width: 1151px) {
+  :root[data-astryx-theme] .sidebar { inset: 16px auto 16px 16px; width: 240px; height: auto; border-radius: 28px; border: 0; box-shadow: var(--nv-shadow-lift); }
+  :root[data-astryx-theme] .main { margin-left: 272px; }
+  :root[data-astryx-theme] .topbar { margin: 16px 20px 0 0; border-radius: 999px; border: 0; box-shadow: var(--nv-shadow); top: 16px; height: 60px; padding-inline: 28px; }
+  :root[data-astryx-theme] .account { margin: 0 -20px; border-radius: 0 0 28px 28px; }
+  :root[data-astryx-theme] .cp-side { inset: auto; top: 16px; margin: 16px 6px 16px 16px; height: calc(100vh - 32px); flex-shrink: 0; border-radius: 28px; border: 0; box-shadow: var(--nv-shadow-lift); }
+  :root[data-astryx-theme] .cp-top { margin: 16px 20px 0 16px; border-radius: 999px; border: 0; top: 16px; box-shadow: var(--nv-shadow); }
+}
+@media (max-width: 900px) { :root[data-astryx-theme] :is(.sidebar, .cp-side) { background: var(--nv-glass-hi); } }
+:root[data-astryx-theme] .workspace-tag { background: var(--nv-gold-soft); border: 1px solid light-dark(rgb(168 122 44 / .25), rgb(227 194 124 / .2)); color: var(--nv-ink); border-radius: 14px; }
+:root[data-astryx-theme] .workspace-tag .dot { background: var(--nv-gold); box-shadow: 0 0 0 4px var(--nv-gold-soft); }
+
+:root[data-astryx-theme] :is(.navitem, .cp-side .cp-nav) { border-radius: 14px; font-weight: 500; position: relative; transition: background-color 300ms var(--nv-ease), color 300ms var(--nv-ease), transform 300ms var(--nv-ease); }
+:root[data-astryx-theme] :is(.navitem, .cp-side .cp-nav):hover:not(.selected):not(.on) { background: light-dark(rgb(20 21 27 / .05), rgb(255 255 255 / .06)); transform: translateX(2px); }
+:root[data-astryx-theme] :is(.navitem.selected, .cp-side .cp-nav.on) { background: var(--nv-ink); color: var(--nv-base); box-shadow: 0 8px 20px -8px light-dark(rgb(20 21 27 / .5), rgb(0 0 0 / .7)); }
+:root[data-astryx-theme] :is(.navitem.selected, .cp-side .cp-nav.on) svg { color: var(--nv-gold); }
+:root[data-astryx-theme] :is(.navitem.selected, .cp-side .cp-nav.on)::before { content: ""; position: absolute; left: -10px; top: 50%; width: 4px; height: 18px; margin-top: -9px; border-radius: 4px; background: var(--nv-gold); }
+:root[data-astryx-theme] .navitem.selected b { background: var(--nv-gold); color: #1a1408; }
+:root[data-astryx-theme] :is(.avatar, .topavatar, .mini-avatar) { background: linear-gradient(135deg, #3f3bd1, #7c5cff); color: #fff; }
+
+/* ---------- Buttons ---------- */
+:root[data-astryx-theme] :is(.primary, .secondary, .iconbutton) { position: relative; overflow: hidden; isolation: isolate; }
+:root[data-astryx-theme] .primary {
+  border-radius: 999px; font-weight: 600; background: var(--nv-ink); color: var(--nv-base); border: 0;
+  box-shadow: 0 10px 24px -10px light-dark(rgb(20 21 27 / .6), rgb(169 166 255 / .4));
+  transition: transform 300ms var(--nv-ease), box-shadow 300ms var(--nv-ease);
+}
+@property --nv-angle { syntax: "<angle>"; initial-value: 0deg; inherits: false; }
+:root[data-astryx-theme] .primary::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; padding: 1.5px;
+  background: conic-gradient(from var(--nv-angle), transparent 0 65%, #e3c27c 78%, #8f7bff 90%, transparent);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude;
+  animation: nv-rotate 4s linear infinite; }
+@keyframes nv-rotate { to { --nv-angle: 360deg; } }
+:root[data-astryx-theme] .primary:hover:not(:disabled) { transform: translateY(-2px); background: var(--nv-ink); box-shadow: 0 18px 34px -12px light-dark(rgb(63 59 209 / .55), rgb(169 166 255 / .5)); }
+:root[data-astryx-theme] .primary:active:not(:disabled) { transform: translateY(0) scale(.97); }
+:root[data-astryx-theme] .primary svg { color: var(--nv-gold); }
+:root[data-theme="dark"] .primary svg { color: #8a6220; }
+:root[data-astryx-theme] .secondary { border-radius: 999px; font-weight: 500; background: var(--nv-glass); color: var(--nv-ink); border: 0; box-shadow: 0 0 0 1px var(--color-border-emphasized), 0 1px 0 var(--nv-edge) inset; backdrop-filter: var(--nv-blur); -webkit-backdrop-filter: var(--nv-blur); transition: transform 300ms var(--nv-ease), box-shadow 300ms var(--nv-ease), background-color 300ms var(--nv-ease); }
+:root[data-astryx-theme] .secondary:hover:not(:disabled) { transform: translateY(-1px); background: var(--nv-glass-hi); box-shadow: 0 0 0 1px var(--nv-indigo), 0 8px 18px -10px light-dark(rgb(63 59 209 / .5), rgb(0 0 0 / .6)); }
+:root[data-astryx-theme] .textbutton { color: var(--nv-indigo); font-weight: 600; background-image: linear-gradient(currentColor, currentColor); background-size: 0 1px; background-position: 0 100%; background-repeat: no-repeat; transition: background-size 400ms var(--nv-ease); }
+:root[data-astryx-theme] .textbutton:hover { background-size: 100% 1px; }
+:root[data-astryx-theme] .iconbutton { background: var(--nv-glass); color: var(--nv-ink); border: 0; box-shadow: 0 0 0 1px var(--nv-hair), 0 1px 0 var(--nv-edge) inset; transition: transform 300ms var(--nv-ease), color 300ms var(--nv-ease); }
+:root[data-astryx-theme] .iconbutton:hover { transform: rotate(-8deg) scale(1.06); color: var(--nv-indigo); }
+.nv-ripple { position: absolute; border-radius: 50%; pointer-events: none; background: currentColor; opacity: .25; transform: scale(0); animation: nv-ripple 650ms cubic-bezier(.16, 1, .3, 1) forwards; z-index: 0; }
+@keyframes nv-ripple { to { transform: scale(4); opacity: 0; } }
+
+/* Tabs */
+:root[data-astryx-theme] :is(.stage-tabs, .job-tabs, .viewtoggle) { background: var(--nv-glass); backdrop-filter: var(--nv-blur); -webkit-backdrop-filter: var(--nv-blur); border: 0; box-shadow: 0 0 0 1px var(--nv-hair); border-radius: 999px; padding: 4px; }
+:root[data-astryx-theme] :is(.stage-tabs, .job-tabs, .viewtoggle) > button { border-radius: 999px; font-weight: 500; transition: background-color 400ms var(--nv-ease), color 400ms var(--nv-ease), box-shadow 400ms var(--nv-ease); }
+:root[data-astryx-theme] :is(.stage-tabs, .job-tabs, .viewtoggle) > :is(button.selected, button.on, button.active, button[aria-selected="true"], button[aria-pressed="true"]) { background: var(--nv-ink); color: var(--nv-base); box-shadow: 0 6px 14px -6px rgb(0 0 0 / .4); }
+:root[data-astryx-theme] :is(.stage-tabs, .job-tabs, .viewtoggle) > button.on span { background: #e3c27c; color: #1a1408; }
+
+/* Fields */
+:root[data-astryx-theme] :is(input:not([type=checkbox]):not([type=radio]):not([type=file]):not([type=range]), select, textarea) {
+  background: light-dark(rgb(255 255 255 / .75), rgb(0 0 0 / .28)); border: 1px solid var(--color-border-emphasized); border-radius: 14px;
+  transition: border-color 300ms var(--nv-ease), box-shadow 300ms var(--nv-ease), background-color 300ms var(--nv-ease);
+}
+:root[data-astryx-theme] :is(input, select, textarea):hover { border-color: light-dark(#bfb7a6, #4a4b58); }
+:root[data-astryx-theme] :is(input, select, textarea):focus { border-color: var(--nv-indigo); box-shadow: 0 0 0 4px light-dark(rgb(63 59 209 / .14), rgb(169 166 255 / .2)); background: var(--color-background-surface); }
+:root[data-astryx-theme] .badge { font-family: var(--nv-mono); font-size: 10px; letter-spacing: .04em; background: var(--nv-gold-soft); color: var(--nv-ink); border-radius: 999px; }
+
+/* Tables */
+:root[data-astryx-theme] table th { font-family: var(--nv-mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; background: transparent; color: var(--nv-ink-2); border-bottom: 1px solid var(--color-border-emphasized); }
+:root[data-astryx-theme] table tbody tr { transition: background-color 250ms var(--nv-ease); }
+:root[data-astryx-theme] table tbody tr:hover td { background: light-dark(rgb(63 59 209 / .04), rgb(169 166 255 / .05)); }
+
+/* Overlays */
+:root[data-astryx-theme] :is(.modal-shade, .reassignment-shade, .theme-settings-shade, .mobile-menu-backdrop, .cp-scrim) { background: light-dark(rgb(20 18 40 / .3), rgb(0 0 0 / .6)); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); animation: nv-fade 400ms var(--nv-ease); }
+:root[data-astryx-theme] .drawer { background: var(--nv-glass-hi); backdrop-filter: var(--nv-blur); -webkit-backdrop-filter: var(--nv-blur); border: 0; border-radius: 30px 0 0 30px; box-shadow: var(--nv-shadow-lift); animation: nv-sheet 600ms var(--nv-ease); }
+:root[data-astryx-theme] :is(.worker-modal, .reassignment-dialog, .theme-settings-dialog) { background: var(--nv-glass-hi); backdrop-filter: var(--nv-blur); -webkit-backdrop-filter: var(--nv-blur); border: 0; border-radius: 28px; box-shadow: var(--nv-shadow-lift); animation: nv-pop 520ms var(--nv-ease); }
+:root[data-astryx-theme] .notification-panel { background: var(--nv-glass-hi); backdrop-filter: var(--nv-blur); -webkit-backdrop-filter: var(--nv-blur); border-radius: 22px; box-shadow: var(--nv-shadow-lift); animation: nv-pop 420ms var(--nv-ease); transform-origin: top right; }
+:root[data-astryx-theme] .toast { border-radius: 999px; background: var(--nv-ink); color: var(--nv-base); border: 0; box-shadow: var(--nv-shadow-lift); }
+@keyframes nv-fade { from { opacity: 0; } }
+@keyframes nv-sheet { from { transform: translateX(60px); opacity: 0; } }
+@keyframes nv-pop { from { transform: perspective(800px) rotateX(10deg) scale(.92) translateY(12px); opacity: 0; } }
+
+/* Page entry */
+:root[data-astryx-theme] :is(.content, .cp-body, .client-main) > * { animation: nv-rise 800ms var(--nv-ease) both; }
+:root[data-astryx-theme] :is(.content, .cp-body, .client-main) > :nth-child(2) { animation-delay: 70ms; }
+:root[data-astryx-theme] :is(.content, .cp-body, .client-main) > :nth-child(3) { animation-delay: 140ms; }
+:root[data-astryx-theme] :is(.content, .cp-body, .client-main) > :nth-child(n+4) { animation-delay: 210ms; }
+@keyframes nv-rise { from { opacity: 0; transform: translateY(24px); filter: blur(8px); } }
+
+/* Login */
+:root[data-astryx-theme] .login-shell { perspective: 1600px; }
+:root[data-astryx-theme] .login-panel { background: var(--nv-glass); backdrop-filter: var(--nv-blur); -webkit-backdrop-filter: var(--nv-blur); border: 0; border-radius: 34px; box-shadow: var(--nv-shadow-lift); animation: nv-stage 1100ms var(--nv-ease) both; }
+:root[data-astryx-theme] .login-story { background: linear-gradient(160deg, #14151b, #2b2a4a); color: #f3f1ec; }
+:root[data-astryx-theme] .login-story :is(p, span, small) { color: rgb(243 241 236 / .85); }
+:root[data-astryx-theme] .login-story svg { color: #e3c27c; }
+:root[data-astryx-theme] .login-shell .login-story h1 { background: linear-gradient(115deg, #fffdf8 30%, #e3c27c 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+:root[data-astryx-theme] .login-story .eyebrow { color: #e3c27c; }
+:root[data-astryx-theme] .login-story .login-frames { background: rgb(255 255 255 / .06); border: 1px solid rgb(227 194 124 / .25); box-shadow: 0 1px 0 rgb(255 255 255 / .08) inset; }
+@keyframes nv-stage { from { opacity: 0; transform: rotateX(18deg) rotateY(-6deg) translateY(40px) scale(.94); } }
+
+:root[data-astryx-theme] :is(button, a, [role=button], [tabindex]):focus-visible { outline: 2px solid var(--nv-indigo); outline-offset: 3px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .nv-aurora, .nv-stars, :root[data-astryx-theme] .primary::before { animation: none !important; }
+  :root[data-astryx-theme] .lq-tilt { transform: none; }
+  :root[data-astryx-theme] .nv-reveal { opacity: 1; transform: none; filter: none; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  :root[data-astryx-theme] { --nv-glass: var(--color-background-surface); --nv-glass-hi: var(--color-background-surface); }
+  .nv-aurora { opacity: .25; }
+}
+.nv-3d, .nv-3d canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.nv-3d { animation: nv-fade 1600ms var(--nv-ease) both; }
+:root[data-astryx-theme] .toggle-control.on { background: light-dark(#3f3bd1, #4a46d8); color: #fff; box-shadow: 0 6px 14px -6px rgb(63 59 209 / .6); }
+:root[data-astryx-theme] .toggle-control.on small { color: #fff; }
+/* toolbars sit over the 3D object: keep them near-opaque so their text stays readable */
+:root[data-astryx-theme] :is(.topbar, .cp-top, .client-top) { background: var(--nv-glass-hi); }
+
+/* Earth stages: the WebGL globe renders behind these areas, so they stay unblurred (see app/nv-3d.tsx) */
+:root[data-astryx-theme] .login-panel { background: transparent; backdrop-filter: none; -webkit-backdrop-filter: none; }
+:root[data-astryx-theme] .login-panel > :not(.login-story) { background: var(--nv-glass-hi); backdrop-filter: var(--nv-blur); -webkit-backdrop-filter: var(--nv-blur); }
+:root[data-astryx-theme] .login-shell .login-story { background: linear-gradient(180deg, rgb(7 8 13 / .9) 0%, rgb(7 8 13 / .55) 38%, transparent 62%); }
+:root[data-astryx-theme] .client-hero { backdrop-filter: none; -webkit-backdrop-filter: none; background: linear-gradient(90deg, var(--nv-glass-hi) 0%, var(--nv-glass-hi) 48%, transparent 85%); }
+:root[data-astryx-theme] .client-hero::after { content: none; }
+:root[data-astryx-theme] .login-story .login-footer { text-shadow: 0 1px 10px rgb(0 0 0 / .9); position: relative; }
+
+/* ---------- Soft, faded boxes everywhere ---------- */
+:root[data-astryx-theme] {
+  --nv-fade-border: linear-gradient(160deg, light-dark(rgb(255 255 255 / .95), rgb(255 255 255 / .16)) 0%, light-dark(rgb(255 255 255 / .2), rgb(255 255 255 / .03)) 45%, light-dark(rgb(168 122 44 / .22), rgb(227 194 124 / .12)) 100%);
+  --nv-fade-fill: linear-gradient(165deg, light-dark(rgb(255 254 250 / .92), rgb(30 31 40 / .82)) 0%, light-dark(rgb(255 253 248 / .7), rgb(18 19 26 / .66)) 100%);
+}
+:root[data-astryx-theme] :is(.stat, .job-card, .person-card, .client-section, .report-panel, .shoot-card, .request-card, .lead-card, .shift-card, .brief-card, .owner-card, .add-card, .cp-quick-card, .invoice-public, .projects, .attendance-panel, .shoot-panel, .leads-column, .extra-panel, .rule-note, .table-wrap, .ig-table-wrap, .empty, .client-empty, .request-notice, .attendance-holiday-notice, .deadline-alert, .unassigned-panel, .overview-brand-box, .steps, .expenses-panel, .requests-panel, .allocation-page, .notification-panel, .worker-modal, .reassignment-dialog, .theme-settings-dialog) {
+  border: 1px solid transparent !important;
+  background: var(--nv-fade-fill) padding-box, var(--nv-fade-border) border-box !important;
+  border-radius: 22px !important;
+  box-shadow: 0 1px 0 light-dark(rgb(255 255 255 / .9), rgb(255 255 255 / .06)) inset, 0 0 0 .5px light-dark(rgb(20 21 27 / .04), rgb(0 0 0 / .4)), 0 18px 40px -22px light-dark(rgb(60 45 110 / .28), rgb(0 0 0 / .8)), 0 4px 10px -6px light-dark(rgb(60 45 110 / .12), rgb(0 0 0 / .5));
+  backdrop-filter: var(--nv-blur); -webkit-backdrop-filter: var(--nv-blur);
+}
+/* soft light pooling in the top-left of each box */
+:root[data-astryx-theme] :is(.stat, .job-card, .person-card, .client-section, .report-panel, .shoot-card, .request-card, .lead-card, .cp-quick-card, .projects, .attendance-panel, .extra-panel) {
+  background: radial-gradient(120% 80% at 0% 0%, light-dark(rgb(255 255 255 / .7), rgb(169 166 255 / .07)), transparent 55%) padding-box, var(--nv-fade-fill) padding-box, var(--nv-fade-border) border-box !important;
+}
+:root[data-astryx-theme] :is(.table-wrap, .ig-table-wrap) { overflow: hidden; padding: 2px; }
+:root[data-astryx-theme] table { border-collapse: separate; border-spacing: 0; }
+:root[data-astryx-theme] table tr:first-child th:first-child { border-top-left-radius: 16px; }
+:root[data-astryx-theme] table tr:first-child th:last-child { border-top-right-radius: 16px; }
+:root[data-astryx-theme] :is(img, video, iframe, canvas):not(.nv-3d canvas) { border-radius: 14px; }
+:root[data-astryx-theme] :is(.leads-search, .date-control) { border-radius: 999px !important; }
+:root[data-astryx-theme] :is(.account, .table-footer, .drawer-footer) { border-radius: 0 0 22px 22px; }
+:root[data-astryx-theme] .account { background: transparent; }
+:root[data-astryx-theme] hr { border: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--color-border-emphasized), transparent); }
+/* faded edges of the whole viewport */
+.nv-scene::after { content: ""; position: absolute; inset: 0; pointer-events: none; box-shadow: inset 0 0 140px 30px light-dark(rgb(244 241 234 / .9), rgb(8 9 13 / .85)); }
+
+/* ---------- Extra glass: specular streak, prismatic rim, hover light sweep ---------- */
+:root[data-astryx-theme] {
+  --nv-streak: linear-gradient(115deg, transparent 0 18%, light-dark(rgb(255 255 255 / .55), rgb(255 255 255 / .06)) 24%, transparent 32%, transparent 62%, light-dark(rgb(255 255 255 / .28), rgb(255 255 255 / .03)) 66%, transparent 70%);
+  --nv-blur: blur(34px) saturate(190%) brightness(light-dark(1.04, .96));
+}
+:root[data-astryx-theme] :is(.stat, .job-card, .person-card, .client-section, .report-panel, .shoot-card, .request-card, .lead-card, .cp-quick-card, .projects, .attendance-panel, .extra-panel) {
+  background: var(--nv-streak) padding-box, radial-gradient(120% 80% at 0% 0%, light-dark(rgb(255 255 255 / .7), rgb(169 166 255 / .07)), transparent 55%) padding-box, var(--nv-fade-fill) padding-box,
+    linear-gradient(160deg, light-dark(rgb(255 255 255 / .98), rgb(255 255 255 / .2)), light-dark(rgb(180 200 255 / .35), rgb(140 170 255 / .08)) 35%, light-dark(rgb(230 190 255 / .25), rgb(200 160 255 / .06)) 65%, light-dark(rgb(168 122 44 / .3), rgb(227 194 124 / .14))) border-box !important;
+  overflow: hidden;
+}
+/* light sweep across a box on hover */
+:root[data-astryx-theme] :is(.client-section, .report-panel, .projects, .attendance-panel, .extra-panel)::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: linear-gradient(105deg, transparent 35%, light-dark(rgb(255 255 255 / .5), rgb(255 255 255 / .07)) 50%, transparent 65%);
+  transform: translateX(-120%); transition: transform 1100ms var(--nv-ease);
+}
+:root[data-astryx-theme] :is(.client-section, .report-panel, .projects, .attendance-panel, .extra-panel):hover::after { transform: translateX(120%); }
+/* frosted controls */
+:root[data-astryx-theme] :is(input:not([type=checkbox]):not([type=radio]):not([type=file]):not([type=range]), select, textarea) {
+  background: linear-gradient(180deg, light-dark(rgb(255 255 255 / .78), rgb(255 255 255 / .05)), light-dark(rgb(255 255 255 / .55), rgb(255 255 255 / .02)));
+  backdrop-filter: blur(12px) saturate(160%); -webkit-backdrop-filter: blur(12px) saturate(160%);
+  box-shadow: 0 1px 0 light-dark(rgb(255 255 255 / .9), rgb(255 255 255 / .05)) inset, 0 1px 2px light-dark(rgb(20 21 27 / .05), rgb(0 0 0 / .4)) inset;
+}
+:root[data-astryx-theme] :is(.badge, .cp-badge, .count) { background: linear-gradient(180deg, light-dark(rgb(255 255 255 / .8), rgb(255 255 255 / .1)), var(--nv-gold-soft)); box-shadow: 0 0 0 1px light-dark(rgb(168 122 44 / .22), rgb(227 194 124 / .18)), 0 1px 0 rgb(255 255 255 / .5) inset; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+:root[data-astryx-theme] :is(.sidebar, .cp-side, .topbar, .cp-top) { background: var(--nv-streak), var(--nv-glass-hi); }
+:root[data-astryx-theme] :is(.navitem.selected, .cp-side .cp-nav.on) { background: linear-gradient(180deg, rgb(255 255 255 / .14), transparent 60%), var(--nv-ink); box-shadow: 0 1px 0 rgb(255 255 255 / .18) inset, 0 8px 20px -8px light-dark(rgb(20 21 27 / .5), rgb(0 0 0 / .7)); }
+:root[data-astryx-theme] .primary { background: linear-gradient(180deg, rgb(255 255 255 / .16), transparent 55%), var(--nv-ink); }
+:root[data-astryx-theme] .primary:hover:not(:disabled) { background: linear-gradient(180deg, rgb(255 255 255 / .22), transparent 55%), var(--nv-ink); }
+:root[data-astryx-theme] .drawer { background: var(--nv-streak), var(--nv-glass-hi); backdrop-filter: blur(40px) saturate(190%); -webkit-backdrop-filter: blur(40px) saturate(190%); }
+@media (prefers-reduced-transparency: reduce) { :root[data-astryx-theme] { --nv-streak: none; } }
+
+/* ---------- Harmony fixes: one glass layer per box, insets inside it, legible loose text ---------- */
+/* items inside a glass panel are quiet insets, not a second glass box */
+:root[data-astryx-theme] :is(.client-section, .report-panel, .projects, .attendance-panel, .shoot-panel, .leads-column, .extra-panel, .expenses-panel, .requests-panel, .allocation-page, .overview-brand-box, .steps)
+  :is(.empty, .client-empty, .rule-note, .table-wrap, .ig-table-wrap, .request-notice, .attendance-holiday-notice, .expense-form, .allocation-editor, .info-banner) {
+  background: light-dark(rgb(20 21 27 / .028), rgb(255 255 255 / .03)) !important;
+  border: 1px solid light-dark(rgb(20 21 27 / .06), rgb(255 255 255 / .06)) !important;
+  box-shadow: none !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; border-radius: 16px !important;
+}
+:root[data-astryx-theme] :is(.client-section, .projects, .extra-panel, .leads-column) :is(.empty, .client-empty) { border-style: dashed !important; }
+/* cards inside a glass column: light raised tiles */
+:root[data-astryx-theme] :is(.shoot-panel, .leads-column, .allocation-page, .projects) :is(.shoot-card, .lead-card, .job-card, .allocation-person) {
+  background: light-dark(rgb(255 255 255 / .78), rgb(255 255 255 / .045)) !important;
+  border: 1px solid light-dark(rgb(20 21 27 / .06), rgb(255 255 255 / .07)) !important;
+  box-shadow: 0 1px 0 light-dark(#fff, rgb(255 255 255 / .05)) inset, 0 6px 16px -10px light-dark(rgb(60 45 110 / .25), rgb(0 0 0 / .6)) !important;
+  backdrop-filter: none !important; -webkit-backdrop-filter: none !important; border-radius: 16px !important;
+}
+/* fields: always the frosted style, never a flat legacy fill */
+:root[data-astryx-theme] :is(input:not([type=checkbox]):not([type=radio]):not([type=file]):not([type=range]), select, textarea) {
+  background: linear-gradient(180deg, light-dark(rgb(255 255 255 / .8), rgb(255 255 255 / .06)), light-dark(rgb(255 255 255 / .58), rgb(255 255 255 / .025))) !important;
+  color: var(--nv-ink) !important;
+}
+/* loose headings/subtitles sit directly on the page (and over the Earth): give them a soft page-coloured halo */
+:root[data-astryx-theme] :is(.page-heading, .section-title, .client-hero) :is(p, span, small, h2, h3, a) { text-shadow: 0 0 18px var(--nv-base), 0 0 2px var(--nv-base); }
+:root[data-astryx-theme] .content > :is(p, h2, h3, .section-title) { text-shadow: 0 0 18px var(--nv-base), 0 0 2px var(--nv-base); }
+:root[data-astryx-theme] .allocation-page .extra-panel { background: light-dark(rgb(20 21 27 / .028), rgb(255 255 255 / .03)) !important; border: 1px solid light-dark(rgb(20 21 27 / .06), rgb(255 255 255 / .06)) !important; box-shadow: none !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; border-radius: 16px !important; }
+:root[data-astryx-theme] .allocation-page .extra-panel::after { content: none; }
+:root[data-astryx-theme] .client-section .stat { background: light-dark(rgb(255 255 255 / .7), rgb(255 255 255 / .045)) !important; border: 1px solid light-dark(rgb(20 21 27 / .06), rgb(255 255 255 / .07)) !important; box-shadow: 0 1px 0 light-dark(#fff, rgb(255 255 255 / .05)) inset !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; border-radius: 16px !important; }
+:root[data-astryx-theme] .client-hero-cta.calm { background: linear-gradient(180deg, light-dark(rgb(255 255 255 / .7), rgb(255 255 255 / .06)), light-dark(rgb(25 129 0 / .1), rgb(100 175 76 / .14))); color: light-dark(#14551a, #b9e3a8); border: 1px solid light-dark(rgb(25 129 0 / .2), rgb(100 175 76 / .25)); border-radius: 999px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-shadow: 0 1px 0 rgb(255 255 255 / .5) inset; text-shadow: none; }
+:root[data-astryx-theme] .client-hero-cta.calm :is(span, svg) { text-shadow: none; color: inherit; }
+/* the welcome banner is a normal glass box again (the Earth now lives in the page corner, not inside it) */
+:root[data-astryx-theme] .client-hero { background: var(--nv-streak) padding-box, var(--nv-fade-fill) padding-box, var(--nv-fade-border) border-box !important; border: 1px solid transparent !important; backdrop-filter: var(--nv-blur) !important; -webkit-backdrop-filter: var(--nv-blur) !important; }
+
+/* ---------- Twinkling starfield (replaces the grid floor) ---------- */
+.nv-stars { position: absolute; inset: 0; background-repeat: repeat; animation: nv-twinkle 4.5s ease-in-out infinite; }
+.nv-stars.a { --s: light-dark(rgb(63 59 209 / .55), rgb(255 255 255 / .9)); background-size: 220px 220px;
+  background-image: radial-gradient(1.2px 1.2px at 20px 30px, var(--s), transparent), radial-gradient(1px 1px at 140px 80px, var(--s), transparent), radial-gradient(1.4px 1.4px at 90px 170px, var(--s), transparent), radial-gradient(1px 1px at 190px 140px, var(--s), transparent); }
+.nv-stars.b { --s: light-dark(rgb(168 122 44 / .6), rgb(227 194 124 / .85)); background-size: 310px 310px; animation-duration: 6.5s; animation-delay: -2s;
+  background-image: radial-gradient(1.6px 1.6px at 60px 250px, var(--s), transparent), radial-gradient(1.1px 1.1px at 250px 40px, var(--s), transparent), radial-gradient(1.3px 1.3px at 170px 120px, var(--s), transparent); }
+.nv-stars.c { --s: light-dark(rgb(124 92 255 / .45), rgb(200 210 255 / .8)); background-size: 410px 410px; animation-duration: 8s; animation-delay: -4s;
+  background-image: radial-gradient(2px 2px at 120px 60px, var(--s), transparent), radial-gradient(1.2px 1.2px at 330px 300px, var(--s), transparent), radial-gradient(1.5px 1.5px at 40px 380px, var(--s), transparent), radial-gradient(1px 1px at 280px 180px, var(--s), transparent); }
+@keyframes nv-twinkle { 0%, 100% { opacity: .25; } 50% { opacity: 1; } }
+
+/* ---------- Hover system (Astryx motion: fast for frequent hovers, ease-standard for moves) ---------- */
+:root[data-astryx-theme] { --nv-fast: var(--duration-fast, 175ms); --nv-med: var(--duration-medium, 410ms); --nv-std: var(--ease-standard, cubic-bezier(.24, 1, .4, 1)); }
+/* card: tilt + lift + counter shadow */
+:root[data-astryx-theme] .lq-tilt { transform-style: preserve-3d; transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(var(--lift, 0px)); transition: transform var(--nv-med) var(--nv-std), box-shadow var(--nv-med) var(--nv-std) !important; }
+:root[data-astryx-theme] .lq-tilt.nv-hot { --lift: -4px; box-shadow: 0 1px 0 var(--nv-edge) inset, var(--sx, 0px) var(--sy, 18px) 44px -18px light-dark(rgb(60 45 110 / .38), rgb(0 0 0 / .85)), 0 0 0 1px light-dark(rgb(168 122 44 / .14), rgb(227 194 124 / .12)) !important; }
+/* content floats slightly in front (parallax) */
+:root[data-astryx-theme] .lq-tilt > * { transition: transform var(--nv-med) var(--nv-std); }
+:root[data-astryx-theme] .lq-tilt.nv-hot > * { transform: translate3d(var(--tx, 0px), var(--ty, 0px), 18px); }
+/* glare follows the cursor */
+:root[data-astryx-theme] .lq-tilt::before { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: 0; opacity: 0; transition: opacity var(--nv-fast) var(--nv-std);
+  background: radial-gradient(340px circle at var(--mx, 50%) var(--my, 0%), light-dark(rgb(255 255 255 / .75), rgb(169 166 255 / .14)), transparent 50%); }
+/* spotlight edge: the border lights up under the cursor */
+:root[data-astryx-theme] .lq-tilt::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; padding: 1.25px; opacity: 0; transition: opacity var(--nv-fast) var(--nv-std);
+  background: radial-gradient(220px circle at var(--mx, 50%) var(--my, 0%), #e3c27c, light-dark(#7c5cff, #a9a6ff) 40%, transparent 70%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; }
+:root[data-astryx-theme] .lq-tilt.nv-hot::before, :root[data-astryx-theme] .lq-tilt.nv-hot::after { opacity: 1; }
+/* magnetic buttons */
+:root[data-astryx-theme] :is(.primary, .secondary, .iconbutton) { translate: var(--bx, 0px) var(--by, 0px); transition: translate var(--nv-fast) var(--nv-std), transform var(--nv-fast) var(--nv-std), box-shadow var(--nv-fast) var(--nv-std), background-color var(--nv-fast) var(--nv-std) !important; }
+/* frequent hovers stay fast (Astryx: never make the user wait) */
+:root[data-astryx-theme] :is(.navitem, .cp-side .cp-nav, table tbody tr, .textbutton) { transition-duration: var(--nv-fast) !important; }
+@media (prefers-reduced-motion: reduce) { :root[data-astryx-theme] :is(.primary, .secondary, .iconbutton) { translate: none; } :root[data-astryx-theme] .lq-tilt.nv-hot > * { transform: none; } }
+
+/* soft background glow that follows the cursor */
+.nv-spot { position: absolute; width: 640px; height: 640px; left: calc(var(--cx, 50vw) - 320px); top: calc(var(--cy, 30vh) - 320px); border-radius: 50%;
+  background: radial-gradient(circle, light-dark(rgb(124 92 255 / .12), rgb(124 92 255 / .16)), transparent 65%); transition: left .6s var(--nv-ease), top .6s var(--nv-ease); }
+@media (hover: none), (prefers-reduced-motion: reduce) { .nv-spot { display: none; } }
+
+/* ---------- Selected states: tinted glass (brand colour as tint + text), never solid black/white ---------- */
+:root[data-astryx-theme] {
+  --nv-sel-fill: linear-gradient(180deg, light-dark(rgb(255 255 255 / .85), rgb(255 255 255 / .1)) 0%, light-dark(rgb(236 235 253 / .7), rgb(169 166 255 / .12)) 55%, light-dark(rgb(220 216 255 / .75), rgb(124 92 255 / .16)) 100%);
+  --nv-sel-edge: linear-gradient(160deg, light-dark(#fff, rgb(255 255 255 / .35)), light-dark(rgb(63 59 209 / .28), rgb(169 166 255 / .3)) 60%, light-dark(rgb(168 122 44 / .45), rgb(227 194 124 / .45)));
+  --nv-sel-ink: light-dark(#2b26a8, #e4e2ff);
+}
+:root[data-astryx-theme] :is(.navitem.selected, .cp-side .cp-nav.on,
+  :is(.stage-tabs, .job-tabs, .viewtoggle, .quick-work-views, .invoice-filter, .log-filter, .overview-sort, .filters) > :is(button.selected, button.on, button.active, button[aria-pressed="true"], button[aria-selected="true"])) {
+  background: var(--nv-sel-fill) padding-box, var(--nv-sel-edge) border-box !important;
+  border: 1px solid transparent !important;
+  color: var(--nv-sel-ink) !important;
+  font-weight: 600;
+  backdrop-filter: blur(14px) saturate(180%); -webkit-backdrop-filter: blur(14px) saturate(180%);
+  box-shadow: 0 1px 0 light-dark(#fff, rgb(255 255 255 / .18)) inset, 0 -1px 0 light-dark(rgb(63 59 209 / .08), rgb(0 0 0 / .3)) inset,
+              0 8px 22px -10px light-dark(rgb(63 59 209 / .45), rgb(124 92 255 / .5)), 0 0 0 4px light-dark(rgb(63 59 209 / .05), rgb(169 166 255 / .06)) !important;
+  text-shadow: none;
+}
+:root[data-astryx-theme] :is(.navitem.selected, .cp-side .cp-nav.on) svg,
+:root[data-astryx-theme] :is(.stage-tabs, .job-tabs, .viewtoggle, .quick-work-views) > :is(.on, .selected, [aria-pressed="true"]) svg { color: light-dark(#3f3bd1, #c9c7ff) !important; }
+:root[data-astryx-theme] :is(.stage-tabs, .job-tabs, .viewtoggle, .quick-work-views) > :is(.on, .selected, [aria-pressed="true"]) :is(span, b) { background: linear-gradient(180deg, #f0d79c, #d9ad5c) !important; color: #2a1d05 !important; }
+:root[data-astryx-theme] .navitem.selected b { background: linear-gradient(180deg, #f0d79c, #d9ad5c); color: #2a1d05; }
+/* unselected tabs: quiet, with a soft glass hover */
+:root[data-astryx-theme] :is(.stage-tabs, .job-tabs, .viewtoggle, .quick-work-views) > button:not(.on):not(.selected):not([aria-pressed="true"]) { color: var(--nv-ink-2); border: 1px solid transparent; }
+:root[data-astryx-theme] :is(.stage-tabs, .job-tabs, .viewtoggle, .quick-work-views) > button:not(.on):not(.selected):not([aria-pressed="true"]):hover { background: light-dark(rgb(255 255 255 / .55), rgb(255 255 255 / .06)); color: var(--nv-ink); }
+:root[data-astryx-theme] .quick-work-views > button { border-radius: 999px; }
+
+/* ---------- Alignment: breathing room inside boxes, tables scroll instead of clipping ---------- */
+:root[data-astryx-theme] :is(.table-wrap, .ig-table-wrap) { overflow-x: auto !important; overflow-y: hidden; padding: 0 !important; }
+:root[data-astryx-theme] :is(.table-wrap, .ig-table-wrap) :is(th, td):first-child { padding-left: 18px; }
+:root[data-astryx-theme] :is(.table-wrap, .ig-table-wrap) :is(th, td):last-child { padding-right: 18px; }
+:root[data-astryx-theme] .shoot-panel { padding: 22px 24px !important; }
+:root[data-astryx-theme] .shoot-panel .leads-toolbar { gap: 14px; align-items: center; }
+:root[data-astryx-theme] .shoot-panel .ig-note { margin: 0; line-height: 1.55; max-width: 72ch; }
+:root[data-astryx-theme] .steps { padding: 18px 22px !important; }
+:root[data-astryx-theme] .work-results { padding-inline: 22px; }
+:root[data-astryx-theme] :is(.attendance-panel, .team-attendance) table th { white-space: normal; line-height: 1.35; vertical-align: bottom; min-width: 72px; }
+:root[data-astryx-theme] :is(.attendance-panel, .team-attendance) table :is(th, td) { padding: 12px 10px; }
+:root[data-astryx-theme] :is(.attendance-panel, .team-attendance) table td .secondary { padding: 7px 12px; }
+:root[data-astryx-theme] .shift-card { padding: 22px 24px !important; }
+
+/* search: no ring/pill around the field, just the field itself */
+:root[data-astryx-theme] label.search { background: none !important; border: 0 !important; box-shadow: none !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; padding: 0 !important; }
+
+/* ---------- Check in: breathing glow, light sheen, nudging play icon ---------- */
+:root[data-astryx-theme] .shift-card .primary:has(.lucide-play) {
+  padding: 14px 26px; font-size: 13px; letter-spacing: .01em;
+  background: linear-gradient(110deg, transparent 30%, rgb(255 255 255 / .28) 45%, transparent 60%) no-repeat, linear-gradient(135deg, #3f3bd1, #7c5cff) !important;
+  background-size: 250% 100%, 100% 100% !important; color: #fff !important;
+  animation: nv-checkin-glow 2.6s ease-in-out infinite, nv-checkin-sheen 3.2s ease-in-out infinite;
+}
+:root[data-astryx-theme] .shift-card .primary:has(.lucide-play) svg { color: #f0d79c !important; animation: nv-checkin-nudge 1.3s ease-in-out infinite; }
+:root[data-astryx-theme] .shift-card .primary:has(.lucide-play):hover:not(:disabled) { transform: translateY(-2px) scale(1.03); }
+:root[data-astryx-theme] .shift-card .primary:has(.lucide-play):active:not(:disabled) { transform: scale(.96); }
+@keyframes nv-checkin-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgb(124 92 255 / .45), 0 10px 24px -10px rgb(63 59 209 / .7); }
+  50% { box-shadow: 0 0 0 10px rgb(124 92 255 / 0), 0 14px 30px -10px rgb(63 59 209 / .85); }
+}
+@keyframes nv-checkin-sheen { 0% { background-position: 150% 0, 0 0; } 60%, 100% { background-position: -60% 0, 0 0; } }
+@keyframes nv-checkin-nudge { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(3px); } }
+@media (prefers-reduced-motion: reduce) { :root[data-astryx-theme] .shift-card .primary:has(.lucide-play), :root[data-astryx-theme] .shift-card .primary:has(.lucide-play) svg { animation: none; } }
+
+/* ---------- Check-in celebration ---------- */
+.nv-cheer { position: fixed; inset: 0; z-index: 2147483000; pointer-events: none; display: grid; place-items: center; }
+.nv-cheer-card { position: relative; z-index: 1; display: flex; align-items: center; gap: 16px; padding: 22px 28px; max-width: min(460px, calc(100vw - 32px)); border-radius: 26px;
+  background: linear-gradient(165deg, light-dark(rgb(255 254 250 / .92), rgb(30 31 40 / .9)), light-dark(rgb(255 253 248 / .78), rgb(18 19 26 / .8))) padding-box,
+              linear-gradient(160deg, light-dark(#fff, rgb(255 255 255 / .3)), light-dark(rgb(63 59 209 / .3), rgb(169 166 255 / .3)) 60%, light-dark(rgb(168 122 44 / .5), rgb(227 194 124 / .5))) border-box;
+  border: 1px solid transparent; backdrop-filter: blur(30px) saturate(190%); -webkit-backdrop-filter: blur(30px) saturate(190%);
+  box-shadow: 0 1px 0 light-dark(#fff, rgb(255 255 255 / .15)) inset, 0 40px 80px -30px light-dark(rgb(50 40 120 / .45), rgb(0 0 0 / .85));
+  animation: nv-cheer-in 700ms cubic-bezier(.16, 1, .3, 1) both; }
+.nv-cheer-card strong { display: block; font-family: "Instrument Serif", Georgia, serif; font-weight: 400; font-size: 28px; line-height: 1.1; color: light-dark(#14151b, #f3f1ec); }
+.nv-cheer-card p { margin: 6px 0 0; font-size: 14px; color: light-dark(#4b4e5a, #c4c3cc); }
+.nv-cheer-badge { flex: none; display: grid; place-items: center; width: 52px; height: 52px; border-radius: 50%; font-size: 26px; color: #fff;
+  background: linear-gradient(135deg, #3f3bd1, #7c5cff); box-shadow: 0 0 0 6px light-dark(rgb(124 92 255 / .15), rgb(169 166 255 / .18)), 0 12px 26px -10px rgb(63 59 209 / .7);
+  animation: nv-cheer-pop 900ms cubic-bezier(.34, 1.56, .64, 1) 200ms both; }
+.nv-confetti { position: absolute; left: 50%; top: 50%; border-radius: 2px; opacity: 0; animation: nv-confetti 1600ms cubic-bezier(.2, .7, .3, 1) forwards; }
+.nv-cheer.out .nv-cheer-card { animation: nv-cheer-out 500ms ease-in forwards; }
+@keyframes nv-cheer-in { from { opacity: 0; transform: perspective(800px) translateY(40px) rotateX(18deg) scale(.9); } }
+@keyframes nv-cheer-out { to { opacity: 0; transform: translateY(-16px) scale(.97); } }
+@keyframes nv-cheer-pop { from { transform: scale(0) rotate(-30deg); } }
+@keyframes nv-confetti { 0% { opacity: 1; transform: translate(-50%, -50%) rotate(0); } 70% { opacity: 1; } 100% { opacity: 0; transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy) + 260px)) rotate(var(--r)); } }
+@media (prefers-reduced-motion: reduce) { .nv-cheer-card, .nv-cheer-badge, .nv-cheer.out .nv-cheer-card { animation: none; } }
+
+/* search fields: no ring/box on focus; the field's own border tints indigo as the focus cue */
+:root[data-astryx-theme] :is(label.search, .leads-search, .search):focus-within { outline: none !important; box-shadow: none !important; background: none !important; }
+:root[data-astryx-theme] :is(label.search, .leads-search, .search) input:is(:focus, :focus-visible) { outline: none !important; box-shadow: none !important; border-color: light-dark(rgb(63 59 209 / .55), rgb(169 166 255 / .6)) !important; }
+
+/* ---------- Production pipeline: glass steps on an animated flow line ---------- */
+:root[data-astryx-theme] .pipeline .steps { position: relative; display: grid !important; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 14px; padding: 22px !important; overflow: hidden; }
+:root[data-astryx-theme] .pipeline .steps::before { content: ""; position: absolute; left: 56px; right: 56px; top: 56px; height: 2px; border-radius: 2px; z-index: 0;
+  background: linear-gradient(90deg, transparent 0%, light-dark(rgb(63 59 209 / .0), rgb(169 166 255 / 0)) 10%, #e3c27c 45%, #7c5cff 55%, transparent 70%) 0 0 / 40% 100% no-repeat, light-dark(rgb(20 21 27 / .08), rgb(255 255 255 / .09));
+  animation: nv-flow 3.6s cubic-bezier(.45, 0, .2, 1) infinite; }
+@keyframes nv-flow { from { background-position: -60% 0, 0 0; } to { background-position: 160% 0, 0 0; } }
+:root[data-astryx-theme] .pipeline .step {
+  position: relative; z-index: 1; display: flex !important; flex-direction: column; align-items: flex-start; gap: 6px; text-align: left; min-width: 0;
+  padding: 16px 16px 18px !important; border-radius: 18px !important; border: 1px solid transparent !important; color: var(--nv-ink) !important;
+  background: linear-gradient(165deg, light-dark(rgb(255 255 255 / .82), rgb(255 255 255 / .06)), light-dark(rgb(255 255 255 / .5), rgb(255 255 255 / .02))) padding-box,
+              linear-gradient(160deg, light-dark(#fff, rgb(255 255 255 / .16)), light-dark(rgb(20 21 27 / .06), rgb(255 255 255 / .04))) border-box !important;
+  box-shadow: 0 1px 0 light-dark(#fff, rgb(255 255 255 / .06)) inset, 0 10px 24px -16px light-dark(rgb(60 45 110 / .3), rgb(0 0 0 / .7));
+  transition: transform var(--nv-med) var(--nv-std), box-shadow var(--nv-med) var(--nv-std), background var(--nv-fast) var(--nv-std) !important;
+  animation: nv-rise 800ms var(--nv-ease) both;
+}
+:root[data-astryx-theme] .pipeline .step:nth-child(2) { animation-delay: 80ms; } :root[data-astryx-theme] .pipeline .step:nth-child(3) { animation-delay: 160ms; }
+:root[data-astryx-theme] .pipeline .step:nth-child(4) { animation-delay: 240ms; } :root[data-astryx-theme] .pipeline .step:nth-child(5) { animation-delay: 320ms; }
+:root[data-astryx-theme] .pipeline .step:nth-child(6) { animation-delay: 400ms; }
+:root[data-astryx-theme] .pipeline .step-number {
+  display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; margin-bottom: 6px; font-family: var(--nv-mono); font-size: 13px; font-weight: 600; color: var(--nv-sel-ink) !important;
+  border: 1.5px solid transparent; background: linear-gradient(var(--nv-base), var(--nv-base)) padding-box, linear-gradient(135deg, #e3c27c, #7c5cff) border-box !important;
+  box-shadow: 0 0 0 5px var(--nv-base); transition: all var(--nv-med) var(--nv-std);
+}
+:root[data-astryx-theme] .pipeline .step strong { font-size: 14px; font-weight: 600; letter-spacing: -.01em; }
+:root[data-astryx-theme] .pipeline .step small { font-family: var(--nv-mono); font-size: 11px; color: var(--nv-ink-2); }
+:root[data-astryx-theme] .pipeline .step-arrow { display: none; }
+:root[data-astryx-theme] .pipeline .step:hover, :root[data-astryx-theme] .pipeline .step:focus-visible {
+  transform: translateY(-5px); color: var(--nv-ink) !important;
+  background: linear-gradient(165deg, light-dark(rgb(255 255 255 / .95), rgb(255 255 255 / .09)), light-dark(rgb(236 235 253 / .8), rgb(124 92 255 / .1))) padding-box,
+              linear-gradient(160deg, #e3c27c, light-dark(rgb(63 59 209 / .45), rgb(169 166 255 / .5)) 60%, #7c5cff) border-box !important;
+  box-shadow: 0 1px 0 light-dark(#fff, rgb(255 255 255 / .12)) inset, 0 22px 40px -18px light-dark(rgb(63 59 209 / .45), rgb(124 92 255 / .45)) !important;
+}
+:root[data-astryx-theme] .pipeline .step:hover .step-number, :root[data-astryx-theme] .pipeline .step:focus-visible .step-number {
+  color: #fff !important; background: linear-gradient(135deg, #3f3bd1, #7c5cff) padding-box, linear-gradient(135deg, #f0d79c, #a9a6ff) border-box !important;
+  box-shadow: 0 0 0 5px var(--nv-base), 0 0 22px rgb(124 92 255 / .6); transform: scale(1.08);
+}
+@media (max-width: 1100px) { :root[data-astryx-theme] .pipeline .steps { grid-template-columns: repeat(3, minmax(0, 1fr)); } :root[data-astryx-theme] .pipeline .steps::before { display: none; } }
+@media (max-width: 560px) { :root[data-astryx-theme] .pipeline .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (prefers-reduced-motion: reduce) { :root[data-astryx-theme] .pipeline .steps::before, :root[data-astryx-theme] .pipeline .step { animation: none; } :root[data-astryx-theme] .pipeline .step:hover { transform: none; } }
+:root[data-astryx-theme] .pipeline .step {
+  background: linear-gradient(165deg, light-dark(rgb(255 255 255 / .82), rgb(255 255 255 / .06)), light-dark(rgb(255 255 255 / .5), rgb(255 255 255 / .02))) padding-box,
+              linear-gradient(var(--color-background-surface), var(--color-background-surface)) padding-box,
+              linear-gradient(160deg, light-dark(#fff, rgb(255 255 255 / .16)), light-dark(rgb(20 21 27 / .06), rgb(255 255 255 / .04))) border-box !important;
+}
+:root[data-astryx-theme] .pipeline .step:is(:hover, :focus-visible) {
+  background: linear-gradient(165deg, light-dark(rgb(255 255 255 / .95), rgb(255 255 255 / .07)), light-dark(rgb(236 235 253 / .85), rgb(124 92 255 / .14))) padding-box,
+              linear-gradient(var(--color-background-surface), var(--color-background-surface)) padding-box,
+              linear-gradient(160deg, #e3c27c, light-dark(rgb(63 59 209 / .45), rgb(169 166 255 / .5)) 60%, #7c5cff) border-box !important;
+}
+
+/* ---------- Production pipeline v2: single-line stepper (balls + connectors), lights up to the chosen stage ---------- */
+:root[data-astryx-theme] .pipeline .steps { gap: 0 !important; padding: 30px 18px 24px !important; }
+:root[data-astryx-theme] .pipeline .steps::before { display: none; }
+:root[data-astryx-theme] .pipeline .step {
+  align-items: center !important; text-align: center !important; gap: 4px !important; padding: 0 6px !important;
+  background: none !important; border: 0 !important; box-shadow: none !important; transform: none !important; cursor: pointer;
+}
+:root[data-astryx-theme] .pipeline .step:is(:hover, :focus-visible) { background: none !important; box-shadow: none !important; transform: none !important; }
+:root[data-astryx-theme] .pipeline .step:focus-visible { outline: none; }
+:root[data-astryx-theme] .pipeline .step:focus-visible .step-number { outline: 2px solid var(--nv-indigo); outline-offset: 4px; }
+/* the ball */
+:root[data-astryx-theme] .pipeline .step-number { position: relative; z-index: 2; width: 44px !important; height: 44px !important; margin: 0 0 10px !important; font-size: 14px !important;
+  color: var(--nv-ink-2) !important; background: linear-gradient(var(--color-background-surface), var(--color-background-surface)) padding-box, linear-gradient(135deg, light-dark(rgb(20 21 27 / .18), rgb(255 255 255 / .2)), light-dark(rgb(20 21 27 / .08), rgb(255 255 255 / .08))) border-box !important;
+  border: 2px solid transparent !important; box-shadow: 0 0 0 6px var(--color-background-surface), 0 6px 14px -8px rgb(0 0 0 / .4) !important; transform: none !important;
+  transition: transform var(--nv-med) var(--nv-std), box-shadow var(--nv-med) var(--nv-std), color var(--nv-fast) var(--nv-std) !important; }
+:root[data-astryx-theme] .pipeline .step:hover .step-number { transform: scale(1.1) !important; color: var(--nv-ink) !important; box-shadow: 0 0 0 6px var(--color-background-surface), 0 0 0 9px light-dark(rgb(124 92 255 / .12), rgb(169 166 255 / .14)) !important; }
+/* connector to the next ball */
+:root[data-astryx-theme] .pipeline .step:not(:last-child)::after { content: ""; position: absolute; z-index: 1; top: 21px; left: calc(50% + 28px); width: calc(100% - 56px); height: 3px; border-radius: 3px;
+  background: light-dark(rgb(20 21 27 / .1), rgb(255 255 255 / .1)); }
+/* done stages (before the chosen one): gold ball + lit, flowing connector */
+:root[data-astryx-theme] .pipeline .step:has(~ .step.chosen) .step-number { color: #2a1d05 !important;
+  background: linear-gradient(135deg, #f3dfae, #d9ad5c) padding-box, linear-gradient(135deg, #fff3d6, #b8893b) border-box !important; box-shadow: 0 0 0 6px var(--color-background-surface), 0 6px 18px -6px rgb(217 173 92 / .7) !important; }
+:root[data-astryx-theme] .pipeline .step:has(~ .step.chosen)::after {
+  background: linear-gradient(90deg, transparent 0%, rgb(255 255 255 / .85) 50%, transparent 100%) 0 0 / 40% 100% no-repeat, linear-gradient(90deg, #d9ad5c, #7c5cff) !important;
+  box-shadow: 0 0 12px rgb(124 92 255 / .45); animation: nv-connector 1.8s linear infinite; }
+@keyframes nv-connector { from { background-position: -60% 0, 0 0; } to { background-position: 160% 0, 0 0; } }
+/* chosen stage: filled ball with a pulsing ring */
+:root[data-astryx-theme] .pipeline .step.chosen .step-number { color: #fff !important; transform: scale(1.12) !important;
+  background: linear-gradient(135deg, #3f3bd1, #7c5cff) padding-box, linear-gradient(135deg, #f0d79c, #a9a6ff) border-box !important;
+  box-shadow: 0 0 0 6px var(--color-background-surface), 0 0 26px rgb(124 92 255 / .7) !important; animation: nv-ball 2.2s ease-in-out infinite; }
+@keyframes nv-ball { 0%, 100% { box-shadow: 0 0 0 6px var(--color-background-surface), 0 0 0 6px rgb(124 92 255 / .45), 0 0 26px rgb(124 92 255 / .6); } 50% { box-shadow: 0 0 0 6px var(--color-background-surface), 0 0 0 16px rgb(124 92 255 / 0), 0 0 34px rgb(124 92 255 / .8); } }
+:root[data-astryx-theme] .pipeline .step.chosen strong { color: var(--nv-sel-ink); }
+:root[data-astryx-theme] .pipeline .step:has(~ .step.chosen) strong { color: var(--nv-ink); }
+:root[data-astryx-theme] .pipeline .step strong { font-size: 13.5px !important; }
+@media (max-width: 1100px) { :root[data-astryx-theme] .pipeline .steps { grid-template-columns: repeat(6, minmax(92px, 1fr)) !important; overflow-x: auto; } }
+@media (max-width: 560px) { :root[data-astryx-theme] .pipeline .steps { grid-template-columns: repeat(6, minmax(84px, 1fr)) !important; } }
+@media (prefers-reduced-motion: reduce) { :root[data-astryx-theme] .pipeline .step.chosen .step-number, :root[data-astryx-theme] .pipeline .step::after { animation: none !important; } }
+:root[data-astryx-theme] .pipeline .step:not(.chosen):not(:has(~ .step.chosen)):is(:hover, :focus-visible) .step-number {
+  color: var(--nv-sel-ink) !important;
+  background: linear-gradient(var(--color-background-surface), var(--color-background-surface)) padding-box, linear-gradient(135deg, #e3c27c, #7c5cff) border-box !important;
+}
+
+/* ---------- Page-heading action (New video, Add worker, New lead…): liquid-glass pill, animated ---------- */
+:root[data-astryx-theme] .page-heading .primary {
+  padding: 13px 22px 13px 18px; font-weight: 600; letter-spacing: .01em; color: var(--nv-sel-ink) !important; border: 1px solid transparent !important;
+  background:
+    linear-gradient(105deg, transparent 30%, light-dark(rgb(255 255 255 / .9), rgb(255 255 255 / .28)) 46%, transparent 60%) no-repeat,
+    linear-gradient(180deg, light-dark(rgb(255 255 255 / .9), rgb(255 255 255 / .14)) 0%, light-dark(rgb(236 235 253 / .55), rgb(169 166 255 / .1)) 52%, light-dark(rgb(210 205 255 / .7), rgb(124 92 255 / .22)) 100%) padding-box,
+    linear-gradient(135deg, #fff6dc, #e3c27c 30%, #a9a6ff 65%, #7c5cff) border-box !important;
+  background-size: 260% 100%, 100% 100%, 100% 100% !important;
+  backdrop-filter: blur(18px) saturate(190%); -webkit-backdrop-filter: blur(18px) saturate(190%);
+  box-shadow: 0 1px 0 light-dark(#fff, rgb(255 255 255 / .3)) inset, 0 -8px 16px -10px light-dark(rgb(124 92 255 / .35), rgb(124 92 255 / .45)) inset,
+              0 12px 28px -12px light-dark(rgb(63 59 209 / .5), rgb(124 92 255 / .55)), 0 0 0 4px light-dark(rgb(124 92 255 / .06), rgb(169 166 255 / .07)) !important;
+  animation: nv-glass-sheen 4.5s ease-in-out infinite, nv-glass-float 5s ease-in-out infinite;
+}
+:root[data-astryx-theme] .page-heading .primary::before { display: none; }
+:root[data-astryx-theme] .page-heading .primary svg { color: light-dark(#3f3bd1, #f0d79c) !important; transition: transform var(--nv-med) var(--nv-std); }
+:root[data-astryx-theme] .page-heading .primary:hover:not(:disabled) {
+  color: var(--nv-sel-ink) !important; animation-play-state: running, paused;
+  box-shadow: 0 1px 0 light-dark(#fff, rgb(255 255 255 / .35)) inset, 0 -8px 16px -8px rgb(124 92 255 / .5) inset,
+              0 18px 36px -12px light-dark(rgb(63 59 209 / .6), rgb(124 92 255 / .7)), 0 0 0 6px light-dark(rgb(124 92 255 / .1), rgb(169 166 255 / .12)) !important;
+}
+:root[data-astryx-theme] .page-heading .primary:hover:not(:disabled) svg { transform: rotate(90deg) scale(1.15); }
+@keyframes nv-glass-sheen { 0%, 55% { background-position: 160% 0, 0 0, 0 0; } 100% { background-position: -70% 0, 0 0, 0 0; } }
+@keyframes nv-glass-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+@media (prefers-reduced-motion: reduce) { :root[data-astryx-theme] .page-heading .primary { animation: none; } :root[data-astryx-theme] .page-heading .primary:hover svg { transform: none; } }
+:root[data-astryx-theme] .page-heading .primary {
+  background:
+    linear-gradient(105deg, transparent 30%, light-dark(rgb(255 255 255 / .9), rgb(255 255 255 / .22)) 46%, transparent 60%) no-repeat,
+    linear-gradient(180deg, light-dark(rgb(255 255 255 / .9), rgb(255 255 255 / .12)) 0%, light-dark(rgb(236 235 253 / .55), rgb(169 166 255 / .08)) 52%, light-dark(rgb(210 205 255 / .7), rgb(124 92 255 / .2)) 100%) padding-box,
+    linear-gradient(light-dark(rgb(255 254 250 / .7), rgb(22 22 34 / .92)), light-dark(rgb(255 254 250 / .7), rgb(22 22 34 / .92))) padding-box,
+    linear-gradient(135deg, #fff6dc, #e3c27c 30%, #a9a6ff 65%, #7c5cff) border-box !important;
+  background-size: 260% 100%, 100% 100%, 100% 100%, 100% 100% !important;
+}
+@keyframes nv-glass-sheen { 0%, 55% { background-position: 160% 0, 0 0, 0 0, 0 0; } 100% { background-position: -70% 0, 0 0, 0 0, 0 0; } }
+
+
+/* ---------- Theme controls: glass switch + glass icon button ---------- */
+:root[data-astryx-theme] :is(.cp-switch, .theme-settings-switch) {
+  position: relative; display: inline-block; flex: none; width: 46px; height: 26px; border-radius: 999px; border: 1px solid transparent !important;
+  background: linear-gradient(180deg, light-dark(rgb(255 255 255 / .55), rgb(255 255 255 / .06)), light-dark(rgb(20 21 27 / .06), rgb(255 255 255 / .02))) padding-box,
+              linear-gradient(160deg, light-dark(#fff, rgb(255 255 255 / .25)), light-dark(rgb(20 21 27 / .12), rgb(255 255 255 / .06))) border-box !important;
+  box-shadow: inset 0 1px 3px light-dark(rgb(20 21 27 / .15), rgb(0 0 0 / .5)), 0 1px 0 light-dark(#fff, rgb(255 255 255 / .06)) !important;
+  backdrop-filter: blur(10px) saturate(170%); -webkit-backdrop-filter: blur(10px) saturate(170%);
+  transition: background var(--nv-med) var(--nv-std), box-shadow var(--nv-med) var(--nv-std) !important;
+}
+:root[data-astryx-theme] :is(.cp-switch.on, .theme-settings-switch.on) {
+  background: linear-gradient(180deg, rgb(255 255 255 / .25), transparent 60%) padding-box, linear-gradient(135deg, #3f3bd1, #7c5cff) padding-box,
+              linear-gradient(160deg, rgb(255 255 255 / .6), #a9a6ff) border-box !important;
+  box-shadow: inset 0 1px 3px rgb(0 0 0 / .25), 0 0 14px rgb(124 92 255 / .45) !important;
+}
+/* the knob: a glossy glass bead */
+:root[data-astryx-theme] .cp-switch::after, :root[data-astryx-theme] .theme-settings-switch > span {
+  content: ""; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; border-radius: 50%; margin: 0 !important;
+  background: radial-gradient(circle at 35% 30%, #fff 0 25%, rgb(255 255 255 / .85) 45%, light-dark(rgb(220 224 235 / .95), rgb(200 210 230 / .9)) 100%) !important;
+  box-shadow: 0 2px 6px rgb(0 0 0 / .3), inset 0 -2px 3px rgb(0 0 0 / .12), inset 0 1px 1px #fff !important;
+  transform: translateX(0); transition: transform var(--nv-med) cubic-bezier(.34, 1.56, .64, 1) !important;
+}
+:root[data-astryx-theme] .cp-switch.on::after, :root[data-astryx-theme] .theme-settings-switch.on > span { transform: translateX(20px); }
+:root[data-astryx-theme] .cp-switch::before { content: none; }
+/* top-bar sun/moon: glass circle, icon spins in */
+:root[data-astryx-theme] .cp-theme-top {
+  width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; border: 1px solid transparent !important; color: var(--nv-ink) !important;
+  background: linear-gradient(180deg, light-dark(rgb(255 255 255 / .85), rgb(255 255 255 / .1)), light-dark(rgb(255 255 255 / .45), rgb(255 255 255 / .03))) padding-box,
+              linear-gradient(160deg, light-dark(#fff, rgb(255 255 255 / .3)), light-dark(rgb(20 21 27 / .1), rgb(255 255 255 / .05))) border-box !important;
+  box-shadow: 0 1px 0 light-dark(#fff, rgb(255 255 255 / .12)) inset, 0 6px 16px -8px light-dark(rgb(40 30 80 / .35), rgb(0 0 0 / .7)) !important;
+  backdrop-filter: blur(12px) saturate(170%); -webkit-backdrop-filter: blur(12px) saturate(170%);
+  transition: transform var(--nv-fast) var(--nv-std), box-shadow var(--nv-fast) var(--nv-std) !important;
+}
+:root[data-astryx-theme] .cp-theme-top:hover { transform: translateY(-1px) scale(1.05); }
+:root[data-astryx-theme] :is(.cp-theme-top, .cp-theme, .theme-settings-icon) svg { animation: nv-icon-in 600ms cubic-bezier(.34, 1.56, .64, 1); }
+@keyframes nv-icon-in { from { transform: rotate(-120deg) scale(.4); opacity: 0; } }
+
+/* ---------- Theme change: circular reveal from the toggle ---------- */
+::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+::view-transition-new(root) { animation: nv-theme-reveal 750ms cubic-bezier(.65, 0, .35, 1); }
+@keyframes nv-theme-reveal { from { clip-path: circle(0 at var(--vt-x, 50%) var(--vt-y, 50%)); } to { clip-path: circle(var(--vt-r, 150vmax) at var(--vt-x, 50%) var(--vt-y, 50%)); } }
+@media (prefers-reduced-motion: reduce) { ::view-transition-new(root) { animation: none; } :root[data-astryx-theme] :is(.cp-theme-top, .cp-theme, .theme-settings-icon) svg { animation: none; } }
+/* theme switch follows the theme it's in: indigo-violet glass in light mode, logo navy in dark mode */
+:root[data-astryx-theme]:not([data-theme="dark"]) :is(.cp-switch, .theme-settings-switch) {
+  background: linear-gradient(180deg, rgb(255 255 255 / .7), rgb(236 235 253 / .55) 60%, rgb(210 205 255 / .7)) padding-box,
+              linear-gradient(160deg, #fff, rgb(124 92 255 / .55)) border-box !important;
+  box-shadow: inset 0 1px 3px rgb(63 59 209 / .2), 0 0 12px rgb(124 92 255 / .25) !important;
+}
+:root[data-astryx-theme]:not([data-theme="dark"]) .cp-switch::after, :root[data-astryx-theme]:not([data-theme="dark"]) .theme-settings-switch > span {
+  background: radial-gradient(circle at 35% 30%, #fff 0 22%, #e7e4ff 50%, #b9b3ff 100%) !important;
+  box-shadow: 0 2px 6px rgb(63 59 209 / .35), inset 0 -2px 3px rgb(63 59 209 / .2), inset 0 1px 1px #fff !important;
+}
+:root[data-astryx-theme]:not([data-theme="dark"]) .cp-theme-top { color: #3f3bd1 !important; box-shadow: 0 1px 0 #fff inset, 0 0 0 1px rgb(124 92 255 / .2), 0 6px 16px -8px rgb(63 59 209 / .45) !important; }
+/* client sidebar: Sign out sits at the bottom */
+:root[data-astryx-theme] .cp-side { display: flex; flex-direction: column; }
+:root[data-astryx-theme] .cp-side .cp-signout-btn { margin-top: auto !important; }
+
+/* client sidebar footer: profile + sign out, like the staff portal */
+:root[data-astryx-theme] .cp-side .cp-account { margin: auto -20px 0 !important; padding: 16px 20px; display: flex; align-items: center; gap: 10px; border-top: 1px solid var(--nv-hair); }
+:root[data-astryx-theme] .cp-side .cp-account > div { min-width: 0; flex: 1; }
+:root[data-astryx-theme] .cp-side .cp-account strong { display: block; font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+:root[data-astryx-theme] .cp-side .cp-account small { display: block; font-size: 11px; color: var(--nv-ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+:root[data-astryx-theme] .cp-side .cp-account .avatar { flex: none; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; font-weight: 700; }
+:root[data-astryx-theme] .cp-side .cp-account .iconbutton { flex: none; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; }
+
+/* ---------- Dark mode buttons in the theme violet ---------- */
+:root[data-astryx-theme][data-theme="dark"] .primary {
+  background: linear-gradient(180deg, rgb(255 255 255 / .16), transparent 55%), linear-gradient(135deg, #4b46e0, #7c5cff) !important; color: #ffffff !important;
+  box-shadow: 0 0 0 1px rgb(169 166 255 / .4), 0 1px 0 rgb(255 255 255 / .22) inset, 0 10px 24px -10px rgb(124 92 255 / .65) !important;
+}
+:root[data-astryx-theme][data-theme="dark"] .primary:hover:not(:disabled) {
+  background: linear-gradient(180deg, rgb(255 255 255 / .22), transparent 55%), linear-gradient(135deg, #5a55f0, #8f73ff) !important;
+  box-shadow: 0 0 0 1px rgb(201 199 255 / .6), 0 1px 0 rgb(255 255 255 / .28) inset, 0 16px 32px -12px rgb(124 92 255 / .8) !important;
+}
+:root[data-astryx-theme][data-theme="dark"] .primary svg { color: #f0d79c !important; }
+:root[data-astryx-theme][data-theme="dark"] .page-heading .primary {
+  color: #f1f0ff !important;
+  background:
+    linear-gradient(105deg, transparent 30%, rgb(255 255 255 / .24) 46%, transparent 60%) no-repeat,
+    linear-gradient(180deg, rgb(255 255 255 / .16), rgb(124 92 255 / .16) 55%, rgb(124 92 255 / .32)) padding-box,
+    linear-gradient(rgb(34 30 70 / .94), rgb(34 30 70 / .94)) padding-box,
+    linear-gradient(135deg, #fff6dc, #e3c27c 30%, #a9a6ff 65%, #7c5cff) border-box !important;
+  background-size: 260% 100%, 100% 100%, 100% 100%, 100% 100% !important;
+  box-shadow: 0 1px 0 rgb(255 255 255 / .28) inset, 0 -8px 16px -10px rgb(124 92 255 / .6) inset, 0 12px 28px -12px rgb(124 92 255 / .7), 0 0 0 4px rgb(169 166 255 / .1) !important;
+}
+:root[data-astryx-theme][data-theme="dark"] .page-heading .primary svg { color: #f0d79c !important; }
+:root[data-astryx-theme][data-theme="dark"] .shift-card .primary:has(.lucide-play) {
+  background: linear-gradient(110deg, transparent 30%, rgb(255 255 255 / .28) 45%, transparent 60%) no-repeat, linear-gradient(135deg, #3f3bd1, #7c5cff) !important;
+  background-size: 250% 100%, 100% 100% !important;
+}
+:root[data-astryx-theme][data-theme="dark"] .secondary { background: rgb(124 92 255 / .12) !important; box-shadow: 0 0 0 1px rgb(169 166 255 / .3), 0 1px 0 rgb(255 255 255 / .08) inset !important; color: #ecebff !important; }
+:root[data-astryx-theme][data-theme="dark"] .secondary:hover:not(:disabled) { background: rgb(124 92 255 / .2) !important; box-shadow: 0 0 0 1px rgb(169 166 255 / .55), 0 8px 18px -10px rgb(124 92 255 / .6) !important; }
+:root[data-astryx-theme][data-theme="dark"] .toggle-control.on { background: linear-gradient(135deg, #4b46e0, #7c5cff); box-shadow: 0 6px 14px -6px rgb(124 92 255 / .65); }
+:root[data-astryx-theme][data-theme="dark"] .theme-settings-switch.on {
+  background: linear-gradient(180deg, rgb(255 255 255 / .22), transparent 60%) padding-box, linear-gradient(135deg, #4b46e0, #7c5cff) padding-box, linear-gradient(160deg, rgb(255 255 255 / .55), #a9a6ff) border-box !important;
+  box-shadow: inset 0 1px 3px rgb(0 0 0 / .3), 0 0 14px rgb(124 92 255 / .5) !important;
+}
+:root[data-astryx-theme][data-theme="dark"] .cp-theme-top { color: #c9c7ff !important; box-shadow: 0 1px 0 rgb(255 255 255 / .12) inset, 0 0 0 1px rgb(169 166 255 / .3), 0 6px 16px -8px rgb(124 92 255 / .6) !important; }
+/* "NOVA FRAMES" wordmark: Manrope bold caps (subtitle line keeps its own style) */
+:root[data-astryx-theme] .brand { font-family: Manrope, var(--font-family-body) !important; font-weight: 800 !important; font-size: 15px !important; letter-spacing: .09em !important; }
+:root[data-astryx-theme] .brand small { font-family: var(--nv-mono) !important; font-weight: 500 !important; letter-spacing: .22em !important; }

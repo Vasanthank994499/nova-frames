@@ -58,8 +58,7 @@ export function ClientPortal({initial,onSignedOut}:{initial:any,onSignedOut:()=>
    <span className="brand"><span className="brandmark"><img src="/logo.svg" alt="" width={36} height={36}/></span><span>NOVA FRAMES<small>CLIENT DASHBOARD</small></span></span>
    <p className="cp-side-brand">{dashboard.brand.name}</p>
    <nav>{PAGES.map(([id,label,Icon])=><button key={id} className={'cp-nav'+(page===id?' on':'')} aria-current={page===id?'page':undefined} onClick={()=>go(id)}><Icon size={17}/><span>{label}</span>{id==='review'&&awaiting>0&&<b className="cp-badge">{awaiting}</b>}</button>)}</nav>
-   <button className="cp-nav cp-theme" role="switch" aria-checked={dark} onClick={toggleTheme}>{dark?<Sun size={17}/>:<Moon size={17}/>}<span>{dark?'Light mode':'Dark mode'}</span><i className={'cp-switch'+(dark?' on':'')}/></button>
-   <button className="cp-nav cp-signout-btn" onClick={signOut} disabled={busy}>{busy?<Loader2 size={17} className="spin"/>:<LogOut size={17}/>}<span>Sign out</span></button>
+   <div className="account cp-account"><span className="avatar" aria-hidden="true">{String(viewer.name).split(' ').filter(Boolean).map((w:string)=>w[0]).join('').slice(0,2).toUpperCase()}</span><div><strong>{viewer.name}</strong><small>Client · {dashboard.brand.name}</small></div><button className="iconbutton" aria-label="Sign out" onClick={signOut} disabled={busy}>{busy?<Loader2 size={16} className="spin"/>:<LogOut size={16}/>}</button></div>
   </aside>
   <div className="cp-scrim" aria-hidden="true" onClick={()=>setMenu(false)}/>
   <div className="cp-body">
