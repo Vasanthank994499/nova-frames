@@ -723,3 +723,25 @@ html { scroll-behavior: auto; -webkit-overflow-scrolling: touch; }
   :root[data-astryx-theme] { --nv-blur: blur(14px) saturate(160%); }
   .nv-aurora, .nv-floor { animation: none; }
 }
+
+/* ---------- Mobile / touch performance: no live blur, no filter animations, fewer full-screen layers ---------- */
+@media (max-width: 900px), (pointer: coarse) {
+  :root[data-astryx-theme] { --nv-blur: none; --nv-glass: light-dark(rgb(255 253 248 / .96), rgb(22 23 31 / .96)); --nv-glass-hi: light-dark(rgb(255 254 250 / .98), rgb(24 25 34 / .98)); }
+  :root[data-astryx-theme] * { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+  :root[data-astryx-theme] .nv-cheer-card { background-color: light-dark(#fffdf8, #181922) !important; }
+  .nv-aurora { filter: none; opacity: .55; animation: none !important; inset: 0;
+    background: radial-gradient(70vw 50vh at 10% 0%, light-dark(rgb(124 92 255 / .22), rgb(124 92 255 / .22)), transparent 70%), radial-gradient(70vw 50vh at 100% 100%, light-dark(rgb(227 194 124 / .3), rgb(63 59 209 / .25)), transparent 70%); }
+  .nv-grain, .nv-spot, .nv-stars.b, .nv-stars.c { display: none !important; }
+  .nv-stars { animation: none !important; opacity: .6; will-change: auto; }
+  .nv-scene { contain: strict; }
+  /* entrance + reveal: transform/opacity only (blur filters are expensive on phones) */
+  @keyframes nv-rise { from { opacity: 0; transform: translateY(14px); } }
+  :root[data-astryx-theme] .nv-reveal { filter: none !important; transform: translateY(14px); }
+  :root[data-astryx-theme] .nv-reveal.nv-in { transform: none; }
+  :root[data-astryx-theme] :is(.content, .cp-body, .client-main) > * { animation-duration: 450ms !important; }
+  /* lighter shadows and no constant button loops while scrolling */
+  :root[data-astryx-theme] :is(.stat, .job-card, .person-card, .client-section, .report-panel, .projects, .shoot-panel, .attendance-panel, .extra-panel, .cp-quick-card, .lead-card, .shoot-card, .allocation-page) { box-shadow: 0 1px 0 light-dark(#fff, rgb(255 255 255 / .05)) inset, 0 6px 16px -12px rgb(0 0 0 / .45) !important; }
+  :root[data-astryx-theme] .page-heading .primary { animation: none !important; }
+  :root[data-astryx-theme] .primary::before { animation: none !important; }
+  :root[data-astryx-theme] .lq-tilt, :root[data-astryx-theme] .lq-tilt > * { transform: none !important; will-change: auto !important; }
+}

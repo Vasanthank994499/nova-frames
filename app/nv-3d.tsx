@@ -18,6 +18,8 @@ export default function Nv3D(){
  const ref=useRef<HTMLDivElement>(null);
  useEffect(()=>{
   let stop=()=>{};let cancelled=false;
+  // Phones and touch tablets skip the 3D Earth entirely: no three.js or texture download, no GPU load.
+  if(matchMedia('(max-width: 900px), (pointer: coarse)').matches)return;
   (async()=>{
    const THREE=await import('three');
    const host=ref.current;if(cancelled||!host)return;
