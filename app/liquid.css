@@ -683,3 +683,28 @@
     :is(.allocation-editor, .extra-panel, .expense-form, .request-form, .holiday-form, .rule-note, .info-banner, .empty, .client-empty, .table-wrap, .ig-table-wrap, .lead-form, .client-form, .shift-card) { padding-inline: 10px !important; }
   :root[data-astryx-theme] :is(.topbar, .cp-top, .client-top) { margin-inline: 8px !important; }
 }
+
+/* ---------- Mobile: one glass layer only ---------- */
+@media (max-width: 900px) {
+  /* sticky top bar: a single, properly frosted layer (content must not show through) */
+  :root[data-astryx-theme] :is(.topbar, .cp-top, .client-top) {
+    background: light-dark(rgb(255 254 250 / .94), rgb(16 17 24 / .94)) !important;
+    backdrop-filter: blur(24px) saturate(180%) !important; -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+    border: 1px solid light-dark(rgb(20 21 27 / .06), rgb(255 255 255 / .07)) !important;
+    box-shadow: 0 10px 24px -16px light-dark(rgb(40 30 80 / .35), rgb(0 0 0 / .8)) !important;
+  }
+  /* buttons inside the bar sit flat on it, no second glass circle */
+  :root[data-astryx-theme] :is(.topbar, .cp-top, .client-top) :is(.iconbutton, .mobile-menu-button, .notification-trigger, .cp-menu-btn, .cp-theme-top) {
+    background: transparent !important; box-shadow: none !important; border-color: transparent !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
+  }
+  /* boxes: drop the second (diagonal streak) light layer, keep one smooth glass */
+  :root[data-astryx-theme] { --nv-streak: linear-gradient(transparent, transparent); }
+  :root[data-astryx-theme] :is(.client-section, .report-panel, .projects, .attendance-panel, .extra-panel)::after { content: none !important; }
+}
+@media (max-width: 700px) {
+  /* inside boxes reach the panel's edges (flush to its corners), no extra inset */
+  :root[data-astryx-theme] :is(.allocation-page, .client-section, .report-panel, .projects, .attendance-panel, .shoot-panel, .expenses-panel, .requests-panel, .leads-panel, .unassigned-panel, .overview-brand-box, .client-admin)
+    > :is(.allocation-editor, .extra-panel, .expense-form, .request-form, .holiday-form, .rule-note, .info-banner, .empty, .client-empty, .table-wrap, .ig-table-wrap, .lead-form, .client-form, .shift-card, .shoot-list, .shoot-card, .request-list, .unassigned-fields) {
+    margin-inline: -10px !important; width: calc(100% + 20px) !important; max-width: none !important; border-radius: 18px !important; box-sizing: border-box;
+  }
+}
