@@ -1,11 +1,15 @@
 'use client';
-import {useEffect} from 'react';
-import Nv3D from './nv-3d';
+import {lazy,Suspense,useEffect,useSyncExternalStore} from 'react';
+// 3D Earth module (and three.js) is only fetched on desktop; phones/touch never download it.
+const Nv3D=lazy(()=>import('./nv-3d'));
 // Decorative 3D scene + motion (styles in liquid.css). Presentation only: no data, no app state.
 // Tilt/spotlight need a hover pointer; everything motion-related is skipped for prefers-reduced-motion.
 const CARDS='.stat,.job-card,.person-card,.cp-quick-card,.lead-card,.add-card,.shoot-card,.request-card,.shift-card,.owner-card,.brief-card';
 const REVEAL=CARDS+',.client-section,.report-panel,.projects,.leads-column';
+const TOUCH='(max-width: 900px), (pointer: coarse)';
+const subDesk=(cb:()=>void)=>{const m=matchMedia(TOUCH);m.addEventListener('change',cb);return()=>m.removeEventListener('change',cb);};
 export default function LiquidEffects(){
+ const desk=useSyncExternalStore(subDesk,()=>!matchMedia(TOUCH).matches,()=>false);
  useEffect(()=>{
   const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches,hover=matchMedia('(hover: hover)').matches;
   const off:(()=>void)[]=[];
@@ -47,7 +51,8 @@ export default function LiquidEffects(){
    root.style.setProperty('--vt-r',Math.hypot(Math.max(x,innerWidth-x),Math.max(y,innerHeight-y))+'px');
    doc.startViewTransition(()=>{replay=true;b.click();replay=false;});};
   document.addEventListener('click',onTheme,true);off.push(()=>document.removeEventListener('click',onTheme,true));
-  if(!reduce){
+  const touch=matchMedia('(max-width: 900px), (pointer: coarse)').matches;
+  if(!reduce&&!touch){
    // scroll reveal for cards entering the viewport
    const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('nv-in');io.unobserve(e.target);}}),{rootMargin:'0px 0px -6% 0px'});
    const scan=()=>document.querySelectorAll<HTMLElement>(REVEAL).forEach(el=>{if(!el.dataset.nvR){el.dataset.nvR='1';if(el.getBoundingClientRect().top>innerHeight){el.classList.add('nv-reveal');io.observe(el);}}});
@@ -84,5 +89,5 @@ export default function LiquidEffects(){
   }
   return()=>off.forEach(f=>f());
  },[]);
- return <><div className="nv-scene" aria-hidden="true"><div className="nv-aurora"/><div className="nv-stars a"/><div className="nv-stars b"/><div className="nv-stars c"/><Nv3D/><div className="nv-spot"/><div className="nv-grain"/></div></>;
+ return <><div className="nv-scene" aria-hidden="true"><div className="nv-aurora"/><div className="nv-stars a"/><div className="nv-stars b"/><div className="nv-stars c"/>{desk&&<Suspense fallback={null}><Nv3D/></Suspense>}<div className="nv-spot"/><div className="nv-grain"/></div></>;
 }
