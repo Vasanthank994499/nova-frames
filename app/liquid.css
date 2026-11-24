@@ -708,3 +708,18 @@
     margin-inline: -10px !important; width: calc(100% + 20px) !important; max-width: none !important; border-radius: 18px !important; box-sizing: border-box;
   }
 }
+
+/* ---------- Performance for high-refresh screens (120/144Hz) ---------- */
+.nv-scene { contain: strict; }
+.nv-aurora { will-change: transform; }
+.nv-stars { will-change: opacity; }
+.nv-spot { will-change: left, top; }
+:root[data-astryx-theme] { --nv-blur: blur(20px) saturate(170%); }
+:root[data-astryx-theme] .lq-tilt { will-change: transform; }
+:root[data-astryx-theme] :is(.stat, .job-card, .person-card, .cp-quick-card, .lead-card, .shoot-card) { backface-visibility: hidden; }
+html { scroll-behavior: auto; -webkit-overflow-scrolling: touch; }
+@media (max-width: 900px) {
+  /* phones: lighter blur, no constant background motion while reading */
+  :root[data-astryx-theme] { --nv-blur: blur(14px) saturate(160%); }
+  .nv-aurora, .nv-floor { animation: none; }
+}

@@ -11,13 +11,19 @@ export default function LiquidEffects(){
   const off:(()=>void)[]=[];
   // Soften any sharp-cornered box the stylesheet doesn't cover (circles/pills and table cells are left alone).
   let soft=0;const SKIP=/^(TH|TD|TR|TBODY|THEAD|TABLE|HTML|BODY|SVG|PATH|OPTION)$/;
-  const soften=()=>{soft=0;document.querySelectorAll<HTMLElement>('.shell *,.client-shell *,.login-shell *,main *').forEach(el=>{
+  // Performance: only newly added elements are checked (text-only updates like the attendance clock are ignored), in idle time.
+  const softenEl=(el:HTMLElement)=>{
    if(el.dataset.nvSoft||SKIP.test(el.tagName)||el.closest('.nv-scene'))return;const r=el.getBoundingClientRect();if(r.width<20||r.height<14)return;
    const cs=getComputedStyle(el);if(cs.backgroundClip==='text'||(cs as unknown as {webkitBackgroundClip?:string}).webkitBackgroundClip==='text')return;
    const box=(cs.backgroundColor!=='rgba(0, 0, 0, 0)')||cs.backgroundImage!=='none'||parseFloat(cs.borderTopWidth)>0||cs.boxShadow!=='none'||/^(IMG|VIDEO|IFRAME)$/.test(el.tagName);
-   if(box&&parseFloat(cs.borderTopLeftRadius)<8){el.style.borderRadius=Math.min(18,Math.round(r.height/2))+'px';el.dataset.nvSoft='1';}});};
-  const queueSoft=()=>{clearTimeout(soft);soft=window.setTimeout(soften,150);};
-  queueSoft();const smo=new MutationObserver(queueSoft);smo.observe(document.body,{childList:true,subtree:true});off.push(()=>smo.disconnect());
+   if(box&&parseFloat(cs.borderTopLeftRadius)<8){el.style.borderRadius=Math.min(18,Math.round(r.height/2))+'px';el.dataset.nvSoft='1';}};
+  const pending=new Set<Element>();
+  const ric=(window as unknown as {requestIdleCallback?:(c:()=>void,o?:{timeout:number})=>number}).requestIdleCallback;
+  const idle=(cb:()=>void)=>ric?ric(cb,{timeout:400}):setTimeout(cb,150) as unknown as number;
+  const flushSoft=()=>{soft=0;pending.forEach(root=>{if(!root.isConnected)return;if(root instanceof HTMLElement)softenEl(root);root.querySelectorAll<HTMLElement>('*').forEach(softenEl);});pending.clear();};
+  const queueSoft=(nodes:Iterable<Node>)=>{for(const n of nodes)if(n.nodeType===1&&!(n as Element).closest('.nv-scene,.nv-cheer'))pending.add(n as Element);if(pending.size&&!soft)soft=idle(flushSoft);};
+  queueSoft(document.querySelectorAll('.shell,.client-shell,.login-shell,main'));
+  const smo=new MutationObserver(recs=>{for(const r of recs)queueSoft(r.addedNodes);});smo.observe(document.body,{childList:true,subtree:true});off.push(()=>smo.disconnect());
   // Check-in celebration: when a Check in click succeeds (its button leaves the shift card), cheer the worker on.
   const LINES=['Great frames start with showing up. Have a brilliant day!','You are on the clock. Let us make something beautiful.','Welcome in! Today is a good day to create.','Checked in. Every shot counts, make it shine.','Here we go. Your best work starts now.'];
   const cheer=()=>{const name=(document.querySelector('.account strong')?.textContent||'').trim().split(' ')[0];
@@ -45,7 +51,7 @@ export default function LiquidEffects(){
    // scroll reveal for cards entering the viewport
    const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('nv-in');io.unobserve(e.target);}}),{rootMargin:'0px 0px -6% 0px'});
    const scan=()=>document.querySelectorAll<HTMLElement>(REVEAL).forEach(el=>{if(!el.dataset.nvR){el.dataset.nvR='1';if(el.getBoundingClientRect().top>innerHeight){el.classList.add('nv-reveal');io.observe(el);}}});
-   scan();const mo=new MutationObserver(scan);mo.observe(document.body,{childList:true,subtree:true});
+   scan();let sraf=0;const mo=new MutationObserver(recs=>{if(sraf||!recs.some(r=>[...r.addedNodes].some(n=>n.nodeType===1)))return;sraf=requestAnimationFrame(()=>{sraf=0;scan();});});mo.observe(document.body,{childList:true,subtree:true});
    off.push(()=>{io.disconnect();mo.disconnect();});
    // ripple on buttons
    const ripple=(ev:PointerEvent)=>{const b=(ev.target as Element)?.closest?.('.primary,.secondary,.iconbutton') as HTMLElement|null;if(!b)return;const r=b.getBoundingClientRect(),s=Math.max(r.width,r.height),d=document.createElement('span');d.className='nv-ripple';d.style.cssText=`width:${s}px;height:${s}px;left:${ev.clientX-r.left-s/2}px;top:${ev.clientY-r.top-s/2}px`;b.appendChild(d);setTimeout(()=>d.remove(),700);};
