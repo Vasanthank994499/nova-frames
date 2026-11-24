@@ -23,7 +23,7 @@ export default function Nv3D(){
    const host=ref.current;if(cancelled||!host)return;
    let renderer:import('three').WebGLRenderer;
    try{renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,powerPreference:'low-power'});}catch{return;}
-   renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.25;
+   renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.25;
    renderer.autoClear=false;renderer.setClearColor(0x000000,0);host.appendChild(renderer.domElement);
    const scene=new THREE.Scene(),cam=new THREE.PerspectiveCamera(30,1,.1,200);cam.position.set(0,0,10);
    const load=new THREE.TextureLoader();load.setCrossOrigin('anonymous');
@@ -75,7 +75,10 @@ export default function Nv3D(){
    const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;let py=0,px=0,raf=0;const clock=new THREE.Clock();
    const pm=(e:PointerEvent)=>{px=e.clientX/innerWidth-.5;py=e.clientY/innerHeight-.5;};addEventListener('pointermove',pm,{passive:true});
    globe.rotation.y=-1.9;clouds.rotation.y=-1.9;
+   let scrolling=0;const onScroll=()=>{clearTimeout(scrolling);scrolling=window.setTimeout(()=>{scrolling=0;},140);};addEventListener('scroll',onScroll,{passive:true});
    const frame=()=>{const dt=Math.min(clock.getDelta(),.05);
+    // pause the 3D render while the page scrolls so scrolling keeps the full frame budget (smooth at 120/144Hz)
+    if(scrolling&&!reduce){raf=requestAnimationFrame(frame);return;}
     const a=anchor();renderer.setScissorTest(false);renderer.clear();
     if(a){const w=innerWidth,h=innerHeight,k=halfH/(h/2);
      const x=(a.cx-w/2)*k,y=-(a.cy-h/2)*k,s=a.r*k;
@@ -90,7 +93,7 @@ export default function Nv3D(){
    const vis=()=>{if(!document.hidden&&!reduce){cancelAnimationFrame(raf);clock.getDelta();raf=requestAnimationFrame(frame);}};document.addEventListener('visibilitychange',vis);
    const once=()=>{if(reduce)frame();};addEventListener('scroll',once,{passive:true});
    frame();
-   stop=()=>{cancelAnimationFrame(raf);removeEventListener('resize',size);removeEventListener('pointermove',pm);removeEventListener('scroll',once);document.removeEventListener('visibilitychange',vis);renderer.dispose();renderer.domElement.remove();};
+   stop=()=>{cancelAnimationFrame(raf);removeEventListener('resize',size);removeEventListener('pointermove',pm);removeEventListener('scroll',once);removeEventListener('scroll',onScroll);document.removeEventListener('visibilitychange',vis);renderer.dispose();renderer.domElement.remove();};
   })();
   return()=>{cancelled=true;stop();};
  },[]);
