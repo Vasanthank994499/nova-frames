@@ -1,0 +1,204 @@
+/* Nova Frames studio layer — Astryx neutral theme tokens + Nova Frames brand accent, macOS-inspired surfaces.
+   Loaded after globals.css. Selectors are prefixed with :root[data-astryx-theme] so one rule serves light and dark
+   (Astryx tokens resolve through light-dark()). */
+@import '@astryxdesign/theme-neutral/theme.css';
+
+:root[data-astryx-theme] {
+  --nf-brand: light-dark(#2c5fa6, #8cb4ef);
+  --nf-brand-strong: light-dark(#1f4a87, #b3cdf5);
+  --nf-brand-soft: light-dark(#e9f0fa, #1f2b3b);
+  --nf-glass: light-dark(rgb(255 255 255 / .72), rgb(30 30 30 / .7));
+  --nf-glass-edge: light-dark(rgb(255 255 255 / .9), rgb(255 255 255 / .06));
+  --nf-ease: cubic-bezier(.2, .8, .2, 1);
+  --color-accent: var(--nf-brand);
+  --color-text-accent: var(--nf-brand);
+  --color-icon-accent: var(--nf-brand);
+  --color-on-accent: light-dark(#ffffff, #0c1524);
+  --color-accent-muted: var(--nf-brand-soft);
+  --font-family-body: -apple-system, BlinkMacSystemFont, "SF Pro Text", "DM Sans", "Segoe UI", Roboto, sans-serif;
+  --font-family-heading: -apple-system, BlinkMacSystemFont, "SF Pro Display", Manrope, "Segoe UI", sans-serif;
+  /* legacy app variables now follow Astryx tokens */
+  --bg: var(--color-background-body);
+  --ink: var(--color-text-primary);
+  --muted: var(--color-text-secondary);
+  --line: var(--color-border);
+  --green: var(--nf-brand);
+  --deep: var(--color-text-primary);
+  --nf-bg: var(--color-background-body);
+  --nf-surface: var(--color-background-surface);
+  --nf-ink: var(--color-text-primary);
+  --nf-text: var(--color-text-secondary);
+  --nf-muted: var(--color-text-secondary);
+  --nf-line: var(--color-border);
+  --nf-line-2: var(--color-border-emphasized);
+  --nf-accent: var(--nf-brand);
+  --nf-accent-soft: var(--nf-brand-soft);
+  --nf-navy: var(--color-text-primary);
+  --nf-r: var(--radius-container);
+  --nf-r-sm: var(--radius-element);
+  --nf-r-lg: 16px;
+  --nf-shadow: var(--shadow-low);
+  --nf-shadow-lg: var(--shadow-high);
+}
+
+:root[data-astryx-theme] body {
+  font-family: var(--font-family-body);
+  background: var(--color-background-body);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+:root[data-astryx-theme] :is(h1, h2, h3, .brand, .project-name) { font-family: var(--font-family-heading); letter-spacing: -.01em; }
+:root[data-astryx-theme] .brand { letter-spacing: .06em; }
+:root[data-astryx-theme] h1 { font-weight: 700; letter-spacing: -.02em; }
+
+/* ---------- Window chrome: sidebar + toolbar ---------- */
+:root[data-astryx-theme] :is(.sidebar, .cp-side) {
+  background: var(--nf-glass);
+  backdrop-filter: saturate(180%) blur(24px);
+  -webkit-backdrop-filter: saturate(180%) blur(24px);
+  border-right: 1px solid var(--color-border);
+  box-shadow: inset -1px 0 0 var(--nf-glass-edge);
+}
+:root[data-astryx-theme] :is(.topbar, .cp-top, .client-top) {
+  background: var(--nf-glass);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 1px solid var(--color-border);
+  position: sticky; top: 0; z-index: 4;
+}
+:root[data-astryx-theme] .sidebar .sidebar-bottom { background: transparent; }
+:root[data-astryx-theme] .workspace-tag { background: var(--color-background-muted); border: 1px solid var(--color-border); border-radius: var(--radius-element); color: var(--color-text-primary); }
+:root[data-astryx-theme] :is(.navlabel) { color: var(--color-text-secondary); font-weight: 600; letter-spacing: .08em; }
+:root[data-astryx-theme] :is(.navitem, .cp-side .cp-nav) {
+  color: var(--color-text-secondary);
+  border-radius: var(--radius-element);
+  padding-block: 9px; margin-bottom: 2px;
+  transition: background-color var(--duration-fast) var(--nf-ease), color var(--duration-fast) var(--nf-ease);
+}
+:root[data-astryx-theme] :is(.navitem, .cp-side .cp-nav):hover { background: var(--color-overlay-hover); color: var(--color-text-primary); }
+:root[data-astryx-theme] :is(.navitem.selected, .cp-side .cp-nav.on) {
+  background: var(--nf-brand-soft); color: var(--nf-brand-strong); font-weight: 600;
+  box-shadow: inset 0 0 0 1px light-dark(rgb(44 95 166 / .14), rgb(140 180 239 / .16));
+}
+:root[data-astryx-theme] .navitem svg { color: currentColor; }
+:root[data-astryx-theme] .navitem b { background: var(--color-background-muted); color: var(--color-text-secondary); border-radius: var(--radius-full); }
+:root[data-astryx-theme] .navitem.selected b { background: var(--nf-brand); color: var(--color-on-accent); }
+:root[data-astryx-theme] .account { border-top: 1px solid var(--color-border); }
+:root[data-astryx-theme] :is(.avatar, .topavatar, .mini-avatar) { background: var(--nf-brand-soft); color: var(--nf-brand-strong); }
+
+/* ---------- Content hierarchy ---------- */
+:root[data-astryx-theme] .eyebrow { color: var(--nf-brand); font-weight: 650; letter-spacing: .12em; }
+:root[data-astryx-theme] :is(.subtitle, .muted, .cell-small, .ig-sub, .rule-note) { color: var(--color-text-secondary); }
+:root[data-astryx-theme] .page-heading h1 { color: var(--color-text-primary); }
+
+/* Cards and panels: Astryx container radius + low elevation */
+:root[data-astryx-theme] :is(.stat, .job-card, .person-card, .client-section, .report-panel, .shoot-card, .request-card, .lead-card, .shift-card, .brief-card, .owner-card, .add-card, .cp-quick-card, .invoice-public, .login-panel) {
+  background: var(--color-background-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-container);
+  box-shadow: var(--shadow-low);
+}
+:root[data-astryx-theme] :is(.job-card, .person-card, .cp-quick-card, .lead-card, .add-card) {
+  transition: box-shadow var(--duration-fast) var(--nf-ease), transform var(--duration-fast) var(--nf-ease), border-color var(--duration-fast) var(--nf-ease);
+}
+:root[data-astryx-theme] :is(.job-card, .person-card, .cp-quick-card, .lead-card, .add-card):hover { box-shadow: var(--shadow-med); border-color: var(--color-border-emphasized); }
+:root[data-astryx-theme] .stat strong, :root[data-astryx-theme] .stat b { color: var(--color-text-primary); font-variant-numeric: tabular-nums; }
+
+/* ---------- Controls ---------- */
+:root[data-astryx-theme] :is(.primary, .secondary, .cp-signout-btn) {
+  border-radius: var(--radius-element);
+  font-weight: 600;
+  transition: background-color var(--duration-fast) var(--nf-ease), box-shadow var(--duration-fast) var(--nf-ease), transform var(--duration-fast) var(--nf-ease);
+}
+:root[data-astryx-theme] .primary {
+  background: var(--nf-brand); color: var(--color-on-accent);
+  box-shadow: 0 1px 2px light-dark(rgb(16 36 70 / .18), rgb(0 0 0 / .4)), inset 0 1px 0 rgb(255 255 255 / .16);
+}
+:root[data-astryx-theme] .primary:hover:not(:disabled) { background: var(--nf-brand-strong); }
+:root[data-astryx-theme] .primary:active:not(:disabled), :root[data-astryx-theme] .secondary:active:not(:disabled) { transform: scale(.98); }
+:root[data-astryx-theme] .secondary {
+  background: var(--color-background-surface); color: var(--color-text-primary);
+  border: 1px solid var(--color-border-emphasized);
+  box-shadow: 0 1px 1px light-dark(rgb(0 0 0 / .04), rgb(0 0 0 / .3));
+}
+:root[data-astryx-theme] .secondary:hover:not(:disabled) { background: var(--color-background-muted); }
+:root[data-astryx-theme] .iconbutton { background: var(--color-background-muted); color: var(--color-text-secondary); border: 1px solid var(--color-border); }
+:root[data-astryx-theme] .iconbutton:hover { color: var(--color-text-primary); background: var(--color-overlay-hover); }
+:root[data-astryx-theme] .textbutton { color: var(--nf-brand); font-weight: 600; }
+:root[data-astryx-theme] :is(.danger-text, .form-error) { color: var(--color-text-error); }
+:root[data-astryx-theme] .badge { background: var(--color-background-muted); color: var(--color-text-secondary); border-radius: var(--radius-full); font-weight: 600; }
+
+:root[data-astryx-theme] :is(input:not([type=checkbox]):not([type=radio]):not([type=file]):not([type=range]), select, textarea) {
+  background: var(--color-background-surface);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border-emphasized);
+  border-radius: var(--radius-element);
+  transition: border-color var(--duration-fast) var(--nf-ease), box-shadow var(--duration-fast) var(--nf-ease);
+}
+:root[data-astryx-theme] :is(input, select, textarea)::placeholder { color: var(--color-text-secondary); opacity: .85; }
+:root[data-astryx-theme] :is(input, select, textarea):focus { outline: none; border-color: var(--nf-brand); box-shadow: 0 0 0 3px light-dark(rgb(44 95 166 / .22), rgb(140 180 239 / .28)); }
+:root[data-astryx-theme] :is(input[type=checkbox], input[type=radio]) { accent-color: var(--nf-brand); }
+:root[data-astryx-theme] label { color: var(--color-text-primary); }
+
+/* Segmented tabs (stage tabs, job tabs, view toggles) */
+:root[data-astryx-theme] :is(.stage-tabs, .job-tabs, .viewtoggle) { background: var(--color-background-muted); border: 1px solid var(--color-border); border-radius: var(--radius-container); padding: 3px; gap: 2px; }
+:root[data-astryx-theme] :is(.stage-tabs, .job-tabs, .viewtoggle) > button { border-radius: calc(var(--radius-container) - 3px); color: var(--color-text-secondary); background: transparent; }
+:root[data-astryx-theme] :is(.stage-tabs, .job-tabs, .viewtoggle) > :is(button.selected, button.on, button.active, button[aria-selected="true"], button[aria-pressed="true"]) {
+  background: var(--color-background-surface); color: var(--color-text-primary); box-shadow: var(--shadow-low); font-weight: 600;
+}
+
+:root[data-astryx-theme] :is(.stage-tabs, .job-tabs, .viewtoggle) > button span { background: var(--color-background-muted); color: var(--color-text-secondary); }
+:root[data-astryx-theme] :is(.stage-tabs, .job-tabs, .viewtoggle) > button.on span { background: var(--nf-brand-soft); color: var(--nf-brand-strong); }
+
+/* Tables */
+:root[data-astryx-theme] :is(.table-wrap, .ig-table-wrap) { border-radius: var(--radius-container); }
+:root[data-astryx-theme] table th { color: var(--color-text-secondary); font-weight: 600; background: var(--color-background-muted); border-color: var(--color-border); }
+:root[data-astryx-theme] table td { border-color: var(--color-border); color: var(--color-text-primary); }
+:root[data-astryx-theme] table tbody tr:hover td { background: var(--color-overlay-hover); }
+
+/* Overlays: sheets, dialogs, popovers, toast */
+:root[data-astryx-theme] :is(.modal-shade, .reassignment-shade, .theme-settings-shade, .mobile-menu-backdrop, .cp-scrim) { background: light-dark(rgb(15 20 30 / .28), rgb(0 0 0 / .55)); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+:root[data-astryx-theme] .drawer { background: var(--color-background-surface); box-shadow: var(--shadow-high); border-left: 1px solid var(--color-border); }
+:root[data-astryx-theme] :is(.worker-modal, .reassignment-dialog, .theme-settings-dialog) { background: var(--color-background-popover); border: 1px solid var(--color-border); border-radius: 16px; box-shadow: var(--shadow-high); }
+:root[data-astryx-theme] .notification-panel { background: var(--nf-glass); backdrop-filter: saturate(180%) blur(24px); -webkit-backdrop-filter: saturate(180%) blur(24px); border: 1px solid var(--color-border); border-radius: var(--radius-container); box-shadow: var(--shadow-high); }
+:root[data-astryx-theme] .toast { background: light-dark(rgb(28 28 30 / .92), rgb(242 242 247 / .94)); color: light-dark(#f5f5f7, #1c1c1e); border: 1px solid light-dark(rgb(255 255 255 / .1), rgb(0 0 0 / .08)); border-radius: var(--radius-container); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); box-shadow: var(--shadow-high); }
+
+/* Banners + states */
+:root[data-astryx-theme] .info-banner { background: var(--color-info-muted); color: var(--color-on-info-muted); border: 1px solid var(--color-border-info); border-radius: var(--radius-container); }
+:root[data-astryx-theme] :is(.info-banner, .rule-note, .attendance-holiday-notice, .request-notice) strong { color: inherit; }
+:root[data-astryx-theme] :is(.empty, .client-empty, .notification-empty) { color: var(--color-text-secondary); }
+:root[data-astryx-theme] .panel-loading { color: var(--color-text-secondary); }
+:root[data-astryx-theme] .spin { animation-timing-function: linear; }
+
+/* Login */
+:root[data-astryx-theme] .login-shell { background: radial-gradient(1200px 600px at 15% -10%, light-dark(#dfe9f8, #1b2433) 0%, transparent 60%), var(--color-background-body); }
+:root[data-astryx-theme] .login-panel { border-radius: 20px; box-shadow: var(--shadow-high); overflow: hidden; }
+:root[data-astryx-theme] .login-story { background: linear-gradient(160deg, light-dark(#eaf1fb, #1d2633), light-dark(#f6f8fc, #202020)); color: var(--color-text-primary); }
+
+/* Client portal shell */
+:root[data-astryx-theme] .client-shell { background: var(--color-background-body); color: var(--color-text-primary); }
+
+/* ---------- Accessibility ---------- */
+:root[data-astryx-theme] :is(button, a, [role=button], [tabindex]):focus-visible {
+  outline: 2px solid var(--nf-brand); outline-offset: 2px; border-radius: var(--radius-inner);
+}
+::selection { background: light-dark(rgb(44 95 166 / .2), rgb(140 180 239 / .3)); }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+  :root[data-astryx-theme] :is(.primary, .secondary):active { transform: none; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  :root[data-astryx-theme] :is(.sidebar, .cp-side, .topbar, .cp-top, .client-top, .notification-panel, .toast) { backdrop-filter: none; -webkit-backdrop-filter: none; background: var(--color-background-surface); }
+}
+
+/* Off-canvas navigation on small screens sits over content: keep it opaque for legibility */
+@media (max-width: 900px) {
+  :root[data-astryx-theme] :is(.sidebar, .cp-side) { background: var(--color-background-surface); box-shadow: var(--shadow-high); }
+}
+:root[data-astryx-theme] .client-hero-cta.calm { background: var(--color-success-muted); color: var(--color-on-success-muted); }
+
+/* Public invoice route (standalone page, not inside a portal shell) */
+:root[data-astryx-theme] body > main.client-main { max-width: 760px; margin: 0 auto; padding: 56px 20px; }
+:root[data-astryx-theme] body > main.client-main > h1:first-child { font-size: var(--text-heading-2-size); margin: 0 0 8px; }
+:root[data-astryx-theme] body > main.client-main > .client-lead { color: var(--color-text-secondary); }
