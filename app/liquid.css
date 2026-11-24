@@ -648,3 +648,38 @@
 /* "NOVA FRAMES" wordmark: Manrope bold caps (subtitle line keeps its own style) */
 :root[data-astryx-theme] .brand { font-family: Manrope, var(--font-family-body) !important; font-weight: 800 !important; font-size: 15px !important; letter-spacing: .09em !important; }
 :root[data-astryx-theme] .brand small { font-family: var(--nv-mono) !important; font-weight: 500 !important; letter-spacing: .22em !important; }
+
+/* ---------- Mobile: glass boxes use the full width (no stacked side padding) ---------- */
+@media (max-width: 700px) {
+  :root[data-astryx-theme] .content { padding-inline: 12px !important; }
+  :root[data-astryx-theme] :is(.allocation-page, .client-section, .report-panel, .projects, .attendance-panel, .shoot-panel, .extra-panel, .expenses-panel, .requests-panel, .leads-panel, .unassigned-panel, .overview-brand-box, .client-admin, .pipeline .steps) {
+    padding-inline: 14px !important; border-radius: 20px !important; width: 100%; max-width: 100%; box-sizing: border-box;
+  }
+  /* boxes inside a panel: full panel width, light inner padding */
+  :root[data-astryx-theme] :is(.allocation-page, .client-section, .report-panel, .projects, .attendance-panel, .shoot-panel, .extra-panel, .expenses-panel, .requests-panel, .leads-panel)
+    :is(.allocation-editor, .extra-panel, .expense-form, .request-form, .holiday-form, .rule-note, .info-banner, .empty, .client-empty, .table-wrap, .ig-table-wrap, .lead-form, .client-form, .shift-card) {
+    margin-inline: 0 !important; padding-inline: 12px !important; width: 100%; max-width: 100%; box-sizing: border-box;
+  }
+  /* third level (e.g. the allocation queue inside the editor) adds no more side space */
+  :root[data-astryx-theme] :is(.allocation-editor, .extra-panel, .expense-form, .request-form, .holiday-form, .shift-card) :is(.allocation-queue, .table-wrap, .form-grid, .extra-list) { margin-inline: 0 !important; padding-inline: 0 !important; width: 100%; }
+  /* card grids stack into one full-width column */
+  :root[data-astryx-theme] :is(.allocation-people, .people-grid, .lead-grid) { grid-template-columns: 1fr !important; }
+  :root[data-astryx-theme] .allocation-person { width: 100%; display: flex !important; align-items: center; gap: 12px; text-align: left; }
+  :root[data-astryx-theme] .form-grid { grid-template-columns: 1fr !important; }
+  :root[data-astryx-theme] :is(input:not([type=checkbox]):not([type=radio]), select, textarea) { width: 100%; max-width: 100%; box-sizing: border-box; }
+}
+@media (max-width: 700px) {
+  /* Leads board: columns stack as full-width sections instead of a sideways strip */
+  :root[data-astryx-theme] .leads-board { display: grid !important; grid-template-columns: 1fr !important; grid-auto-flow: row !important; overflow: visible !important; gap: 14px; }
+  :root[data-astryx-theme] .leads-column { width: 100% !important; min-width: 0 !important; max-width: 100% !important; padding-inline: 12px !important; }
+  :root[data-astryx-theme] .leads-column .lead-card { width: 100% !important; }
+  :root[data-astryx-theme] .profile-photo-editor { width: 100%; }
+}
+@media (max-width: 700px) {
+  /* tighter side spacing on phones */
+  :root[data-astryx-theme] :is(.content, .client-main, .cp-body > main) { padding-inline: 8px !important; }
+  :root[data-astryx-theme] :is(.allocation-page, .client-section, .report-panel, .projects, .attendance-panel, .shoot-panel, .extra-panel, .expenses-panel, .requests-panel, .leads-panel, .unassigned-panel, .overview-brand-box, .client-admin, .pipeline .steps, .client-hero, .info-banner, .leads-column, .section-title) { padding-inline: 10px !important; }
+  :root[data-astryx-theme] :is(.allocation-page, .client-section, .report-panel, .projects, .attendance-panel, .shoot-panel, .extra-panel, .expenses-panel, .requests-panel, .leads-panel)
+    :is(.allocation-editor, .extra-panel, .expense-form, .request-form, .holiday-form, .rule-note, .info-banner, .empty, .client-empty, .table-wrap, .ig-table-wrap, .lead-form, .client-form, .shift-card) { padding-inline: 10px !important; }
+  :root[data-astryx-theme] :is(.topbar, .cp-top, .client-top) { margin-inline: 8px !important; }
+}
